@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "description": "Name of the extension",
+        "message": "Browse Manager"
+    },
+    "extension_description": {
+        "description": "Description of the extension",
+        "message": "自动收藏经常访问的网站；统计访问次数；拉黑指定网站。"
+    }
+}
