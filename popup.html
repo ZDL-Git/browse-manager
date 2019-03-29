@@ -7,8 +7,12 @@
     body {
       position: relative;
       width: 520px;
-      height: 300px;
       margin: 0;
+    }
+
+    ::-webkit-scrollbar {
+      width: 0;  /* remove scrollbar space */
+      background: transparent;  /* optional: just make scrollbar invisible */
     }
 
     .search-bg {
@@ -30,6 +34,7 @@
 
     .table-container {
       overflow: scroll;
+      overflow-x: hidden;
       /*height: 100px;*/
       min-height: 250px;
       max-height: 400px;
@@ -54,7 +59,7 @@
     }
 
     .whitelist-col-del, .blacklist-col-del {
-      width: 5%;
+      width: 4%;
       text-align: center;
     }
 
