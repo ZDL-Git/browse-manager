@@ -13,7 +13,8 @@ Chrome扩展：网址/域名拉黑，访问次数统计，自动收藏。【这�
 
 请按gif步骤选择最新版本安装，如有问题可提Github issue，可email:zdl_daily@163.com
 
-<img src="https://github.com/ZDL-Git/Resource-store/blob/master/gifs/Kapture%202019-04-13%20at%2016.36.40.GIF" />
+<br/>
+<img src="https://github.com/ZDL-Git/Resource-store/blob/master/gifs/Kapture%202019-04-13%20at%2016.36.40.GIF" width="100%" />
 <br/>
 
 ### 当前功能
