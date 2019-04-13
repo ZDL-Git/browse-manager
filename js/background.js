@@ -24,6 +24,7 @@ chrome.runtime.onInstalled.addListener(function () {
   if (!localStorage['bookmark_title']) localStorage['bookmark_title'] = '经常访问(BM)';
   if (!localStorage['is_diapause']) localStorage['is_diapause'] = true;
   if (!localStorage['diapause_time']) localStorage['diapause_time'] = 120000;
+  if (!localStorage['is_notify']) localStorage['is_notify'] = true;
   notify_('Browse Manager安装成功', 2000);
 });
 
