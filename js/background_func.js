@@ -105,6 +105,11 @@ function delBookmark(url) {
   })
 }
 
+function showBrowseTimes(tab) {
+  setBadge(tab);
+  // ...
+}
+
 function setBadge(tab) {
 
   if (!tab) return;
@@ -157,6 +162,6 @@ function notify_(content, timeout = 3000) {
 }
 
 function getUrlDomain(url) {
-  // 可用正则
-  return url.replace('//', '`.@^').split('/')[0].replace('`.@^', '//');
+  let arr = url.split("/");
+  return arr[0] + "//" + arr[2];
 }

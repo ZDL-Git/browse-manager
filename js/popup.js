@@ -10,32 +10,27 @@ window.onload = function () {
 };
 
 function appendTableContent() {
-  let whitelist = [];
-  let blacklist = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    if (localStorage.key(i).endsWith(localStorage['whitelist_suffix'])) {
-      whitelist.push(localStorage.key(i).replace(localStorage['whitelist_suffix'], ''))
-    } else if (localStorage.key(i).endsWith(localStorage['blacklist_suffix'])) {
-      blacklist.push(localStorage.key(i).replace(localStorage['blacklist_suffix'], ''))
-    }
-  }
 
-  whitelist.forEach(function (whiteUrl) {
-    $('#table-white').append(
-      '<tr>' +
-      '<td>' + whiteUrl + '</td>' +
-      '<td class="whitelist-col-del">✕</td>' +
-      '</tr>'
-    )
-  });
-  blacklist.forEach(function (blackUrl) {
-    $('#table-black').append(
-      '<tr>' +
-      '<td>' + blackUrl + '</td>' +
-      '<td class="blacklist-col-del">✕</td>' +
-      '</tr>'
-    )
-  });
+  Object.keys(localStorage).forEach(function (key) {
+      if (key.endsWith(localStorage['whitelist_suffix'])) {
+        let whiteUrl = key.replace(localStorage['whitelist_suffix'], '');
+        $('#table-white').append(
+          '<tr>' +
+          '<td>' + whiteUrl + '</td>' +
+          '<td class="whitelist-col-del">✕</td>' +
+          '</tr>'
+        )
+      } else if (key.endsWith(localStorage['blacklist_suffix'])) {
+        let blackUrl = key.replace(localStorage['blacklist_suffix'], '');
+        $('#table-black').append(
+          '<tr>' +
+          '<td>' + blackUrl + '</td>' +
+          '<td class="blacklist-col-del">✕</td>' +
+          '</tr>'
+        );
+      }
+    }
+  );
 }
 
 function fillSettingsContent() {
@@ -44,13 +39,15 @@ function fillSettingsContent() {
   document.getElementById('bookmark-title').value = localStorage['bookmark_title'];
   document.getElementById('diapause-checkbox').checked = localStorage['is_diapause'] === 'true';
   document.getElementById('diapause-input').value = localStorage['diapause_time'] / 1000;
+  document.getElementById('notify-checkbox').checked = localStorage['is_notify'] === 'true';
 }
 
 function showAllTr() {
-  let tr = document.getElementsByTagName("tr");
-  for (let i = 1; i < tr.length; i++) {
-    tr[i].hidden = false;
-  }
+  let trs = document.getElementsByTagName("tr");
+  Array.from(trs).forEach(function (tr) {
+      tr.hidden = false;
+    }
+  );
 }
 
 //实现search时列表的实时过滤
@@ -58,20 +55,19 @@ function addTableFilterListener() {
   let input = document.getElementById("search");
 
   input.oninput = function () {
-    if (!this.value) {
-      showAllTr();
+    showAllTr();
+
+    if (!input.value) {
       return;
     }
 
-    showAllTr();
     let trs = document.getElementsByTagName("tr");
-    for (let i = 1; i < trs.length; i++) {
-      let tr = trs[i];
+    Array.from(trs).forEach(function (tr) {
       //查找是否含有关键字,不含有则隐藏
-      if (tr.innerText.indexOf(this.value) === -1 && tr.innerText.indexOf('名单:') === -1) {
+      if (tr.innerText.indexOf(input.value) === -1 && tr.innerText.indexOf('名单:') === -1) {
         tr.hidden = true;
       }
-    }
+    });
   };
 }
 
@@ -108,5 +104,10 @@ function addSettingListener() {
   let diapauseTime = document.getElementById("diapause-input");
   diapauseTime.oninput = function () {
     localStorage['diapause_time'] = diapauseTime.value * 1000;
+  };
+
+  let isNotify = document.getElementById("notify-checkbox");
+  isNotify.onclick = function () {
+    localStorage['is_notify'] = isNotify.checked;
   };
 }

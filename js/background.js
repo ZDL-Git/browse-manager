@@ -34,12 +34,12 @@ chrome.runtime.onStartup.addListener(function () {
     localStorage.removeItem('startup_within_5s');
   }, 5000);
 
-  chrome.tabs.query({}, function(tabs){
+  chrome.tabs.query({}, function (tabs) {
     for (let i = 0; i < tabs.length; i++) {
       tabsLastUrl[tabs[i].id] = tabs[i].url;
 
       if (tabs[i].active) {
-        setBadge(tabs[i]);
+        showBrowseTimes(tabs[i]);
       }
     }
   });
@@ -63,7 +63,7 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
     }
     case "Menu-" + TITLES[1]: {
       localStorage[tab_url + localStorage['whitelist_suffix']] = 1;
-      setBadge(tab);
+      showBrowseTimes(tab);
       break;
     }
     case "Menu-" + TITLES[2]: {
@@ -74,7 +74,7 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
     case "Menu-" + TITLES[3]: {
       let domain = getUrlDomain(tab_url);
       localStorage[domain + localStorage['whitelist_suffix']] = 1;
-      setBadge(tab);
+      showBrowseTimes(tab);
       break;
     }
   }
@@ -112,7 +112,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
     if (changeInfo.hasOwnProperty('url')) {
       if (isBlacklist(tab_url)) {
-        if (localStorage['tabcreated_within_5s']) {
+        if (localStorage.hasOwnProperty('tabcreated_within_5s')) {
           notify_('黑名单网站，自动关闭');
           chrome.tabs.remove(tabId);
         } else {
@@ -128,11 +128,11 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         if (isEffectual(tab)) {
           updateBrowseTimes(tab);
         }
-        setBadge(tab);
+        showBrowseTimes(tab);
       }
     } else if (!isWhitelist(tab_url)) {
       // 直接F5刷新没有时loading事件没有url，但是需要显示计数
-      setBadge(tab);
+      showBrowseTimes(tab);
     }
   }
 
@@ -152,10 +152,23 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 
     // 在新窗口打开网页，并激活的情况（未按ctrl键）由create事件负责更新图标badge
     if (!localStorage.hasOwnProperty('tabcreated_within_5s')) {
-      setBadge(tab);
+      showBrowseTimes(tab);
     }
   })
 
 });
 
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  switch (message.method) {
+    case "getBrowseTimes":
+      if (message.url) {
+        if (isWhitelist(message.url) || localStorage['is_notify'] !== 'true')
+          sendResponse({browseTimes: null});
+        else
+          sendResponse({browseTimes: localStorage[message.url]});
+      }
+      break;
+    // ...
+  }
+});
 // TODO 前后切换不能加一

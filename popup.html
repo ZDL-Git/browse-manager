@@ -4,25 +4,19 @@
   <title>Browse Manager popup</title>
   <style>
 
+    ::-webkit-scrollbar {
+      width: 0; /* remove scrollbar space */
+      background: transparent; /* optional: just make scrollbar invisible */
+    }
+
     body {
       position: relative;
       width: 400px;
       margin: 0;
     }
 
-    ::-webkit-scrollbar {
-      width: 0;  /* remove scrollbar space */
-      background: transparent;  /* optional: just make scrollbar invisible */
-    }
-
-    .search-bg {
-      /*margin: 0;*/
-      /*background-color: #d8dccc;*/
-      /*box-shadow: 0px 1px 2px 0px #ccc;*/
-    }
-
     #search {
-      margin: 1% 3%;
+      margin: 2% 3% 0;
       width: 94%;
       height: 35px;
       border: none;
@@ -35,21 +29,16 @@
     .table-container {
       overflow: scroll;
       overflow-x: hidden;
-      /*height: 100px;*/
       height: 350px;
       margin: 1% 3%;
     }
 
     .tables {
       table-layout: fixed;
-      /*width: 94%;*/
       width: 100%;
-      /*margin: 0 3%;*/
-      /*font: ;*/
       font-size: 10px;
       font-weight: normal;
       word-wrap: break-word;
-      /*border-style: solid;*/
     }
 
     .table-head {
@@ -67,36 +56,22 @@
     }
 
     .settings-bg {
-      /*position: fixed;*/
-      height: 60px;
-      width: 100%;
-      margin: 0;
+      padding: 4px 8px;
       bottom: 0;
       background: #eeeeee;
     }
 
-    .settings—container {
-      width: 96%;
-      height: 80%;
-      margin: 6px;
-      /*margin: 3%;*/
-      /*margin: auto auto;*/
+    .settings-bg .text-input {
+      height: 90%;
     }
 
-    .settings—container * {
-      /*height: 50%;*/
-      vertical-align: middle;
+    .settings-row1, .settings-row2, .settings-row3 {
+      height: 20px;
+      margin: 0;
+      padding: 0;
     }
 
-    .settings—container-row1 * {
-      height: 46%;
-      /*margin: 2% 0;*/
-      display: inline;
-    }
-
-    .settings—container-row2 * {
-      height: 46%;
-      /*margin: 2% 0;*/
+    .settings-row1 *, .settings-row2 *, .settings-row3 * {
       display: inline;
     }
 
@@ -119,7 +94,7 @@
 
 <body>
 
-<div class="search-bg">
+<div class="search-wrapper">
   <input id="search" autocapitalize="none" autocomplete="off" tabindex="0"
          type="text" spellcheck="false" placeholder="搜索" dir="ltr">
 </div>
@@ -139,21 +114,27 @@
   </table>
 </div>
 
-<div class="settings-bg">
-  <div class="settings—container">
-    <div class="settings—container-row1">
-      <input type="checkbox" id="bookmark-checkbox">
-      <label for="bookmark-threshold">访问超过</label><input type="text" id="bookmark-threshold">
-      <label for="bookmark-title">次自动加入收藏夹</label><input type="text" id="bookmark-title">
-    </div>
-    <div class="settings—container-row2">
-      <input type="checkbox" id="diapause-checkbox">
-      <input type="text" id="diapause-input">
-      <p>秒内重复访问不计数</p>
-      <p class="copyright">Copyright © ZDL</p>
+<footer>
+  <div class="settings-bg">
+    <div class="settings—container">
+      <div class="settings-row1">
+        <input type="checkbox" id="bookmark-checkbox">
+        <label for="bookmark-threshold">访问超过</label><input type="text" id="bookmark-threshold" class="text-input">
+        <label for="bookmark-title">次自动加入收藏夹</label><input type="text" id="bookmark-title" class="text-input">
+      </div>
+      <div class="settings-row2">
+        <input type="checkbox" id="diapause-checkbox">
+        <input type="text" id="diapause-input" class="text-input">
+        <p>秒内重复访问不计数</p>
+      </div>
+      <div class="settings-row3">
+        <input type="checkbox" id="notify-checkbox">
+        <p>在页面显示访问次数</p>
+        <p class="copyright">Copyright © ZDL</p>
+      </div>
     </div>
   </div>
-</div>
+</footer>
 
 <script type="text/javascript" src="js/popup.js"></script>
 </body>

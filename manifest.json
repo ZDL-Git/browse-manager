@@ -1,8 +1,7 @@
-
 {
     "manifest_version": 2,
     "name": "__MSG_extension_name__",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "__MSG_extension_description__",
     "default_locale": "zh_CN",
     "permissions": [
@@ -22,6 +21,16 @@
             "js/background_func.js"
         ]
     },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "js/content_script.js"
+            ]
+        }
+    ],
     "browser_action": {
         "default_icon": "images/icon19.png",
         "default_title": "__MSG_extension_name__",
