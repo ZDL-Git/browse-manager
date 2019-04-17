@@ -1,10 +1,15 @@
-// localStorage.clear();
 let TITLES = [
   "URL不再访问(黑名单)",
   "URL不再统计(白名单)",
   "Domain不再访问(黑名单)",
   "Domain不再统计(白名单)"
 ];
+
+// 临时信息存储在变量中，关闭浏览器时自动释放
+// 对设定时间内频繁访问做过滤，不计数
+// 记录上次访问url，实现在当前页打开黑名单网页时的拦截
+let urlBrowsedWithinSettedTime = {};
+let tabsLastUrl = {};
 
 chrome.runtime.onInstalled.addListener(function () {
   TITLES.forEach(function (title) {
@@ -14,43 +19,23 @@ chrome.runtime.onInstalled.addListener(function () {
     });
   });
 
-  if (!localStorage['whitelist_suffix']) localStorage['whitelist_suffix'] = '--whitelist';
-  if (!localStorage['blacklist_suffix']) localStorage['blacklist_suffix'] = '--blacklist';
-  // if (!localStorage['tab_id_suffix']) localStorage['tab_id_suffix'] = '--tab_id';
-  //配置项，待提供配置入口。open_in_new_tab：1表示在当前标签打开新网页，2表示在新标签中打开
-  if (!localStorage['open_in_new_tab']) localStorage['open_in_new_tab'] = 2;
-  if (!localStorage['is_auto_save']) localStorage['is_auto_save'] = true;
-  if (!localStorage['auto_save_thre']) localStorage['auto_save_thre'] = 5;
-  if (!localStorage['bookmark_title']) localStorage['bookmark_title'] = '经常访问(BM)';
-  if (!localStorage['is_diapause']) localStorage['is_diapause'] = true;
-  if (!localStorage['diapause_time']) localStorage['diapause_time'] = 120000;
-  if (!localStorage['is_notify']) localStorage['is_notify'] = true;
+  initializeSettings();
+  initializeTabs();
+
   notify_('Browse Manager安装成功', 2000);
 });
 
+
 chrome.runtime.onStartup.addListener(function () {
 
-  localStorage['startup_within_5s'] = 1;
-  setTimeout(function () {
-    localStorage.removeItem('startup_within_5s');
-  }, 5000);
-
-  chrome.tabs.query({}, function (tabs) {
-    for (let i = 0; i < tabs.length; i++) {
-      tabsLastUrl[tabs[i].id] = tabs[i].url;
-
-      if (tabs[i].active) {
-        showBrowseTimes(tabs[i]);
-      }
-    }
-  });
+  initializeTabs();
 });
 
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-  let tab_url = tab.url;
+  let processedUrl = getCleanedUrl(tab.url);
 
-  if (/^chrome/.test(tab_url)) {
+  if (/^chrome/.test(processedUrl)) {
     notify_('chrome相关的网页默认在白名单。');
     return;
   }
@@ -58,118 +43,106 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
   switch (info.menuItemId) {
 
     case "Menu-" + TITLES[0]: {
-      localStorage[tab_url + localStorage['blacklist_suffix']] = 1;
-      delBookmark(tab_url);
+      localStorage[processedUrl + localStorage['blacklist_suffix']] = 1;
+      delBookmark(processedUrl);
       break;
     }
     case "Menu-" + TITLES[1]: {
-      localStorage[tab_url + localStorage['whitelist_suffix']] = 1;
-      showBrowseTimes(tab);
+      localStorage[processedUrl + localStorage['whitelist_suffix']] = 1;
+      setBadge(tab);
       break;
     }
     case "Menu-" + TITLES[2]: {
-      let domain = getUrlDomain(tab_url);
+      let domain = getDomain(processedUrl);
       localStorage[domain + localStorage['blacklist_suffix']] = 1;
       break;
     }
     case "Menu-" + TITLES[3]: {
-      let domain = getUrlDomain(tab_url);
+      let domain = getDomain(processedUrl);
       localStorage[domain + localStorage['whitelist_suffix']] = 1;
-      showBrowseTimes(tab);
+      setBadge(tab);
       break;
     }
   }
 
 });
 
-// 临时信息存储在变量中，关闭浏览器时自动释放
-// 对设定时间内频繁访问做过滤，不计数
-// 记录上次访问url，实现在当前页打开黑名单网页时的拦截
-let urlBrowsedWithinSettedTime = {};
-let tabsLastUrl = {};
 
 chrome.tabs.onCreated.addListener(function (tab) {
 
-  localStorage['tabcreated_within_5s'] = 1;
-  setTimeout(function () {
-    localStorage.removeItem('tabcreated_within_5s');
-  }, 5000);
-
   // 浏览器设置为新窗口打开链接的，在此判断
-  chrome.tabs.get(tab.id, function (tab_g) {
-    if (isBlacklist(tab_g.url)) {
+  // tab.url 此时为""，需要重新get
+  chrome.tabs.get(tab.id, function (tab) {
+    if (isBlacklist(getCleanedUrl(tab.url))) {
       notify_('黑名单网站，自动关闭');
-      chrome.tabs.remove(tab_g.id);
+      chrome.tabs.remove(tab.id);
     }
   });
 
 });
 
+
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
-  let tab_url = tab.url;
+  let processedUrl = getCleanedUrl(tab.url);
 
   if (changeInfo['status'] === 'loading') {
-
     if (changeInfo.hasOwnProperty('url')) {
-      if (isBlacklist(tab_url)) {
-        if (localStorage.hasOwnProperty('tabcreated_within_5s')) {
-          notify_('黑名单网站，自动关闭');
-          chrome.tabs.remove(tabId);
-        } else {
-          if (tabsLastUrl.hasOwnProperty(tabId) && tab_url !== tabsLastUrl[tabId]) {
-            chrome.tabs.update(tabId, {url: tabsLastUrl[tabId]}, function (tab) {
-              notify_('黑名单网站，不再访问');
-            });
-          }
-        }
+      if (isBlacklist(processedUrl)) {
+        if (tabsLastUrl.hasOwnProperty(tabId)) {
+          chrome.tabs.update(tabId, {url: tabsLastUrl[tabId]}, function (tab) {
+            notify_('黑名单网站，不再访问');
+          });
+        } // else的情况已经在onCreated事件中处理
+
         return;
       }
-      if (!isWhitelist(tab_url)) {
-        if (isEffectual(tab)) {
-          updateBrowseTimes(tab);
+
+      if (isEffectual(tab)) {
+        updateBrowseTimes(tab);
+
+        if (localStorage['is_page_show'] === 'true') {
+          showBrowseTimes(tab);
         }
-        showBrowseTimes(tab);
       }
-    } else if (!isWhitelist(tab_url)) {
-      // 直接F5刷新没有时loading事件没有url，但是需要显示计数
-      showBrowseTimes(tab);
     }
+
+    // 直接F5刷新没有时loading事件没有url，但是需要显示badge计数
+    setBadge(tab);
   }
 
-
   if (changeInfo['status'] === 'complete') {
+
     addBookmarkWithCheck(tab);
-    tabsLastUrl[tabId] = tab_url;
+
+    // 作判断来解决无法从黑名单跳回的问题
+    if (!isBlacklist(processedUrl)) {
+      setTabLastUrl(tab);
+    }
   }
 
 });
 
+
+chrome.tabs.onRemoved.addListener(function (tabid, removeInfo) {
+  cacheRecentUrl(tabsLastUrl[tabid]);
+  delete tabsLastUrl[tabid];
+});
+
+
 chrome.tabs.onActivated.addListener(function (activeInfo) {
 
   chrome.tabs.get(activeInfo.tabId, function (tab) {
-    //为了解决'The Great Suspender'类软件造成的重复计次bug
-    updateActivatedValidUrl(tab.url);
+    //为了解决'The Great Suspender'类软件造成的重复计次问题
+    updateActivatedValidUrl(getCleanedUrl(tab.url));
 
-    // 在新窗口打开网页，并激活的情况（未按ctrl键）由create事件负责更新图标badge
-    if (!localStorage.hasOwnProperty('tabcreated_within_5s')) {
-      showBrowseTimes(tab);
+    // 手动切换标签时更新badge
+    // 作判断的原因：在新窗口打开网页时onActivated事件在更新访问次数之前，会导致badge的数字先显示n紧接着变为n+1
+    if (tabsLastUrl[tab.id]) {
+      setBadge(tab);
     }
   })
 
 });
 
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  switch (message.method) {
-    case "getBrowseTimes":
-      if (message.url) {
-        if (isWhitelist(message.url) || localStorage['is_notify'] !== 'true')
-          sendResponse({browseTimes: null});
-        else
-          sendResponse({browseTimes: localStorage[message.url]});
-      }
-      break;
-    // ...
-  }
-});
-// TODO 前后切换不能加一
+// TODO 修改diapause_time值后有时不会立即生效：只有已经执行的setTimeout达到了以前设置的时长才会释放。在改回设置时也有此问题

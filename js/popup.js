@@ -1,6 +1,3 @@
-// 注：同时存在DOM和jquery
-
-
 window.onload = function () {
   appendTableContent();
   addTableFilterListener();
@@ -34,15 +31,15 @@ function appendTableContent() {
 }
 
 function fillSettingsContent() {
-  document.getElementById('bookmark-checkbox').checked = localStorage['is_auto_save'] === 'true';
-  document.getElementById('bookmark-threshold').value = localStorage['auto_save_thre'];
-  document.getElementById('bookmark-title').value = localStorage['bookmark_title'];
-  document.getElementById('diapause-checkbox').checked = localStorage['is_diapause'] === 'true';
-  document.getElementById('diapause-input').value = localStorage['diapause_time'] / 1000;
-  document.getElementById('notify-checkbox').checked = localStorage['is_notify'] === 'true';
+  $('#bookmark-checkbox')[0].checked = localStorage['is_auto_save'] === 'true';
+  $('#bookmark-threshold')[0].value = localStorage['auto_save_thre'];
+  $('#bookmark-title')[0].value = localStorage['bookmark_title'];
+  $('#diapause-checkbox')[0].checked = localStorage['is_diapause'] === 'true';
+  $('#diapause-time')[0].value = localStorage['diapause_time'] / 1000;
+  $('#pageshow-checkbox')[0].checked = localStorage['is_page_show'] === 'true';
 }
 
-function showAllTr() {
+function showAllTrs() {
   let trs = document.getElementsByTagName("tr");
   Array.from(trs).forEach(function (tr) {
       tr.hidden = false;
@@ -55,7 +52,7 @@ function addTableFilterListener() {
   let input = document.getElementById("search");
 
   input.oninput = function () {
-    showAllTr();
+    showAllTrs();
 
     if (!input.value) {
       return;
@@ -84,30 +81,24 @@ function addTableRowDeleteListener() {
 }
 
 function addSettingListener() {
-  let open = document.getElementById("bookmark-checkbox");
-  open.onclick = function () {
-    localStorage['is_auto_save'] = open.checked;
-  };
-  let timesInput = document.getElementById("bookmark-threshold");
-  timesInput.oninput = function () {
-    localStorage['auto_save_thre'] = timesInput.value;
-  };
-  let bookmarkTitleInput = document.getElementById("bookmark-title");
-  bookmarkTitleInput.oninput = function () {
-    localStorage['bookmark_title'] = bookmarkTitleInput.value;
-  };
+  $('#bookmark-checkbox').on('click', function () {
+    localStorage['is_auto_save'] = $(this).prop('checked');
+  });
+  $('#bookmark-threshold').on('input', function () {
+    localStorage['auto_save_thre'] = $(this).val();
+  });
+  $('#bookmark-title').on('input', function () {
+    localStorage['bookmark_title'] = $(this).val();
+  });
 
-  let isDiapause = document.getElementById("diapause-checkbox");
-  isDiapause.onclick = function () {
-    localStorage['is_diapause'] = isDiapause.checked;
-  };
-  let diapauseTime = document.getElementById("diapause-input");
-  diapauseTime.oninput = function () {
-    localStorage['diapause_time'] = diapauseTime.value * 1000;
-  };
+  $('#diapause-checkbox').on('click', function () {
+    localStorage['is_diapause'] = $(this).prop('checked');
+  });
+  $('#diapause-time').on('input', function () {
+    localStorage['diapause_time'] = $(this).val() * 1000;
+  });
 
-  let isNotify = document.getElementById("notify-checkbox");
-  isNotify.onclick = function () {
-    localStorage['is_notify'] = isNotify.checked;
-  };
+  $('#pageshow-checkbox').on('click', function () {
+    localStorage['is_page_show'] = $(this).prop('checked');
+  });
 }
