@@ -1,23 +1,25 @@
 let TITLES = [
-  "URL不再访问(黑名单)",
-  "URL不再统计(白名单)",
-  "Domain不再访问(黑名单)",
-  "Domain不再统计(白名单)"
+  "URL加入黑名单（不再访问）",
+  "URL加入白名单（不再统计）",
+  "Domain加入黑名单（不再访问）",
+  "Domain加入白名单（不再统计）"
 ];
 
-// 临时信息存储在变量中，关闭浏览器时自动释放
+TITLES.forEach(function (title) {
+  chrome.contextMenus.create({
+    type: 'normal',
+    title: title, id: "Menu-" + title, contexts: ['all']
+  });
+});
+
 // 对设定时间内频繁访问做过滤，不计数
 // 记录上次访问url，实现在当前页打开黑名单网页时的拦截
 let urlBrowsedWithinSettedTime = {};
 let tabsLastUrl = {};
+initializeTabs();
+
 
 chrome.runtime.onInstalled.addListener(function () {
-  TITLES.forEach(function (title) {
-    chrome.contextMenus.create({
-      type: 'normal',
-      title: title, id: "Menu-" + title, contexts: ['all']
-    });
-  });
 
   initializeSettings();
   initializeTabs();
@@ -26,9 +28,11 @@ chrome.runtime.onInstalled.addListener(function () {
 });
 
 
+// Fired when a profile that has this extension installed first starts up.
+// This event is not fired when an incognito profile is started,
+// even if this extension is operating in 'split' incognito mode.
 chrome.runtime.onStartup.addListener(function () {
 
-  initializeTabs();
 });
 
 
