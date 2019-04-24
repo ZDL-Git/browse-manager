@@ -3,13 +3,15 @@
 
 Chrome扩展：网址/域名拉黑，访问次数统计，自动收藏。【这是编程早期的作品，不过功能对我自己很有用，可能对跟我一样需求的人来说是个很不错的软件。由于时间精力原因非bug或者重要新功能不会频繁更新】
 
+项目主页：https://github.com/ZDL-Git/browse-manager
+
 ### Idea来源
 
 在搜索某些资源，或者查找解决某些bug的方法的时候，会来回不断地翻阅一些网站，经历很久的时间，有的问题甚至半年后还需要重新来过，那些曾经访问过且证明没有任何意义的网页，因为一个“优秀的”标题而导致再次浪费我们的时间。所以为什么我们不能统计它们，拉黑它们呢？
 
 ### 安装方法
 
-下载地址：https://github.com/ZDL-Git/browse-manager
+下载地址：https://github.com/ZDL-Git/browse-manager/releases/latest
 
 方法一：按gif步骤选择最新版本安装
 
@@ -17,7 +19,7 @@ Chrome扩展：网址/域名拉黑，访问次数统计，自动收藏。【这�
 
 方法二：clone仓库，平时可更新获取最新的版本。
 
-如有问题可提Github issue，可email:zdl_daily@163.com
+如有问题可提[Github issue](https://github.com/ZDL-Git/browse-manager/issues)，可email:zdl_daily@163.com
 
 ### 当前功能
 
