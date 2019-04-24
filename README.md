@@ -11,9 +11,13 @@ Chrome扩展：网址/域名拉黑，访问次数统计，自动收藏。【这�
 
 下载地址：https://github.com/ZDL-Git/browse-manager
 
-请按gif步骤选择最新版本安装，如有问题可提Github issue，可email:zdl_daily@163.com
+方法一：按gif步骤选择最新版本安装
 
 <img src="https://github.com/ZDL-Git/Resource-store/blob/master/gifs/Kapture%202019-04-13%20at%2016.36.40.GIF" width="100%" />
+
+方法二：clone仓库，平时可更新获取最新的版本。
+
+如有问题可提Github issue，可email:zdl_daily@163.com
 
 ### 当前功能
 
