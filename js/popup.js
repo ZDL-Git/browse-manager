@@ -9,16 +9,16 @@ window.onload = function () {
 function appendTableContent() {
 
   Object.keys(localStorage).forEach(function (key) {
-      if (key.endsWith(localStorage['whitelist_suffix'])) {
-        let whiteUrl = key.replace(localStorage['whitelist_suffix'], '');
+      if (key.endsWith(whiteListSuffix)) {
+        let whiteUrl = key.replace(whiteListSuffix, '');
         $('#table-white').append(
           '<tr>' +
           '<td>' + whiteUrl + '</td>' +
           '<td class="whitelist-col-del">✕</td>' +
           '</tr>'
         )
-      } else if (key.endsWith(localStorage['blacklist_suffix'])) {
-        let blackUrl = key.replace(localStorage['blacklist_suffix'], '');
+      } else if (key.endsWith(blackListSuffix)) {
+        let blackUrl = key.replace(blackListSuffix, '');
         $('#table-black').append(
           '<tr>' +
           '<td>' + blackUrl + '</td>' +
@@ -72,11 +72,11 @@ function addTableFilterListener() {
 function addTableRowDeleteListener() {
   $('td.whitelist-col-del').on('click', function () {
     $(this).parent().remove();
-    localStorage.removeItem($(this).prev().text() + localStorage['whitelist_suffix'])
+    localStorage.removeItem($(this).prev().text() + whiteListSuffix)
   });
   $('td.blacklist-col-del').on('click', function () {
     $(this).parent().remove();
-    localStorage.removeItem($(this).prev().text() + localStorage['blacklist_suffix'])
+    localStorage.removeItem($(this).prev().text() + blackListSuffix)
   });
 }
 

@@ -1,6 +1,4 @@
 function initializeSettings() {
-  if (!localStorage['whitelist_suffix']) localStorage['whitelist_suffix'] = '--BM_whitelist';
-  if (!localStorage['blacklist_suffix']) localStorage['blacklist_suffix'] = '--BM_blacklist';
   if (!localStorage['is_auto_save']) localStorage['is_auto_save'] = true;
   if (!localStorage['auto_save_thre']) localStorage['auto_save_thre'] = 5;
   if (!localStorage['bookmark_title']) localStorage['bookmark_title'] = '经常访问(BM)';
@@ -9,7 +7,7 @@ function initializeSettings() {
   if (!localStorage['is_page_show']) localStorage['is_page_show'] = true;
 }
 
-function initializeTabs() {
+function registerTabs() {
   chrome.tabs.query({}, function (tabs) {
     Array.from(tabs).forEach(function (tab) {
       setTabLastUrl(tab);
@@ -33,9 +31,9 @@ function setTabLastUrl(tab) {
 
 function isWhitelist(url) {
 
-  return localStorage.hasOwnProperty(url + localStorage['whitelist_suffix'])
+  return localStorage.hasOwnProperty(url + whiteListSuffix)
     || isDefaultWhitelist(url)
-    || localStorage.hasOwnProperty(getDomain(url) + localStorage['whitelist_suffix']);
+    || localStorage.hasOwnProperty(getDomain(url) + whiteListSuffix);
 }
 
 function isDefaultWhitelist(url) {
@@ -49,8 +47,8 @@ function isDefaultWhitelist(url) {
 function isBlacklist(url) {
   if (/^chrome/.test(url)) return false;
 
-  return localStorage.hasOwnProperty(url + localStorage['blacklist_suffix'])
-    || localStorage.hasOwnProperty(getDomain(url) + localStorage['blacklist_suffix']);
+  return localStorage.hasOwnProperty(url + blackListSuffix)
+    || localStorage.hasOwnProperty(getDomain(url) + blackListSuffix);
 }
 
 function updateActivatedValidUrl(url) {

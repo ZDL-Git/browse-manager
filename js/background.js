@@ -5,26 +5,27 @@ let TITLES = [
   "Domain加入白名单（不再统计）"
 ];
 
+// 对设定时间内频繁访问做过滤，不计数
+// 记录上次访问url，实现在当前页打开黑名单网页时的拦截
+let urlBrowsedWithinSettedTime = {};
+let tabsLastUrl = {};
+const blackListSuffix = "--BM_blacklist";
+const whiteListSuffix = "--BM_whitelist";
+
 TITLES.forEach(function (title) {
   chrome.contextMenus.create({
     type: 'normal',
     title: title, id: "Menu-" + title, contexts: ['all']
   });
 });
-
-// 对设定时间内频繁访问做过滤，不计数
-// 记录上次访问url，实现在当前页打开黑名单网页时的拦截
-let urlBrowsedWithinSettedTime = {};
-let tabsLastUrl = {};
-initializeTabs();
+registerTabs();
 
 
 chrome.runtime.onInstalled.addListener(function () {
 
   initializeSettings();
-  initializeTabs();
+  registerTabs();
 
-  notify_('Browse Manager安装成功', 2000);
 });
 
 
@@ -47,23 +48,23 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
   switch (info.menuItemId) {
 
     case "Menu-" + TITLES[0]: {
-      localStorage[processedUrl + localStorage['blacklist_suffix']] = 1;
+      localStorage[processedUrl + blackListSuffix] = 1;
       delBookmark(processedUrl);
       break;
     }
     case "Menu-" + TITLES[1]: {
-      localStorage[processedUrl + localStorage['whitelist_suffix']] = 1;
+      localStorage[processedUrl + whiteListSuffix] = 1;
       setBadge(tab);
       break;
     }
     case "Menu-" + TITLES[2]: {
       let domain = getDomain(processedUrl);
-      localStorage[domain + localStorage['blacklist_suffix']] = 1;
+      localStorage[domain + blackListSuffix] = 1;
       break;
     }
     case "Menu-" + TITLES[3]: {
       let domain = getDomain(processedUrl);
-      localStorage[domain + localStorage['whitelist_suffix']] = 1;
+      localStorage[domain + whiteListSuffix] = 1;
       setBadge(tab);
       break;
     }
