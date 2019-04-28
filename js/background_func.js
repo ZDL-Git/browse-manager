@@ -30,18 +30,15 @@ function setTabLastUrl(tab) {
 }
 
 function isWhitelist(url) {
-
   return localStorage.hasOwnProperty(url + whiteListSuffix)
     || isDefaultWhitelist(url)
     || localStorage.hasOwnProperty(getDomain(url) + whiteListSuffix);
 }
 
 function isDefaultWhitelist(url) {
-
   return /^chrome/.test(url)
     || /^https?:\/\/www\.baidu\.com\//.test(url)
     || /^https?:\/\/www\.google\.com\//.test(url);
-
 }
 
 function isBlacklist(url) {
@@ -81,7 +78,6 @@ function isEffectual(tab) {
 }
 
 function touchBookmarkDir(callback) {
-
   let bookmarkTitle = localStorage['bookmark_title'];
   chrome.bookmarks.search({title: bookmarkTitle}, function (results) {
     if (results.length >= 1) {
@@ -125,7 +121,6 @@ function addBookmarkWithCheck(tab) {
 }
 
 function delBookmark(url) {
-
   chrome.bookmarks.search({url: url}, function (results) {
     for (let i = 0; i < results.length; i++) {
       chrome.bookmarks.remove(results[i.toString()].id, function (results_r) {
@@ -162,7 +157,6 @@ function setBadge(tab) {
 }
 
 function updateBrowseTimes(tab) {
-
   let cleanedUrl = getCleanedUrl(tab.url);
   let browseTimes = localStorage[cleanedUrl];
   browseTimes = browseTimes ? parseInt(browseTimes) + 1 : 1;
@@ -177,7 +171,6 @@ function cacheRecentUrl(url) {
 }
 
 function notify_(content, timeout = 3000) {
-
   let opt = {
     type: 'basic',
     title: chrome.i18n.getMessage('extension_name'),
