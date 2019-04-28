@@ -200,7 +200,13 @@ function getDomain(url) {
 }
 
 function getCleanedUrl(orgUrl) {
-  let url = new URL(orgUrl);
+  let url;
+  try {
+    url = new URL(orgUrl);
+  } catch (e) {
+    console.log("Error, new URL() failed, orgUrl:", orgUrl);
+    return orgUrl;
+  }
   url.hash = '';
   let params = url.searchParams;
   switch (url.hostname) {
