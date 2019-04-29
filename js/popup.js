@@ -1,3 +1,6 @@
+const blackListSuffix = "--BM_blacklist";
+const whiteListSuffix = "--BM_whitelist";
+
 window.onload = function () {
   appendTableContent();
   addTableFilterListener();
