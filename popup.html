@@ -46,12 +46,12 @@
       text-align: left;
     }
 
-    .whitelist-col-del, .blacklist-col-del {
+    .delete-row {
       width: 4%;
       text-align: center;
     }
 
-    .whitelist-col-del:hover, .blacklist-col-del:hover {
+    .delete-row:hover {
       color: red;
     }
 
@@ -100,16 +100,28 @@
 </div>
 
 <div class="table-container">
-  <table class="tables" id="table-white">
+  <table class="tables" id="table-url-white">
     <tr class="table-head">
-      <th>白名单:</th>
-      <th class="whitelist-col-del"></th>
+      <th>URL 白名单:</th>
+      <th class="delete-row"></th>
     </tr>
   </table>
-  <table class="tables" id="table-black">
+  <table class="tables" id="table-url-black">
     <tr class="table-head">
-      <th>黑名单:</th>
-      <th class="blacklist-col-del"></th>
+      <th>URL 黑名单:</th>
+      <th class="delete-row"></th>
+    </tr>
+  </table>
+  <table class="tables" id="table-domain-white">
+    <tr class="table-head">
+      <th>DOMAIN 白名单:</th>
+      <th class="delete-row"></th>
+    </tr>
+  </table>
+  <table class="tables" id="table-domain-black">
+    <tr class="table-head">
+      <th>DOMAIN 黑名单:</th>
+      <th class="delete-row"></th>
     </tr>
   </table>
 </div>
@@ -136,6 +148,7 @@
   </div>
 </footer>
 
+<script type="text/javascript" src="js/utils.js"></script>
 <script type="text/javascript" src="js/popup.js"></script>
 </body>
 </html>

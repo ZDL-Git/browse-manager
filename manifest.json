@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "__MSG_extension_name__",
-    "version": "2.1.4",
+    "version": "2.1.5",
     "description": "__MSG_extension_description__",
     "default_locale": "zh_CN",
     "permissions": [
@@ -17,7 +17,7 @@
     },
     "background": {
         "scripts": [
-            "js/background_func.js",
+            "js/utils.js",
             "js/background.js"
         ]
     },

@@ -1,32 +1,10 @@
-let TITLES = [
-  "URL加入黑名单（不再访问）",
-  "URL加入白名单（不再统计）",
-  "Domain加入黑名单（不再访问）",
-  "Domain加入白名单（不再统计）"
-];
-
-// 对设定时间内频繁访问做过滤，不计数
-// 记录上次访问url，实现在当前页打开黑名单网页时的拦截
-let urlBrowsedWithinSettedTime = {};
-let tabsLastUrl = {};
-const blackListSuffix = "--BM_blacklist";
-const whiteListSuffix = "--BM_whitelist";
-
-TITLES.forEach(function (title) {
-  chrome.contextMenus.create({
-    type: 'normal',
-    title: title, id: "Menu-" + title, contexts: ['all']
-  });
-});
-
-registerTabs();
-
-
+// ============================================================================
 chrome.runtime.onInstalled.addListener(function () {
   initializeSettings();
   registerTabs();
 });
 
+// ============================================================================
 
 // Fired when a profile that has this extension installed first starts up.
 // This event is not fired when an incognito profile is started,
@@ -34,60 +12,76 @@ chrome.runtime.onInstalled.addListener(function () {
 chrome.runtime.onStartup.addListener(function () {
 });
 
+// ============================================================================
+
+OPERATIONS.forEach(function (title) {
+  chrome.contextMenus.create({
+    type: 'normal',
+    title: title, id: "Menu-" + title, contexts: ['all']
+  });
+});
+
+// 对设定时间内频繁访问做过滤，不计数
+// 记录上次访问url，实现在当前页打开黑名单网页时的拦截
+let urlBrowsedWithinSettedTime = {};
+let tabsLastUrl = {};
+
+registerTabs();
+
+// ============================================================================
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-  let processedUrl = getCleanedUrl(tab.url);
-  let domain = getDomain(processedUrl);
+  let stableUrl = getStableUrl(tab.url);
+  let domain = getDomain(stableUrl);
 
-  if (/^chrome/.test(processedUrl)) {
+  if (/^chrome/.test(stableUrl)) {
     notify_('chrome相关的网页默认在白名单。');
     return;
   }
 
   switch (info.menuItemId) {
-    case "Menu-" + TITLES[0]: {
-      localStorage[processedUrl + blackListSuffix] = 1;
-      delBookmark(processedUrl);
+    case "Menu-" + OPERATIONS[0]: {
+      setBrowsedTimes(stableUrl, OPERATIONS[0]);
+      delBookmark(stableUrl);
       break;
     }
-    case "Menu-" + TITLES[1]: {
-      localStorage[processedUrl + whiteListSuffix] = 1;
-      setBadge(tab);
+    case "Menu-" + OPERATIONS[1]: {
+      setBrowsedTimes(stableUrl, OPERATIONS[1]);
       break;
     }
-    case "Menu-" + TITLES[2]: {
-      localStorage[domain + blackListSuffix] = 1;
+    case "Menu-" + OPERATIONS[2]: {
+      setBrowsedTimes(domain, OPERATIONS[2]);
       break;
     }
-    case "Menu-" + TITLES[3]: {
-      localStorage[domain + whiteListSuffix] = 1;
-      setBadge(tab);
+    case "Menu-" + OPERATIONS[3]: {
+      setBrowsedTimes(domain, OPERATIONS[3]);
       break;
     }
   }
+  setBadge(tab);
 });
 
+// ============================================================================
 
 chrome.tabs.onCreated.addListener(function (tab) {
   // 浏览器设置为新窗口打开链接的，在此判断
   // tab.url 此时为""，需要重新get
   chrome.tabs.get(tab.id, function (tab) {
-    if (isBlacklist(getCleanedUrl(tab.url))) {
+    if (isBlacklist(getStableUrl(tab.url))) {
       notify_('黑名单网站，自动关闭');
       chrome.tabs.remove(tab.id);
     }
   });
 });
 
-
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  let processedUrl = getCleanedUrl(tab.url);
+  let stableUrl = getStableUrl(tab.url);
 
   if (changeInfo['status'] === 'loading') {
     if (changeInfo.hasOwnProperty('url')) {
-      if (isBlacklist(processedUrl)) {
-        if (tabsLastUrl.hasOwnProperty(tabId)) {
-          chrome.tabs.update(tabId, {url: tabsLastUrl[tabId]}, function (tab) {
+      if (isBlacklist(stableUrl)) {
+        if (tabLastUrlExists(tabId)) {
+          chrome.tabs.update(tabId, {url: getTabLastUrl(tabId)}, function (tab) {
             notify_('黑名单网站，不再访问');
           });
         } // else的情况已经在onCreated事件中处理
@@ -95,11 +89,12 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
       }
 
       if (isEffectual(tab)) {
-        updateBrowseTimes(tab);
-        if (localStorage['is_page_show'] === 'true') {
+        increaseBrowseTimes(tab.url);
+        if (getParam('is_page_show') === 'true') {
           showBrowseTimes(tab);
         }
       }
+      cacheRecentUrl(stableUrl);
     }
 
     // 直接F5刷新没有时loading事件没有url，但是需要显示badge计数
@@ -109,31 +104,34 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo['status'] === 'complete') {
     addBookmarkWithCheck(tab);
 
-    // 作判断来解决无法从黑名单跳回的问题
-    if (!isBlacklist(processedUrl)) {
+    // 加判断来解决无法从黑名单跳回的问题
+    if (!isBlacklist(stableUrl)) {
       setTabLastUrl(tab);
     }
   }
 });
 
-
 chrome.tabs.onRemoved.addListener(function (tabid, removeInfo) {
-  cacheRecentUrl(tabsLastUrl[tabid]);
-  delete tabsLastUrl[tabid];
+  cacheRecentUrl(getTabLastUrl(tabid));
+  deleteTabLastUrl(tabid);
 });
-
 
 chrome.tabs.onActivated.addListener(function (activeInfo) {
   chrome.tabs.get(activeInfo.tabId, function (tab) {
-    //为了解决'The Great Suspender'类软件造成的重复计次问题
-    updateActivatedValidUrl(getCleanedUrl(tab.url));
+    // 为了解决'The Great Suspender'类软件造成的重复计次问题。
+    // 加判断避免new tab时的activated事件。
+    if (tabLastUrlExists(tab.id)) {
+      setTabLastUrl(tab);
+    }
 
     // 手动切换标签时更新badge
     // 作判断的原因：在新窗口打开网页时onActivated事件在更新访问次数之前，会导致badge的数字先显示n紧接着变为n+1
-    if (tabsLastUrl[tab.id]) {
+    if (getTabLastUrl(tab.id)) {
       setBadge(tab);
     }
   })
 });
+
+// ============================================================================
 
 // TODO 修改diapause_time值后有时不会立即生效：只有已经执行的setTimeout达到了以前设置的时长才会释放。在改回设置时也有此问题

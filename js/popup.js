@@ -1,5 +1,3 @@
-const blackListSuffix = "--BM_blacklist";
-const whiteListSuffix = "--BM_whitelist";
 
 window.onload = function () {
   appendTableContent();
@@ -11,35 +9,38 @@ window.onload = function () {
 
 function appendTableContent() {
 
-  Object.keys(localStorage).forEach(function (key) {
-      if (key.endsWith(whiteListSuffix)) {
-        let whiteUrl = key.replace(whiteListSuffix, '');
-        $('#table-white').append(
-          '<tr>' +
-          '<td>' + whiteUrl + '</td>' +
-          '<td class="whitelist-col-del">✕</td>' +
-          '</tr>'
-        )
-      } else if (key.endsWith(blackListSuffix)) {
-        let blackUrl = key.replace(blackListSuffix, '');
-        $('#table-black').append(
-          '<tr>' +
-          '<td>' + blackUrl + '</td>' +
-          '<td class="blacklist-col-del">✕</td>' +
-          '</tr>'
-        );
+  $.each(localStorage, function (key, value) {
+      let table;
+      if (value === OPERATIONS[1]) {
+        table = 'table-url-white';
+      } else if (value === OPERATIONS[0]) {
+        table = 'table-url-black';
+      } else if (value === OPERATIONS[3]) {
+        table = 'table-domain-white';
+      } else if (value === OPERATIONS[2]) {
+        table = 'table-domain-black';
+      } else {
+        // 相当于continue
+        return;
       }
+
+      $('#' + table).append(
+        '<tr>' +
+        '<td>' + key + '</td>' +
+        '<td class="delete-row">✕</td>' +
+        '</tr>'
+      );
     }
   );
 }
 
 function fillSettingsContent() {
-  $('#bookmark-checkbox')[0].checked = localStorage['is_auto_save'] === 'true';
-  $('#bookmark-threshold')[0].value = localStorage['auto_save_thre'];
-  $('#bookmark-title')[0].value = localStorage['bookmark_title'];
-  $('#diapause-checkbox')[0].checked = localStorage['is_diapause'] === 'true';
-  $('#diapause-time')[0].value = localStorage['diapause_time'] / 1000;
-  $('#pageshow-checkbox')[0].checked = localStorage['is_page_show'] === 'true';
+  $('#bookmark-checkbox')[0].checked = getParam('is_auto_save') === 'true';
+  $('#bookmark-threshold')[0].value = getParam('auto_save_thre');
+  $('#bookmark-title')[0].value = getParam('bookmark_title');
+  $('#diapause-checkbox')[0].checked = getParam('is_diapause') === 'true';
+  $('#diapause-time')[0].value = getParam('diapause_time') / 1000;
+  $('#pageshow-checkbox')[0].checked = getParam('is_page_show') === 'true';
 }
 
 function showAllTrs() {
@@ -73,35 +74,31 @@ function addTableFilterListener() {
 
 //列表行删除事件
 function addTableRowDeleteListener() {
-  $('td.whitelist-col-del').on('click', function () {
+  $('td.delete-row').on('click', function () {
+    localStorage.removeItem($(this).prev().text());
     $(this).parent().remove();
-    localStorage.removeItem($(this).prev().text() + whiteListSuffix)
-  });
-  $('td.blacklist-col-del').on('click', function () {
-    $(this).parent().remove();
-    localStorage.removeItem($(this).prev().text() + blackListSuffix)
   });
 }
 
 function addSettingListener() {
   $('#bookmark-checkbox').on('click', function () {
-    localStorage['is_auto_save'] = $(this).prop('checked');
+    setParam('is_auto_save', $(this).prop('checked'))
   });
   $('#bookmark-threshold').on('input', function () {
-    localStorage['auto_save_thre'] = $(this).val();
+    setParam('auto_save_thre', $(this).val());
   });
   $('#bookmark-title').on('input', function () {
-    localStorage['bookmark_title'] = $(this).val();
+    setParam('bookmark_title', $(this).val());
   });
 
   $('#diapause-checkbox').on('click', function () {
-    localStorage['is_diapause'] = $(this).prop('checked');
+    setParam('is_diapause', $(this).prop('checked'));
   });
   $('#diapause-time').on('input', function () {
-    localStorage['diapause_time'] = $(this).val() * 1000;
+    setParam('diapause_time', $(this).val() * 1000);
   });
 
   $('#pageshow-checkbox').on('click', function () {
-    localStorage['is_page_show'] = $(this).prop('checked');
+    setParam('is_page_show', $(this).prop('checked'));
   });
 }
