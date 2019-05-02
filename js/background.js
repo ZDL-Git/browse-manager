@@ -119,7 +119,7 @@ chrome.tabs.onRemoved.addListener(function (tabid, removeInfo) {
 chrome.tabs.onActivated.addListener(function (activeInfo) {
   chrome.tabs.get(activeInfo.tabId, function (tab) {
     // 为了解决'The Great Suspender'类软件造成的重复计次问题。
-    // 加判断避免new tab时的activated事件。
+    // 加判断剔除new tab时的activated事件。
     if (tabLastUrlExists(tab.id)) {
       setTabLastUrl(tab);
     }
