@@ -51,12 +51,12 @@ function setTabLastUrl(tab) {
   tabsLastUrl[tabId] = getStableUrl(tab.url);
 }
 
-function deleteTabLastUrl(tabId) {
-  delete tabsLastUrl[tabId];
-}
-
 function getTabLastUrl(tabId) {
   return tabsLastUrl[tabId];
+}
+
+function deleteTabLastUrl(tabId) {
+  delete tabsLastUrl[tabId];
 }
 
 function tabLastUrlExists(tabId) {
@@ -104,12 +104,13 @@ function isEffectual(tab) {
     return false;
   }
 
-  // 不包括刷新操作，因为刷新操作没有loading事件，不会执行到此位置。
+  // 不包括刷新操作，刷新时url没有变化。
   if (getTabLastUrl(tabId) === stableUrl) {
     console.log(stableUrl, "地址未发生变化");
     return false;
   }
 
+  console.log(stableUrl, "计数有效");
   return true;
 }
 
@@ -136,7 +137,7 @@ function addBookmarkWithCheck(tab) {
 
   let stableUrl = getStableUrl(tab.url);
 
-  let browseTimes = getBrowsedTimes(stableUrl) ? parseInt(getBrowsedTimes(stableUrl)) : 0;
+  let browseTimes = parseInt(getBrowsedTimes(stableUrl) || 0);
   let saveThre = parseInt(getParam('auto_save_thre'));
   if (browseTimes < saveThre || browseTimes >= saveThre + 3 || isBlacklist(stableUrl)) return;
 
@@ -157,11 +158,11 @@ function addBookmarkWithCheck(tab) {
 
 function delBookmark(url) {
   chrome.bookmarks.search({url: url}, function (results) {
-    for (let i = 0; i < results.length; i++) {
-      chrome.bookmarks.remove(results[i.toString()].id, function (results_r) {
-        notify_('收藏夹中的已同时删除.' + results_r);
+    results.forEach(function (result) {
+      chrome.bookmarks.remove(result.id, function () {
+        notify_('已同时从收藏夹中删除.');
       })
-    }
+    })
   })
 }
 
@@ -197,8 +198,7 @@ function setBadge(tab) {
 
 function increaseBrowseTimes(url) {
   let stableUrl = getStableUrl(url);
-  let browseTimes = getBrowsedTimes(stableUrl);
-  browseTimes = browseTimes ? parseInt(browseTimes) + 1 : 1;
+  let browseTimes = parseInt(getBrowsedTimes(stableUrl) || 0) + 1;
   setBrowsedTimes(stableUrl, browseTimes);
 }
 
@@ -242,7 +242,7 @@ function getStableUrl(orgUrl) {
   try {
     url = new URL(orgUrl);
   } catch (e) {
-    console.log("Error, new URL() failed, orgUrl:", orgUrl);
+    console.error("Error, new URL() failed, orgUrl:", orgUrl);
     return orgUrl;
   }
   // 解决url中带有hash字段导致的页面重复计数问题。

@@ -17,6 +17,8 @@ Chrome扩展：网址/域名拉黑，访问次数统计，自动收藏。【这�
 
 <img src="https://github.com/ZDL-Git/Resource-store/blob/master/gifs/Kapture%202019-04-13%20at%2016.36.40.GIF" width="100%" />
 
+注：完成安装后请将开发者模式关闭，避免Chrome的频繁提示（Windows平台）。
+
 方法二：clone仓库，平时可更新获取最新的版本。
 
 如有问题可提[Github issue](https://github.com/ZDL-Git/browse-manager/issues)，可email:zdl_daily@163.com

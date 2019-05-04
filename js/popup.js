@@ -1,4 +1,3 @@
-
 window.onload = function () {
   appendTableContent();
   addTableFilterListener();
@@ -75,7 +74,7 @@ function addTableFilterListener() {
 //列表行删除事件
 function addTableRowDeleteListener() {
   $('td.delete-row').on('click', function () {
-    localStorage.removeItem($(this).prev().text());
+    setBrowsedTimes($(this).prev().text(), 1);
     $(this).parent().remove();
   });
 }
