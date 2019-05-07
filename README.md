@@ -25,6 +25,8 @@ Chrome扩展：网址/域名拉黑，访问次数统计，自动收藏。【这�
 
 ### 当前功能
 
+<img src="https://github.com/ZDL-Git/resources-store/blob/master/images/popup.jpg?raw=true" width="40%"/>
+
 * 拉黑地址或域名：黑名单，在页面右键-Browse Manager-URL不再访问(黑名单)/Domain不再访问(黑名单)；
 * 统计访问次数：统计除白名单外每个网页已经访问过的次数，在图标上显示；
 * 白名单：为了避免无用的统计，提供了白名单。页面右键将地址或域名加入白名单，不再统计、不再显示访问次数。"chrome:"/"www.baidu.com"/"www.google.com"开头的网页默认在白名单；
