@@ -13,24 +13,27 @@
       position: relative;
       width: 400px;
       margin: 0;
+      background-image: url('images/bg.jpg');
+      background-size: 100%;
+      background-repeat: no-repeat;
     }
 
     #search {
-      margin: 2% 3% 0;
-      width: 94%;
-      height: 35px;
+      width: 100%;
+      height: 40px;
       border: none;
-      border-bottom: solid 1px gray;
       padding-left: 10px;
       padding-right: 10px;
-      font-size: 14px;
+      font-size: 200%;
+      font-style: italic;
+      background: #eeeeee;
     }
 
     .table-container {
       overflow: scroll;
       overflow-x: hidden;
       height: 350px;
-      margin: 1% 3%;
+      margin: 2% 1%;
     }
 
     .tables {
@@ -39,10 +42,16 @@
       font-size: 10px;
       font-weight: normal;
       word-wrap: break-word;
+      margin: 0 2px 2px 0;
+      background-color: white;
     }
 
-    .table-head {
-      background-color: #f7f7f7;
+    .tables td {
+      font-style: italic;
+    }
+
+    .tables th {
+      background-color: #eeeeee;
       text-align: left;
     }
 
@@ -59,6 +68,7 @@
       padding: 4px 8px;
       bottom: 0;
       background: #eeeeee;
+      text-shadow: 1px 1px 1px #ffffff;
     }
 
     .settings-bg .text-input {
@@ -96,30 +106,30 @@
 
 <div class="search-wrapper">
   <input id="search" autocapitalize="none" autocomplete="off" tabindex="0"
-         type="text" spellcheck="false" placeholder="搜索" dir="ltr">
+         type="text" spellcheck="false" placeholder="搜索" dir="ltr" autofocus>
 </div>
 
 <div class="table-container">
   <table class="tables" id="table-url-white">
-    <tr class="table-head">
+    <tr>
       <th>URL 白名单:</th>
       <th class="delete-row"></th>
     </tr>
   </table>
   <table class="tables" id="table-url-black">
-    <tr class="table-head">
+    <tr>
       <th>URL 黑名单:</th>
       <th class="delete-row"></th>
     </tr>
   </table>
   <table class="tables" id="table-domain-white">
-    <tr class="table-head">
+    <tr>
       <th>DOMAIN 白名单:</th>
       <th class="delete-row"></th>
     </tr>
   </table>
   <table class="tables" id="table-domain-black">
-    <tr class="table-head">
+    <tr>
       <th>DOMAIN 黑名单:</th>
       <th class="delete-row"></th>
     </tr>
