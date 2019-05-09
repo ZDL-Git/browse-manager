@@ -6,26 +6,34 @@ let OPERATIONS = [
 ];
 
 function initializeSettings() {
-  touchSettings('is_auto_save', true);
-  touchSettings('auto_save_thre', 5);
-  touchSettings('bookmark_title', '经常访问(BM)');
-  touchSettings('is_diapause', true);
-  touchSettings('diapause_time', 120000);
-  touchSettings('is_page_show', true);
+  touchSetting('is_auto_save', true);
+  touchSetting('auto_save_thre', 5);
+  touchSetting('bookmark_title', '经常访问(BM)');
+  touchSetting('is_diapause', true);
+  touchSetting('diapause_time', 120000);
+  touchSetting('is_page_show', true);
 }
 
-function touchSettings(paramName, defaultValue) {
+function touchSetting(paramName, defaultValue) {
   if (!getParam(paramName)) {
     setParam(paramName, defaultValue);
   }
 }
 
 function setParam(paramName, value) {
-  localStorage['SETTINGS:' + paramName] = value;
+  setValue('SETTINGS:' + paramName, value);
 }
 
 function getParam(paramName) {
-  return localStorage['SETTINGS:' + paramName];
+  return getValue('SETTINGS:' + paramName);
+}
+
+function getValue(key) {
+  return localStorage[key];
+}
+
+function setValue(key, value) {
+  localStorage[key] = value;
 }
 
 
@@ -70,15 +78,15 @@ function isWhitelist(url) {
     || /^https?:\/\/www\.google\.com\//.test(url);
 
   return isDefaultWhitelist
-    || getBrowsedTimes(url) === OPERATIONS[1]
-    || getBrowsedTimes(getDomain(url)) === OPERATIONS[3];
+    || getValue(url) === OPERATIONS[1]
+    || getValue(getDomain(url)) === OPERATIONS[3];
 }
 
 function isBlacklist(url) {
   if (/^chrome/.test(url)) return false;
 
-  return getBrowsedTimes(url) === OPERATIONS[0]
-    || getBrowsedTimes(getDomain(url)) === OPERATIONS[2];
+  return getValue(url) === OPERATIONS[0]
+    || getValue(getDomain(url)) === OPERATIONS[2];
 }
 
 
@@ -92,8 +100,9 @@ function isEffectual(tab) {
     return false;
   }
 
-  // 'The Greate Suspender'类软件
-  if (tab.active && /^chrome-extension/.test(getTabLastUrl(tabId)) && getBrowsedTimes(stableUrl)) {
+  // 'The Greate Suspender'类软件的跳转
+  // 判断browseTimes，如果不在黑白名单，且以前未访问过，则为有效访问需要计数；
+  if (/^chrome-extension/.test(getTabLastUrl(tabId)) && getBrowsedTimes(stableUrl)) {
     console.log(stableUrl, "跳转自chrome-extension");
     return false;
   }
@@ -137,9 +146,11 @@ function addBookmarkWithCheck(tab) {
 
   let stableUrl = getStableUrl(tab.url);
 
-  let browseTimes = parseInt(getBrowsedTimes(stableUrl) || 0);
+  let browseTimes = getBrowsedTimes(stableUrl);
+  if (browseTimes === null) return;
+
   let saveThre = parseInt(getParam('auto_save_thre'));
-  if (browseTimes < saveThre || browseTimes >= saveThre + 3 || isBlacklist(stableUrl)) return;
+  if (browseTimes < saveThre || browseTimes >= saveThre + 3) return;
 
   touchBookmarkFolder(function (bookmarkId) {
     chrome.bookmarks.search({url: stableUrl}, function (results) {
@@ -149,7 +160,7 @@ function addBookmarkWithCheck(tab) {
           url: stableUrl,
           title: tab.title
         }, function (bookmark) {
-          notify_('经常访问此网页,自动加入收藏夹:\n' + bookmark.title);
+          notify_('经常访问此网页,自动加入收藏夹:\n' + bookmark.title, 5000);
         })
       }
     })
@@ -188,26 +199,27 @@ function setBadge(tab) {
     if (isWhitelist(stableUrl) || isBlacklist(stableUrl) || !browseTimes) {
       chrome.browserAction.setBadgeText({text: '', tabId: tab.id});
     } else {
-      let bgColor = (parseInt(browseTimes || '0') >= parseInt(getParam('auto_save_thre'))) ?
+      let bgColor = browseTimes >= parseInt(getParam('auto_save_thre')) ?
         [255, 0, 0, 255] : [70, 136, 241, 255];
       chrome.browserAction.setBadgeBackgroundColor({color: bgColor, tabId: tab.id});
-      chrome.browserAction.setBadgeText({text: browseTimes, tabId: tab.id});
+      chrome.browserAction.setBadgeText({text: '' + browseTimes, tabId: tab.id});
     }
   });
 }
 
 function increaseBrowseTimes(url) {
   let stableUrl = getStableUrl(url);
-  let browseTimes = parseInt(getBrowsedTimes(stableUrl) || 0) + 1;
+  let browseTimes = (getBrowsedTimes(stableUrl) || 0) + 1;
   setBrowsedTimes(stableUrl, browseTimes);
 }
 
 function getBrowsedTimes(url) {
-  return localStorage[url];
+  let t = parseInt(getValue(url));
+  return isNaN(t) ? null : t;
 }
 
 function setBrowsedTimes(url, times) {
-  localStorage[url] = times;
+  setValue(url, times);
 }
 
 function cacheRecentUrl(url) {

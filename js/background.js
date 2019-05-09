@@ -41,20 +41,20 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
 
   switch (info.menuItemId) {
     case "Menu-" + OPERATIONS[0]: {
-      setBrowsedTimes(stableUrl, OPERATIONS[0]);
+      setValue(stableUrl, OPERATIONS[0]);
       delBookmark(stableUrl);
       break;
     }
     case "Menu-" + OPERATIONS[1]: {
-      setBrowsedTimes(stableUrl, OPERATIONS[1]);
+      setValue(stableUrl, OPERATIONS[1]);
       break;
     }
     case "Menu-" + OPERATIONS[2]: {
-      setBrowsedTimes(domain, OPERATIONS[2]);
+      setValue(domain, OPERATIONS[2]);
       break;
     }
     case "Menu-" + OPERATIONS[3]: {
-      setBrowsedTimes(domain, OPERATIONS[3]);
+      setValue(domain, OPERATIONS[3]);
       break;
     }
   }
