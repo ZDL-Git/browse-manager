@@ -43,7 +43,7 @@ function registerTabs() {
       setTabLastUrl(tab);
 
       if (tab.active) {
-        setBadge(tab);
+        setTabBadge(tab);
       }
     })
   });
@@ -188,7 +188,16 @@ function showBrowseTimes(tab) {
   }, 200);
 }
 
-function setBadge(tab) {
+function setActiveTabBadge() {
+  chrome.tabs.query(
+    {currentWindow: true, active: true},
+    function (tabArray) {
+      setTabBadge(tabArray[0]);
+    }
+  )
+}
+
+function setTabBadge(tab) {
   if (!tab) return;
 
   chrome.tabs.get(tab.id, function (tab) {

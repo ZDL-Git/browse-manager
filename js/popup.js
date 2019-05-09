@@ -76,6 +76,7 @@ function addTableRowDeleteListener() {
   $('td.delete-row').on('click', function () {
     setBrowsedTimes($(this).prev().text(), 1);
     $(this).parent().remove();
+    setActiveTabBadge();
   });
 }
 

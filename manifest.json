@@ -17,7 +17,7 @@
     },
     "background": {
         "scripts": [
-            "js/utils.js",
+            "js/common.js",
             "js/background.js"
         ]
     },

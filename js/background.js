@@ -58,7 +58,7 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
       break;
     }
   }
-  setBadge(tab);
+  setTabBadge(tab);
 });
 
 // ============================================================================
@@ -98,7 +98,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     }
 
     // 直接F5刷新没有时loading事件没有url，但是需要显示badge计数
-    setBadge(tab);
+    setTabBadge(tab);
   }
 
   if (changeInfo['status'] === 'complete') {
@@ -127,7 +127,7 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
     // 手动切换标签时更新badge
     // 作判断的原因：在新窗口打开网页时onActivated事件在更新访问次数之前，会导致badge的数字先显示n紧接着变为n+1
     if (getTabLastUrl(tab.id)) {
-      setBadge(tab);
+      setTabBadge(tab);
     }
   })
 });
