@@ -64,12 +64,15 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
 // ============================================================================
 
 chrome.tabs.onCreated.addListener(function (tab) {
-  // 浏览器设置为新窗口打开链接的，在此判断
+  // 浏览器设置为新窗口打开链接的，在此判断。速度比在onUpdated中处理快
   // tab.url 此时为""，需要重新get
+  // 特殊情况：百度跳转时有个link的中间环节，会导致失效，在onUpdated中处理
   chrome.tabs.get(tab.id, function (tab) {
-    if (isBlacklist(getStableUrl(tab.url))) {
-      notify_('黑名单网站，自动关闭');
+    let stableUrl = getStableUrl(tab.url);
+    if (isBlacklist(stableUrl)) {
       chrome.tabs.remove(tab.id);
+      notify_('黑名单网站，自动关闭');
+      console.log(stableUrl, "黑名单网站，不再访问。标签关闭");
     }
   });
 });
@@ -83,8 +86,13 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         if (tabLastUrlExists(tabId)) {
           chrome.tabs.update(tabId, {url: getTabLastUrl(tabId)}, function (tab) {
             notify_('黑名单网站，不再访问');
+            console.log(stableUrl, "黑名单网站，不再访问。页面返回");
           });
-        } // else的情况已经在onCreated事件中处理
+        } else {
+          chrome.tabs.remove(tabId);
+          notify_('黑名单网站，自动关闭');
+          console.log(stableUrl, "黑名单网站，不再访问。标签关闭");
+        }
         return;
       }
 
