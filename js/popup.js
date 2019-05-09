@@ -55,6 +55,7 @@ function addTableFilterListener() {
   let input = document.getElementById("search");
 
   input.oninput = function () {
+    // 先全部show再判断隐藏的模式比较稳定
     showAllTrs();
 
     if (!input.value) {
@@ -63,9 +64,9 @@ function addTableFilterListener() {
 
     let trs = document.getElementsByTagName("tr");
     Array.from(trs).forEach(function (tr) {
-      //查找是否含有关键字,不含有则隐藏
-      if (tr.innerText.indexOf(input.value) === -1 && tr.innerText.indexOf('名单:') === -1) {
-        tr.hidden = true;
+      let td = tr.getElementsByTagName("td")[0];
+      if (td) {
+        tr.hidden = encodeURI(td.textContent || td.innerText).indexOf(input.value) === -1;
       }
     });
   };
