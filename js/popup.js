@@ -25,7 +25,7 @@ function appendTableContent() {
 
       $('#' + table).append(
         '<tr>' +
-        '<td>' + key + '</td>' +
+        '<td>' + decodeURI(key) + '</td>' +
         '<td class="delete-row">✕</td>' +
         '</tr>'
       );
@@ -74,9 +74,9 @@ function addTableFilterListener() {
 //列表行删除事件
 function addTableRowDeleteListener() {
   $('td.delete-row').on('click', function () {
-    setBrowsedTimes($(this).prev().text(), 1);
-    $(this).parent().remove();
+    setBrowsedTimes(encodeURI($(this).prev().text()), 1);
     setActiveTabBadge();
+    $(this).parent().remove();
   });
 }
 
