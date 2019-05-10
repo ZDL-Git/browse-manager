@@ -17,7 +17,6 @@
     },
     "background": {
         "scripts": [
-            "js/jquery-3.3.1.min.js",
             "js/common.js",
             "js/compatibility.js",
             "js/background.js"

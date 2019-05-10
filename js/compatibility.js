@@ -2,8 +2,7 @@
 
 function handleCompatibility() {
 
-  // $.each(localStorage, function (key, value) {
-  //
+  // LS.forEach(function (key, value) {
   //   key.startsWith('SETTINGS:') || urlMoveToDecode(key);
   // })
 }

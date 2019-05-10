@@ -23,11 +23,6 @@ OPERATIONS.forEach(function (title) {
   });
 });
 
-// 对设定时间内频繁访问做过滤，不计数
-// 记录上次访问url，实现在当前页打开黑名单网页时的拦截
-let urlBrowsedWithinSettedTime = {};
-let tabsLastUrl = {};
-
 registerTabs();
 
 // ============================================================================
@@ -43,20 +38,20 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
 
   switch (info.menuItemId) {
     case "Menu-" + OPERATIONS[0]: {
-      setItem(stableUrl, OPERATIONS[0]);
+      LS.setItem(stableUrl, OPERATIONS[0]);
       delBookmark(stableUrl);
       break;
     }
     case "Menu-" + OPERATIONS[1]: {
-      setItem(stableUrl, OPERATIONS[1]);
+      LS.setItem(stableUrl, OPERATIONS[1]);
       break;
     }
     case "Menu-" + OPERATIONS[2]: {
-      setItem(domain, OPERATIONS[2]);
+      LS.setItem(domain, OPERATIONS[2]);
       break;
     }
     case "Menu-" + OPERATIONS[3]: {
-      setItem(domain, OPERATIONS[3]);
+      LS.setItem(domain, OPERATIONS[3]);
       break;
     }
   }
@@ -85,8 +80,8 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo['status'] === 'loading') {
     if (changeInfo.hasOwnProperty('url')) {
       if (isBlacklist(stableUrl)) {
-        if (tabLastUrlExists(tabId)) {
-          chrome.tabs.update(tabId, {url: getTabLastUrl(tabId)}, function (tab) {
+        if (HISTORY.tabLastUrlExists(tabId)) {
+          chrome.tabs.update(tabId, {url: HISTORY.getTabLastUrl(tabId)}, function (tab) {
             notify_('黑名单网站，不再访问');
             console.log(stableUrl, "黑名单网站，不再访问。页面返回");
           });
@@ -104,8 +99,8 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
           showBrowseTimes(tab);
         }
       }
-      cacheRecentUrl(stableUrl);
-      stableUrl === 'chrome://newtab/' && setTabLastUrl(tab);
+      HISTORY.cacheUrlWithinSetTime(stableUrl);
+      stableUrl === 'chrome://newtab/' && HISTORY.setTabLastUrl(tab);
     }
 
     // 直接F5刷新没有时loading事件没有url，但是需要显示badge计数
@@ -119,27 +114,27 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
     // 加判断来解决无法从黑名单跳回的问题
     if (!isBlacklist(stableUrl)) {
-      setTabLastUrl(tab);
+      HISTORY.setTabLastUrl(tab);
     }
   }
 });
 
 chrome.tabs.onRemoved.addListener(function (tabid, removeInfo) {
-  cacheRecentUrl(getTabLastUrl(tabid));
-  deleteTabLastUrl(tabid);
+  HISTORY.cacheUrlWithinSetTime(HISTORY.getTabLastUrl(tabid));
+  HISTORY.deleteTabLastUrl(tabid);
 });
 
 chrome.tabs.onActivated.addListener(function (activeInfo) {
   chrome.tabs.get(activeInfo.tabId, function (tab) {
     // 为了解决'The Great Suspender'类软件造成的重复计次问题。
     // 加判断剔除new tab时的activated事件。
-    if (tabLastUrlExists(tab.id)) {
-      setTabLastUrl(tab);
+    if (HISTORY.tabLastUrlExists(tab.id)) {
+      HISTORY.setTabLastUrl(tab);
     }
 
     // 手动切换标签时更新badge
     // 作判断的原因：在新窗口打开网页时onActivated事件在更新访问次数之前，会导致badge的数字先显示n紧接着变为n+1
-    if (getTabLastUrl(tab.id)) {
+    if (HISTORY.getTabLastUrl(tab.id)) {
       setTabBadge(tab);
     }
   })

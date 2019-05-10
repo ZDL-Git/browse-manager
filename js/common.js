@@ -5,6 +5,66 @@ let OPERATIONS = [
   "Domain加入白名单（不再统计）"
 ];
 
+let LS = {
+  getValue: function (key) {
+    return localStorage[key];
+  },
+
+  setItem: function (key, value) {
+    localStorage[key] = value;
+  },
+
+  removeItem: function (key) {
+    localStorage.removeItem(key);
+  },
+
+  forEach: function (callback) {
+    Object.keys(localStorage).forEach(function (k) {
+      callback(k, localStorage[k]);
+    })
+  }
+};
+
+let HISTORY = {
+  // 对设定时间内频繁访问做过滤，不计数
+  urlsBrowsedWithinSetTime: {},
+  // 记录上次访问url，实现在对应页面打开黑名单网页时的拦截
+  tabsLastUrl: {},
+
+  getTabLastUrl: function (tabId) {
+    return this.tabsLastUrl[tabId];
+  },
+
+  setTabLastUrl: function (tab) {
+    let tabId = tab.id;
+    // 在跳转到其它页面前重新激活，以关闭时间作为最后访问时间。解决临时切换到其它标签再切回导致的次数增加
+    if (this.tabLastUrlExists(tabId)) {
+      this.cacheUrlWithinSetTime(this.getTabLastUrl(tabId));
+    }
+    this.tabsLastUrl[tabId] = getStableUrl(tab.url);
+  },
+
+  deleteTabLastUrl: function (tabId) {
+    delete this.tabsLastUrl[tabId];
+  },
+
+  tabLastUrlExists: function (tabId) {
+    return this.tabsLastUrl.hasOwnProperty(tabId);
+  },
+
+  cacheUrlWithinSetTime: function (url) {
+    let _this = this;
+    this.urlsBrowsedWithinSetTime[url] = 1;
+    setTimeout(function () {
+      delete _this.urlsBrowsedWithinSetTime[url];
+    }, getParam('diapause_time'));
+  },
+
+  browsedWithinSetTime: function (url) {
+    return this.urlsBrowsedWithinSetTime.hasOwnProperty(url);
+  }
+};
+
 function initializeSettings() {
   touchSetting('is_auto_save', true);
   touchSetting('auto_save_thre', 5);
@@ -21,58 +81,24 @@ function touchSetting(paramName, defaultValue) {
 }
 
 function setParam(paramName, value) {
-  setItem('SETTINGS:' + paramName, value);
+  LS.setItem('SETTINGS:' + paramName, value);
 }
 
 function getParam(paramName) {
-  return getValue('SETTINGS:' + paramName);
-}
-
-function getValue(key) {
-  return localStorage[key];
-}
-
-function setItem(key, value) {
-  localStorage[key] = value;
-}
-
-function removeItem(key) {
-  localStorage.removeItem(key);
+  return LS.getValue('SETTINGS:' + paramName);
 }
 
 
 function registerTabs() {
   chrome.tabs.query({}, function (tabs) {
     Array.from(tabs).forEach(function (tab) {
-      setTabLastUrl(tab);
+      HISTORY.setTabLastUrl(tab);
 
       if (tab.active) {
         setTabBadge(tab);
       }
     })
   });
-}
-
-function setTabLastUrl(tab) {
-  let tabId = tab.id;
-  // 在跳转到其它页面前重新激活，以关闭时间作为最后访问时间。解决临时切换到其它标签再切回导致的次数增加
-  if (tabLastUrlExists(tabId)) {
-    cacheRecentUrl(getTabLastUrl(tabId));
-  }
-
-  tabsLastUrl[tabId] = getStableUrl(tab.url);
-}
-
-function getTabLastUrl(tabId) {
-  return tabsLastUrl[tabId];
-}
-
-function deleteTabLastUrl(tabId) {
-  delete tabsLastUrl[tabId];
-}
-
-function tabLastUrlExists(tabId) {
-  return tabsLastUrl.hasOwnProperty(tabId);
 }
 
 
@@ -82,15 +108,15 @@ function isWhitelist(url) {
     || /^https?:\/\/www\.google\.com\//.test(url);
 
   return isDefaultWhitelist
-    || getValue(url) === OPERATIONS[1]
-    || getValue(getDomain(url)) === OPERATIONS[3];
+    || LS.getValue(url) === OPERATIONS[1]
+    || LS.getValue(getDomain(url)) === OPERATIONS[3];
 }
 
 function isBlacklist(url) {
   if (/^chrome/.test(url)) return false;
 
-  return getValue(url) === OPERATIONS[0]
-    || getValue(getDomain(url)) === OPERATIONS[2];
+  return LS.getValue(url) === OPERATIONS[0]
+    || LS.getValue(getDomain(url)) === OPERATIONS[2];
 }
 
 
@@ -106,19 +132,19 @@ function isEffectual(tab) {
 
   // 'The Greate Suspender'类软件的跳转
   // 判断browseTimes，如果不在黑白名单，且以前未访问过，则为有效访问需要计数；
-  if (/^chrome-extension/.test(getTabLastUrl(tabId)) && getBrowsedTimes(stableUrl)) {
+  if (/^chrome-extension/.test(HISTORY.getTabLastUrl(tabId)) && getBrowsedTimes(stableUrl)) {
     console.log(stableUrl, "跳转自chrome-extension");
     return false;
   }
 
   // 忽略在diapause_time间的重复访问
-  if (getParam('is_diapause') === 'true' && urlBrowsedWithinSettedTime.hasOwnProperty(stableUrl)) {
+  if (getParam('is_diapause') === 'true' && HISTORY.browsedWithinSetTime(stableUrl)) {
     console.log(stableUrl, "在设置的忽略间隔中");
     return false;
   }
 
   // 不包括刷新操作，刷新时url没有变化。
-  if (getTabLastUrl(tabId) === stableUrl) {
+  if (HISTORY.getTabLastUrl(tabId) === stableUrl) {
     console.log(stableUrl, "地址未发生变化");
     return false;
   }
@@ -227,20 +253,14 @@ function increaseBrowseTimes(url) {
 }
 
 function getBrowsedTimes(url) {
-  let t = parseInt(getValue(url));
+  let t = parseInt(LS.getValue(url));
   return isNaN(t) ? null : t;
 }
 
 function setBrowsedTimes(url, times) {
-  setItem(url, times);
+  LS.setItem(url, times);
 }
 
-function cacheRecentUrl(url) {
-  urlBrowsedWithinSettedTime[url] = 1;
-  setTimeout(function () {
-    delete urlBrowsedWithinSettedTime[url];
-  }, getParam('diapause_time'));
-}
 
 function notify_(content, timeout = 3000) {
   let opt = {
