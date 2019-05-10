@@ -103,12 +103,15 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         }
       }
       cacheRecentUrl(stableUrl);
+      stableUrl === 'chrome://newtab/' && setTabLastUrl(tab);
     }
 
     // 直接F5刷新没有时loading事件没有url，但是需要显示badge计数
     setTabBadge(tab);
   }
 
+  // 在complete阶段处理可以过滤掉一些中间url，如百度跳转的link，
+  // 但是部分页面从loading到complete需要很长时间，或者一直在loading，所以可能会存在一些问题
   if (changeInfo['status'] === 'complete') {
     addBookmarkWithCheck(tab);
 
