@@ -21,7 +21,7 @@ function touchSetting(paramName, defaultValue) {
 }
 
 function setParam(paramName, value) {
-  setValue('SETTINGS:' + paramName, value);
+  setItem('SETTINGS:' + paramName, value);
 }
 
 function getParam(paramName) {
@@ -32,8 +32,12 @@ function getValue(key) {
   return localStorage[key];
 }
 
-function setValue(key, value) {
+function setItem(key, value) {
   localStorage[key] = value;
+}
+
+function removeItem(key) {
+  localStorage.removeItem(key);
 }
 
 
@@ -228,7 +232,7 @@ function getBrowsedTimes(url) {
 }
 
 function setBrowsedTimes(url, times) {
-  setValue(url, times);
+  setItem(url, times);
 }
 
 function cacheRecentUrl(url) {
@@ -259,16 +263,18 @@ function getDomain(url) {
 }
 
 function getStableUrl(orgUrl) {
-  let url;
+  let url, params;
   try {
     url = new URL(orgUrl);
   } catch (e) {
     console.error("Error, new URL() failed, orgUrl:", orgUrl);
     return orgUrl;
   }
+
   // 解决url中带有hash字段导致的页面重复计数问题。
   url.hash = '';
-  let params = url.searchParams;
+
+  params = url.searchParams;
   switch (url.hostname) {
     case "www.youtube.com": {
       params.delete('t');

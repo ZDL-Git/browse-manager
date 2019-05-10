@@ -1,5 +1,7 @@
 // ============================================================================
 chrome.runtime.onInstalled.addListener(function () {
+  handleCompatibility();
+
   initializeSettings();
   registerTabs();
 });
@@ -41,20 +43,20 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
 
   switch (info.menuItemId) {
     case "Menu-" + OPERATIONS[0]: {
-      setValue(stableUrl, OPERATIONS[0]);
+      setItem(stableUrl, OPERATIONS[0]);
       delBookmark(stableUrl);
       break;
     }
     case "Menu-" + OPERATIONS[1]: {
-      setValue(stableUrl, OPERATIONS[1]);
+      setItem(stableUrl, OPERATIONS[1]);
       break;
     }
     case "Menu-" + OPERATIONS[2]: {
-      setValue(domain, OPERATIONS[2]);
+      setItem(domain, OPERATIONS[2]);
       break;
     }
     case "Menu-" + OPERATIONS[3]: {
-      setValue(domain, OPERATIONS[3]);
+      setItem(domain, OPERATIONS[3]);
       break;
     }
   }

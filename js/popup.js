@@ -9,7 +9,7 @@ window.onload = function () {
 function appendTableContent() {
 
   $.each(localStorage, function (key, value) {
-      let table;
+      let table, url;
       if (value === OPERATIONS[1]) {
         table = 'table-url-white';
       } else if (value === OPERATIONS[0]) {
@@ -23,9 +23,15 @@ function appendTableContent() {
         return;
       }
 
+      try {
+        url = decodeURI(key);
+      } catch (e) {
+        url = key;
+      }
+
       $('#' + table).append(
         '<tr>' +
-        '<td>' + decodeURI(key) + '</td>' +
+        '<td>' + url + '</td>' +
         '<td class="delete-row">✕</td>' +
         '</tr>'
       );
@@ -66,7 +72,8 @@ function addTableFilterListener() {
     Array.from(trs).forEach(function (tr) {
       let td = tr.getElementsByTagName("td")[0];
       if (td) {
-        tr.hidden = encodeURI(td.textContent || td.innerText).indexOf(input.value) === -1;
+        tr.hidden = encodeURI((td.textContent || td.innerText).trim()).toUpperCase()
+          .indexOf(encodeURI(input.value.trim()).toUpperCase()) === -1;
       }
     });
   };
