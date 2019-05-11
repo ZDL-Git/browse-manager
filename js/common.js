@@ -6,7 +6,7 @@ let OPERATIONS = {
 };
 
 let LS = {
-  getValue: function (key) {
+  getItem: function (key) {
     return localStorage[key];
   },
 
@@ -42,7 +42,7 @@ let HISTORY = (function () {
       if (this.tabLastUrlExists(tabId)) {
         this.cacheUrlWithinSetTime(this.getTabLastUrl(tabId));
       }
-      tabsLastUrl[tabId] = getStableUrl(tab.url);
+      tabsLastUrl[tabId] = URL_UTILS.getStableUrl(tab.url);
       console.debug('setTabLastUrl: tabId ' + tabId + ', url ' + tab.url);
     },
 
@@ -87,7 +87,7 @@ function setParam(paramName, value) {
 }
 
 function getParam(paramName) {
-  return LS.getValue('SETTINGS:' + paramName);
+  return LS.getItem('SETTINGS:' + paramName);
 }
 
 
@@ -101,74 +101,6 @@ function registerTabs() {
       }
     })
   });
-}
-
-
-function isWhitelist(url) {
-  let isDefaultWhitelist = /^chrome/.test(url)
-    || /^https?:\/\/www\.baidu\.com\//.test(url)
-    || /^https?:\/\/www\.google\.com\//.test(url);
-
-  return isDefaultWhitelist
-    || LS.getValue(url) === OPERATIONS.addUrlWhitelist
-    || LS.getValue(getDomain(url)) === OPERATIONS.addDomainWhitelist;
-}
-
-function isBlacklist(url) {
-  if (/^chrome/.test(url)) return false;
-
-  return LS.getValue(url) === OPERATIONS.addUrlBlacklist
-    || LS.getValue(getDomain(url)) === OPERATIONS.addDomainBlacklist;
-}
-
-function filterBlacklistUrl(tabId, url) {
-  if (!isBlacklist(url)) return false;
-  let noticeContent = '黑名单网站，不再访问';
-  if (HISTORY.tabLastUrlExists(tabId)) {
-    chrome.tabs.update(tabId, {url: HISTORY.getTabLastUrl(tabId)}, function (tab) {
-      notify_(noticeContent);
-      console.log(url, "黑名单网站，页面返回");
-    });
-  } else {
-    chrome.tabs.remove(tabId);
-    notify_(noticeContent);
-    console.log(url, "黑名单网站，标签关闭");
-  }
-  return true;
-}
-
-
-function isEffectual(tab) {
-  let stableUrl = getStableUrl(tab.url);
-  let tabId = tab.id;
-
-  // 黑白名单
-  if (isWhitelist(stableUrl) || isBlacklist(stableUrl)) {
-    console.log(stableUrl, "黑白名单");
-    return false;
-  }
-
-  // 'The Greate Suspender'类软件的跳转
-  // 判断browseTimes，如果不在黑白名单，且以前未访问过，则为有效访问需要计数；
-  if (/^chrome-extension/.test(HISTORY.getTabLastUrl(tabId)) && getBrowsedTimes(stableUrl)) {
-    console.log(stableUrl, "跳转自chrome-extension");
-    return false;
-  }
-
-  // 忽略在diapause_time间的重复访问
-  if (getParam('is_diapause') === 'true' && HISTORY.browsedWithinSetTime(stableUrl)) {
-    console.log(stableUrl, "在设置的忽略间隔中");
-    return false;
-  }
-
-  // 不包括刷新操作，刷新时url没有变化。
-  if (HISTORY.getTabLastUrl(tabId) === stableUrl) {
-    console.log(stableUrl, "地址未发生变化");
-    return false;
-  }
-
-  console.log(stableUrl, "计数有效");
-  return true;
 }
 
 
@@ -192,7 +124,7 @@ function touchBookmarkFolder(callback) {
 function addBookmarkWithCheck(tab) {
   if (getParam('is_auto_save') === 'false') return;
 
-  let stableUrl = getStableUrl(tab.url);
+  let stableUrl = URL_UTILS.getStableUrl(tab.url);
 
   let browseTimes = getBrowsedTimes(stableUrl);
   if (browseTimes === null) return;
@@ -231,7 +163,7 @@ function showBrowseTimes(tab) {
   setTimeout(function () {
     chrome.tabs.sendMessage(tab.id, {
       method: "displayBrowseTimes",
-      browseTimes: getBrowsedTimes(getStableUrl(tab.url))
+      browseTimes: getBrowsedTimes(URL_UTILS.getStableUrl(tab.url))
     });
   }, 200);
 }
@@ -251,9 +183,9 @@ function setTabBadge(tab) {
   chrome.tabs.get(tab.id, function (tab) {
     if (chrome.runtime.lastError) return;
 
-    let stableUrl = getStableUrl(tab.url);
+    let stableUrl = URL_UTILS.getStableUrl(tab.url);
     let browseTimes = getBrowsedTimes(stableUrl);
-    if (isWhitelist(stableUrl) || isBlacklist(stableUrl) || !browseTimes) {
+    if (URL_UTILS.isWhitelist(stableUrl) || URL_UTILS.isBlacklist(stableUrl) || !browseTimes) {
       chrome.browserAction.setBadgeText({text: '', tabId: tab.id});
     } else {
       let bgColor = browseTimes >= parseInt(getParam('auto_save_thre')) ?
@@ -265,13 +197,13 @@ function setTabBadge(tab) {
 }
 
 function increaseBrowseTimes(url) {
-  let stableUrl = getStableUrl(url);
+  let stableUrl = URL_UTILS.getStableUrl(url);
   let browseTimes = (getBrowsedTimes(stableUrl) || 0) + 1;
   setBrowsedTimes(stableUrl, browseTimes);
 }
 
 function getBrowsedTimes(url) {
-  let t = parseInt(LS.getValue(url));
+  let t = parseInt(LS.getItem(url));
   return isNaN(t) ? null : t;
 }
 
@@ -295,31 +227,106 @@ function notify_(content, timeout = 3000) {
   });
 }
 
-function getDomain(url) {
-  let arr = url.split("/");
-  return arr[0] + "//" + arr[2];
-}
 
-function getStableUrl(orgUrl) {
-  let url, params;
-  try {
-    url = new URL(orgUrl);
-  } catch (e) {
-    console.error("Error, new URL() failed, orgUrl:", orgUrl);
-    return orgUrl;
-  }
-
-  // 解决url中带有hash字段导致的页面重复计数问题。
-  url.hash = '';
-
-  params = url.searchParams;
-  switch (url.hostname) {
-    case "www.youtube.com": {
-      params.delete('t');
-      break;
+let URL_UTILS = {
+  movedToUrlObj: function (url) {
+    try {
+      return new URL(url);
+    } catch (e) {
+      console.error("Error, new URL() failed, orgUrl:", url);
+      return null;
     }
-    // ...
-  }
+  },
 
-  return url.toString();
-}
+  getStableUrl: function (url) {
+    let stableUrl, urlObj, params;
+    url.endsWith('/') && (url = url.slice(0, -1));
+    urlObj = this.movedToUrlObj(url);
+    if (urlObj) {
+      // 解决url中带有hash字段导致的页面重复计数问题。
+      urlObj.hash = '';
+      params = urlObj.searchParams;
+      switch (urlObj.hostname) {
+        case "www.youtube.com": {
+          params.delete('t');
+          break;
+        }
+        // ...
+      }
+    }
+
+    stableUrl = (urlObj || url).toString();
+    return stableUrl;
+  },
+
+  getDomain: function (url) {
+    let arr = url.split("/");
+    return arr[0] + "//" + arr[2];
+  },
+
+  isWhitelist: function (url) {
+    let isDefaultWhitelist = /^chrome/.test(url)
+      || /^https?:\/\/www\.baidu\.com/.test(url)
+      || /^https?:\/\/www\.google\.com/.test(url);
+
+    return isDefaultWhitelist
+      || LS.getItem(url) === OPERATIONS.addUrlWhitelist
+      || LS.getItem(this.getDomain(url)) === OPERATIONS.addDomainWhitelist;
+  },
+
+  isBlacklist: function (url) {
+    if (/^chrome/.test(url)) return false;
+
+    return LS.getItem(url) === OPERATIONS.addUrlBlacklist
+      || LS.getItem(this.getDomain(url)) === OPERATIONS.addDomainBlacklist;
+  },
+
+  filterBlacklistUrl: function (tabId, url) {
+    if (!this.isBlacklist(url)) return false;
+    let noticeContent = '黑名单网站，不再访问';
+    if (HISTORY.tabLastUrlExists(tabId)) {
+      chrome.tabs.update(tabId, {url: HISTORY.getTabLastUrl(tabId)}, function (tab) {
+        notify_(noticeContent);
+        console.log(url, "黑名单网站，页面返回");
+      });
+    } else {
+      chrome.tabs.remove(tabId);
+      notify_(noticeContent);
+      console.log(url, "黑名单网站，标签关闭");
+    }
+    return true;
+  },
+
+  isEffectual: function (tab) {
+    let stableUrl = this.getStableUrl(tab.url);
+    let tabId = tab.id;
+
+    // 黑白名单
+    if (this.isWhitelist(stableUrl) || this.isBlacklist(stableUrl)) {
+      console.log(stableUrl, "黑白名单");
+      return false;
+    }
+
+    // 'The Greate Suspender'类软件的跳转
+    // 判断browseTimes，如果不在黑白名单，且以前未访问过，则为有效访问需要计数；
+    if (/^chrome-extension/.test(HISTORY.getTabLastUrl(tabId)) && getBrowsedTimes(stableUrl)) {
+      console.log(stableUrl, "跳转自chrome-extension");
+      return false;
+    }
+
+    // 忽略在diapause_time间的重复访问
+    if (getParam('is_diapause') === 'true' && HISTORY.browsedWithinSetTime(stableUrl)) {
+      console.log(stableUrl, "在设置的忽略间隔中");
+      return false;
+    }
+
+    // 不包括刷新操作，刷新时url没有变化。
+    if (HISTORY.getTabLastUrl(tabId) === stableUrl) {
+      console.log(stableUrl, "地址未发生变化");
+      return false;
+    }
+
+    console.log(stableUrl, "计数有效");
+    return true;
+  }
+};

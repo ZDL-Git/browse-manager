@@ -2,8 +2,19 @@
 
 function handleCompatibility() {
 
-  // LS.forEach(function (key, value) {
-  //   key.startsWith('SETTINGS:') || urlMoveToDecode(key);
-  // })
+  LS.forEach(function (key, value) {
+    if (key.startsWith('SETTINGS:')) {
+      return;
+    }
+    trimTailSlash(key, value);
+  })
 }
 
+function trimTailSlash(key, value) {
+  if (key.endsWith('/')) {
+    if (!LS.getItem(key.slice(0, -1))) {
+      LS.setItem(key.slice(0, -1), value);
+    }
+    LS.removeItem(key);
+  }
+}

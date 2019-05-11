@@ -30,8 +30,8 @@ chrome.runtime.onStartup.addListener(function () {
 // ============================================================================
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-  let stableUrl = getStableUrl(tab.url);
-  let domain = getDomain(stableUrl);
+  let stableUrl = URL_UTILS.getStableUrl(tab.url);
+  let domain = URL_UTILS.getDomain(stableUrl);
 
   if (/^chrome/.test(stableUrl)) {
     notify_('chrome相关的网页默认在白名单。');
@@ -69,21 +69,21 @@ chrome.tabs.onCreated.addListener(function (tab) {
   // 特殊情况：百度跳转时有个link的中间环节，会导致失效，在onUpdated中处理
   tab.url === 'chrome://newtab/' && HISTORY.setTabLastUrl(tab);
   chrome.tabs.get(tab.id, function (tab) {
-    let stableUrl = getStableUrl(tab.url);
-    filterBlacklistUrl(tab.id, stableUrl);
+    let stableUrl = URL_UTILS.getStableUrl(tab.url);
+    URL_UTILS.filterBlacklistUrl(tab.id, stableUrl);
   });
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  let stableUrl = getStableUrl(tab.url);
+  let stableUrl = URL_UTILS.getStableUrl(tab.url);
 
   if (changeInfo['status'] === 'loading') {
     if (changeInfo.hasOwnProperty('url')) {
-      if (filterBlacklistUrl(tabId, stableUrl)) {
+      if (URL_UTILS.filterBlacklistUrl(tabId, stableUrl)) {
         return;
       }
 
-      if (isEffectual(tab)) {
+      if (URL_UTILS.isEffectual(tab)) {
         increaseBrowseTimes(tab.url);
         if (getParam('is_page_show') === 'true') {
           showBrowseTimes(tab);
@@ -102,7 +102,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     addBookmarkWithCheck(tab);
 
     // 加判断来解决无法从黑名单跳回的问题
-    if (!isBlacklist(stableUrl)) {
+    if (!URL_UTILS.isBlacklist(stableUrl)) {
       HISTORY.setTabLastUrl(tab);
     }
   }
