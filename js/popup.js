@@ -10,13 +10,13 @@ function appendTableContent() {
 
   LS.forEach(function (key, value) {
       let table, url;
-      if (value === OPERATIONS.addUrlWhiteList) {
+      if (value === OPERATIONS.addUrlWhitelist) {
         table = 'table-url-white';
-      } else if (value === OPERATIONS.addUrlBlackList) {
+      } else if (value === OPERATIONS.addUrlBlacklist) {
         table = 'table-url-black';
-      } else if (value === OPERATIONS.addDomainWhiteList) {
+      } else if (value === OPERATIONS.addDomainWhitelist) {
         table = 'table-domain-white';
-      } else if (value === OPERATIONS.addDomainBlackList) {
+      } else if (value === OPERATIONS.addDomainBlacklist) {
         table = 'table-domain-black';
       } else {
         // 相当于continue

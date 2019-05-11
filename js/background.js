@@ -39,21 +39,21 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
   }
 
   switch (info.menuItemId) {
-    case "Menu-" + OPERATIONS.addUrlBlackList: {
-      LS.setItem(stableUrl, OPERATIONS.addUrlBlackList);
+    case "Menu-" + OPERATIONS.addUrlBlacklist: {
+      LS.setItem(stableUrl, OPERATIONS.addUrlBlacklist);
       delBookmark(stableUrl);
       break;
     }
-    case "Menu-" + OPERATIONS.addUrlWhiteList: {
-      LS.setItem(stableUrl, OPERATIONS.addUrlWhiteList);
+    case "Menu-" + OPERATIONS.addUrlWhitelist: {
+      LS.setItem(stableUrl, OPERATIONS.addUrlWhitelist);
       break;
     }
-    case "Menu-" + OPERATIONS.addDomainBlackList: {
-      LS.setItem(domain, OPERATIONS.addDomainBlackList);
+    case "Menu-" + OPERATIONS.addDomainBlacklist: {
+      LS.setItem(domain, OPERATIONS.addDomainBlacklist);
       break;
     }
-    case "Menu-" + OPERATIONS.addDomainWhiteList: {
-      LS.setItem(domain, OPERATIONS.addDomainWhiteList);
+    case "Menu-" + OPERATIONS.addDomainWhitelist: {
+      LS.setItem(domain, OPERATIONS.addDomainWhitelist);
       break;
     }
   }
@@ -63,15 +63,15 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
 // ============================================================================
 
 chrome.tabs.onCreated.addListener(function (tab) {
+  // 此处主要拦截黑名单
   // 浏览器设置为新窗口打开链接的，在此判断。速度比在onUpdated中处理快
-  // tab.url 此时为""，需要重新get
+  // 跳转过来的tab.url可能为""，需要重新get。但是人工new tab时 url一定为'chrome://newtab/'
   // 特殊情况：百度跳转时有个link的中间环节，会导致失效，在onUpdated中处理
+  tab.url === 'chrome://newtab/' && HISTORY.setTabLastUrl(tab);
   chrome.tabs.get(tab.id, function (tab) {
     let stableUrl = getStableUrl(tab.url);
     if (isBlacklist(stableUrl)) {
-      chrome.tabs.remove(tab.id);
-      notify_('黑名单网站，不再访问');
-      console.log(stableUrl, "黑名单网站，标签关闭");
+      quitBrowseBlacklistUrl(tab.id, stableUrl);
     }
   });
 });
@@ -82,16 +82,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo['status'] === 'loading') {
     if (changeInfo.hasOwnProperty('url')) {
       if (isBlacklist(stableUrl)) {
-        if (HISTORY.tabLastUrlExists(tabId)) {
-          chrome.tabs.update(tabId, {url: HISTORY.getTabLastUrl(tabId)}, function (tab) {
-            notify_('黑名单网站，不再访问');
-            console.log(stableUrl, "黑名单网站，页面返回");
-          });
-        } else {
-          chrome.tabs.remove(tabId);
-          notify_('黑名单网站，不再访问');
-          console.log(stableUrl, "黑名单网站，标签关闭");
-        }
+        quitBrowseBlacklistUrl(tabId, stableUrl);
         return;
       }
 
@@ -102,10 +93,9 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         }
       }
       HISTORY.cacheUrlWithinSetTime(stableUrl);
-      stableUrl === 'chrome://newtab/' && HISTORY.setTabLastUrl(tab);
     }
 
-    // 直接F5刷新没有时loading事件没有url，但是需要显示badge计数
+    // 直接F5刷新时changeInfo不含url，但是需要显示badge计数
     setTabBadge(tab);
   }
 

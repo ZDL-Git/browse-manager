@@ -1,8 +1,8 @@
 let OPERATIONS = {
-  addUrlBlackList: "URL加入黑名单（不再访问）",
-  addUrlWhiteList: "URL加入白名单（不再统计）",
-  addDomainBlackList: "Domain加入黑名单（不再访问）",
-  addDomainWhiteList: "Domain加入白名单（不再统计）",
+  addUrlBlacklist: "URL加入黑名单（不再访问）",
+  addUrlWhitelist: "URL加入白名单（不再统计）",
+  addDomainBlacklist: "Domain加入黑名单（不再访问）",
+  addDomainWhitelist: "Domain加入白名单（不再统计）",
 };
 
 let LS = {
@@ -43,6 +43,7 @@ let HISTORY = (function () {
         this.cacheUrlWithinSetTime(this.getTabLastUrl(tabId));
       }
       tabsLastUrl[tabId] = getStableUrl(tab.url);
+      console.debug('setTabLastUrl: tabId ' + tabId + ', url ' + tab.url);
     },
 
     deleteTabLastUrl: function (tabId) {
@@ -109,15 +110,28 @@ function isWhitelist(url) {
     || /^https?:\/\/www\.google\.com\//.test(url);
 
   return isDefaultWhitelist
-    || LS.getValue(url) === OPERATIONS.addUrlWhiteList
-    || LS.getValue(getDomain(url)) === OPERATIONS.addDomainWhiteList;
+    || LS.getValue(url) === OPERATIONS.addUrlWhitelist
+    || LS.getValue(getDomain(url)) === OPERATIONS.addDomainWhitelist;
 }
 
 function isBlacklist(url) {
   if (/^chrome/.test(url)) return false;
 
-  return LS.getValue(url) === OPERATIONS.addUrlBlackList
-    || LS.getValue(getDomain(url)) === OPERATIONS.addDomainBlackList;
+  return LS.getValue(url) === OPERATIONS.addUrlBlacklist
+    || LS.getValue(getDomain(url)) === OPERATIONS.addDomainBlacklist;
+}
+
+function quitBrowseBlacklistUrl(tabId, url) {
+  if (HISTORY.tabLastUrlExists(tabId)) {
+    chrome.tabs.update(tabId, {url: HISTORY.getTabLastUrl(tabId)}, function (tab) {
+      notify_('黑名单网站，不再访问');
+      console.log(url, "黑名单网站，页面返回");
+    });
+  } else {
+    chrome.tabs.remove(tabId);
+    notify_('黑名单网站，不再访问');
+    console.log(url, "黑名单网站，标签关闭");
+  }
 }
 
 
