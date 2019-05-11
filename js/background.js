@@ -16,7 +16,7 @@ chrome.runtime.onStartup.addListener(function () {
 
 // ============================================================================
 
-Object.keys(OPERATIONS).forEach(function (title) {
+Object.values(OPERATIONS).forEach(function (title) {
   chrome.contextMenus.create({
     type: 'normal',
     title: title, id: "Menu-" + title, contexts: ['all']
