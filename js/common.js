@@ -122,14 +122,15 @@ function isBlacklist(url) {
 }
 
 function quitBrowseBlacklistUrl(tabId, url) {
+  let noticeContent = '黑名单网站，不再访问';
   if (HISTORY.tabLastUrlExists(tabId)) {
     chrome.tabs.update(tabId, {url: HISTORY.getTabLastUrl(tabId)}, function (tab) {
-      notify_('黑名单网站，不再访问');
+      notify_(noticeContent);
       console.log(url, "黑名单网站，页面返回");
     });
   } else {
     chrome.tabs.remove(tabId);
-    notify_('黑名单网站，不再访问');
+    notify_(noticeContent);
     console.log(url, "黑名单网站，标签关闭");
   }
 }
@@ -179,7 +180,7 @@ function touchBookmarkFolder(callback) {
         parentId: '1',
         title: bookmarkTitle,
       }, function (bookmark) {
-        notify_('已创建收藏夹，如想停止请在Browse Manager扩展中设置');
+        notify_('已自动创建收藏夹 ' + getParam('bookmark_title'));
         callback(bookmark.id);
       });
     }
