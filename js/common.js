@@ -39,8 +39,8 @@ let HISTORY = (function () {
     setTabLastUrl: function (tab) {
       let tabId = tab.id;
       // 在跳转到其它页面前重新激活，以关闭时间作为最后访问时间。解决临时切换到其它标签再切回导致的次数增加
-      if (tabLastUrlExists(tabId)) {
-        cacheUrlWithinSetTime(getTabLastUrl(tabId));
+      if (this.tabLastUrlExists(tabId)) {
+        this.cacheUrlWithinSetTime(this.getTabLastUrl(tabId));
       }
       tabsLastUrl[tabId] = getStableUrl(tab.url);
     },
