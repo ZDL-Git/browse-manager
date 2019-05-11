@@ -121,7 +121,8 @@ function isBlacklist(url) {
     || LS.getValue(getDomain(url)) === OPERATIONS.addDomainBlacklist;
 }
 
-function quitBrowseBlacklistUrl(tabId, url) {
+function filterBlacklistUrl(tabId, url) {
+  if (!isBlacklist(url)) return false;
   let noticeContent = '黑名单网站，不再访问';
   if (HISTORY.tabLastUrlExists(tabId)) {
     chrome.tabs.update(tabId, {url: HISTORY.getTabLastUrl(tabId)}, function (tab) {
@@ -133,6 +134,7 @@ function quitBrowseBlacklistUrl(tabId, url) {
     notify_(noticeContent);
     console.log(url, "黑名单网站，标签关闭");
   }
+  return true;
 }
 
 

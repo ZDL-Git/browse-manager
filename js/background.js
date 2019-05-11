@@ -70,9 +70,7 @@ chrome.tabs.onCreated.addListener(function (tab) {
   tab.url === 'chrome://newtab/' && HISTORY.setTabLastUrl(tab);
   chrome.tabs.get(tab.id, function (tab) {
     let stableUrl = getStableUrl(tab.url);
-    if (isBlacklist(stableUrl)) {
-      quitBrowseBlacklistUrl(tab.id, stableUrl);
-    }
+    filterBlacklistUrl(tab.id, stableUrl);
   });
 });
 
@@ -81,8 +79,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
   if (changeInfo['status'] === 'loading') {
     if (changeInfo.hasOwnProperty('url')) {
-      if (isBlacklist(stableUrl)) {
-        quitBrowseBlacklistUrl(tabId, stableUrl);
+      if (filterBlacklistUrl(tabId, stableUrl)) {
         return;
       }
 
