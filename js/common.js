@@ -1,9 +1,9 @@
-let OPERATIONS = [
-  "URL加入黑名单（不再访问）",
-  "URL加入白名单（不再统计）",
-  "Domain加入黑名单（不再访问）",
-  "Domain加入白名单（不再统计）"
-];
+let OPERATIONS = {
+  addUrlBlackList: "URL加入黑名单（不再访问）",
+  addUrlWhiteList: "URL加入白名单（不再统计）",
+  addDomainBlackList: "Domain加入黑名单（不再访问）",
+  addDomainWhiteList: "Domain加入白名单（不再统计）",
+};
 
 let LS = {
   getValue: function (key) {
@@ -109,15 +109,15 @@ function isWhitelist(url) {
     || /^https?:\/\/www\.google\.com\//.test(url);
 
   return isDefaultWhitelist
-    || LS.getValue(url) === OPERATIONS[1]
-    || LS.getValue(getDomain(url)) === OPERATIONS[3];
+    || LS.getValue(url) === OPERATIONS.addUrlWhiteList
+    || LS.getValue(getDomain(url)) === OPERATIONS.addDomainWhiteList;
 }
 
 function isBlacklist(url) {
   if (/^chrome/.test(url)) return false;
 
-  return LS.getValue(url) === OPERATIONS[0]
-    || LS.getValue(getDomain(url)) === OPERATIONS[2];
+  return LS.getValue(url) === OPERATIONS.addUrlBlackList
+    || LS.getValue(getDomain(url)) === OPERATIONS.addDomainBlackList;
 }
 
 

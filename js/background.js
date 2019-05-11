@@ -16,7 +16,7 @@ chrome.runtime.onStartup.addListener(function () {
 
 // ============================================================================
 
-OPERATIONS.forEach(function (title) {
+Object.keys(OPERATIONS).forEach(function (title) {
   chrome.contextMenus.create({
     type: 'normal',
     title: title, id: "Menu-" + title, contexts: ['all']
@@ -37,21 +37,21 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
   }
 
   switch (info.menuItemId) {
-    case "Menu-" + OPERATIONS[0]: {
-      LS.setItem(stableUrl, OPERATIONS[0]);
+    case "Menu-" + OPERATIONS.addUrlBlackList: {
+      LS.setItem(stableUrl, OPERATIONS.addUrlBlackList);
       delBookmark(stableUrl);
       break;
     }
-    case "Menu-" + OPERATIONS[1]: {
-      LS.setItem(stableUrl, OPERATIONS[1]);
+    case "Menu-" + OPERATIONS.addUrlWhiteList: {
+      LS.setItem(stableUrl, OPERATIONS.addUrlWhiteList);
       break;
     }
-    case "Menu-" + OPERATIONS[2]: {
-      LS.setItem(domain, OPERATIONS[2]);
+    case "Menu-" + OPERATIONS.addDomainBlackList: {
+      LS.setItem(domain, OPERATIONS.addDomainBlackList);
       break;
     }
-    case "Menu-" + OPERATIONS[3]: {
-      LS.setItem(domain, OPERATIONS[3]);
+    case "Menu-" + OPERATIONS.addDomainWhiteList: {
+      LS.setItem(domain, OPERATIONS.addDomainWhiteList);
       break;
     }
   }

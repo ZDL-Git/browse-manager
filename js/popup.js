@@ -8,15 +8,15 @@ window.onload = function () {
 
 function appendTableContent() {
 
-  $.each(localStorage, function (key, value) {
+  LS.forEach(function (key, value) {
       let table, url;
-      if (value === OPERATIONS[1]) {
+      if (value === OPERATIONS.addUrlWhiteList) {
         table = 'table-url-white';
-      } else if (value === OPERATIONS[0]) {
+      } else if (value === OPERATIONS.addUrlBlackList) {
         table = 'table-url-black';
-      } else if (value === OPERATIONS[3]) {
+      } else if (value === OPERATIONS.addDomainWhiteList) {
         table = 'table-domain-white';
-      } else if (value === OPERATIONS[2]) {
+      } else if (value === OPERATIONS.addDomainBlackList) {
         table = 'table-domain-black';
       } else {
         // 相当于continue
@@ -36,7 +36,7 @@ function appendTableContent() {
         '</tr>'
       );
     }
-  );
+  )
 }
 
 function fillSettingsContent() {
