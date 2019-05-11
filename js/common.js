@@ -25,45 +25,46 @@ let LS = {
   }
 };
 
-let HISTORY = {
+let HISTORY = (function () {
   // 对设定时间内频繁访问做过滤，不计数
-  urlsBrowsedWithinSetTime: {},
+  let urlsBrowsedWithinSetTime = {};
   // 记录上次访问url，实现在对应页面打开黑名单网页时的拦截
-  tabsLastUrl: {},
+  let tabsLastUrl = {};
 
-  getTabLastUrl: function (tabId) {
-    return this.tabsLastUrl[tabId];
-  },
+  return {
+    getTabLastUrl: function (tabId) {
+      return tabsLastUrl[tabId];
+    },
 
-  setTabLastUrl: function (tab) {
-    let tabId = tab.id;
-    // 在跳转到其它页面前重新激活，以关闭时间作为最后访问时间。解决临时切换到其它标签再切回导致的次数增加
-    if (this.tabLastUrlExists(tabId)) {
-      this.cacheUrlWithinSetTime(this.getTabLastUrl(tabId));
+    setTabLastUrl: function (tab) {
+      let tabId = tab.id;
+      // 在跳转到其它页面前重新激活，以关闭时间作为最后访问时间。解决临时切换到其它标签再切回导致的次数增加
+      if (tabLastUrlExists(tabId)) {
+        cacheUrlWithinSetTime(getTabLastUrl(tabId));
+      }
+      tabsLastUrl[tabId] = getStableUrl(tab.url);
+    },
+
+    deleteTabLastUrl: function (tabId) {
+      delete tabsLastUrl[tabId];
+    },
+
+    tabLastUrlExists: function (tabId) {
+      return tabsLastUrl.hasOwnProperty(tabId);
+    },
+
+    cacheUrlWithinSetTime: function (url) {
+      urlsBrowsedWithinSetTime[url] = 1;
+      setTimeout(function () {
+        delete urlsBrowsedWithinSetTime[url];
+      }, getParam('diapause_time'));
+    },
+
+    browsedWithinSetTime: function (url) {
+      return urlsBrowsedWithinSetTime.hasOwnProperty(url);
     }
-    this.tabsLastUrl[tabId] = getStableUrl(tab.url);
-  },
-
-  deleteTabLastUrl: function (tabId) {
-    delete this.tabsLastUrl[tabId];
-  },
-
-  tabLastUrlExists: function (tabId) {
-    return this.tabsLastUrl.hasOwnProperty(tabId);
-  },
-
-  cacheUrlWithinSetTime: function (url) {
-    let _this = this;
-    this.urlsBrowsedWithinSetTime[url] = 1;
-    setTimeout(function () {
-      delete _this.urlsBrowsedWithinSetTime[url];
-    }, getParam('diapause_time'));
-  },
-
-  browsedWithinSetTime: function (url) {
-    return this.urlsBrowsedWithinSetTime.hasOwnProperty(url);
-  }
-};
+  };
+})();
 
 function initializeSettings() {
   touchSetting('is_auto_save', true);

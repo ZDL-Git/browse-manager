@@ -68,8 +68,8 @@ chrome.tabs.onCreated.addListener(function (tab) {
     let stableUrl = getStableUrl(tab.url);
     if (isBlacklist(stableUrl)) {
       chrome.tabs.remove(tab.id);
-      notify_('黑名单网站，自动关闭');
-      console.log(stableUrl, "黑名单网站，不再访问。标签关闭");
+      notify_('黑名单网站，不再访问');
+      console.log(stableUrl, "黑名单网站，标签关闭");
     }
   });
 });
@@ -83,12 +83,12 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         if (HISTORY.tabLastUrlExists(tabId)) {
           chrome.tabs.update(tabId, {url: HISTORY.getTabLastUrl(tabId)}, function (tab) {
             notify_('黑名单网站，不再访问');
-            console.log(stableUrl, "黑名单网站，不再访问。页面返回");
+            console.log(stableUrl, "黑名单网站，页面返回");
           });
         } else {
           chrome.tabs.remove(tabId);
-          notify_('黑名单网站，自动关闭');
-          console.log(stableUrl, "黑名单网站，不再访问。标签关闭");
+          notify_('黑名单网站，不再访问');
+          console.log(stableUrl, "黑名单网站，标签关闭");
         }
         return;
       }
