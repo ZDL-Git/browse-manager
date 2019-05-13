@@ -10,12 +10,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 
 function displayBrowseTimes(browseTimes) {
-  if (!browseTimes)
+  if (!browseTimes) {
     return;
+  }
 
-  waitFor(function () {
-    return document.body;
-  }, function () {
+  onBodyReady(function () {
     let dstDiv = document.getElementById("BrowseManager-TemporaryDisplayBrowseTimesDiv")
       || document.createElement("div");
 
@@ -29,10 +28,10 @@ function displayBrowseTimes(browseTimes) {
     dstDiv.style.textShadow = "-2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue";
     // 解决因从body继承line-height属性导致纵向位置错误的问题
     dstDiv.style.lineHeight = "1";
-    if (browseTimes > 3)
+    if (browseTimes > 3) {
       dstDiv.style.color = "#fe4a49";
+    }
     dstDiv.innerHTML = browseTimes;
-
     document.body.appendChild(dstDiv);
 
     setTimeout(function () {
@@ -41,6 +40,15 @@ function displayBrowseTimes(browseTimes) {
       } catch (e) {
       }
     }, 1200);
+  });
+}
+
+
+function onBodyReady(callback) {
+  waitFor(function () {
+    return document.body;
+  }, function () {
+    callback();
   });
 }
 

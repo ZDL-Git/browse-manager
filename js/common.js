@@ -38,12 +38,13 @@ let HISTORY = (function () {
 
     setTabLastUrl: function (tab) {
       let tabId = tab.id;
+      let stableUrl = URL_UTILS.getStableUrl(tab.url);
       // 在跳转到其它页面前重新激活，以关闭时间作为最后访问时间。解决临时切换到其它标签再切回导致的次数增加
       if (this.tabLastUrlExists(tabId)) {
         this.cacheUrlWithinSetTime(this.getTabLastUrl(tabId));
       }
-      tabsLastUrl[tabId] = URL_UTILS.getStableUrl(tab.url);
-      console.debug('setTabLastUrl: tabId ' + tabId + ', url ' + tab.url);
+      tabsLastUrl[tabId] = stableUrl;
+      console.debug(stableUrl + '  --> tab' + tabId);
     },
 
     deleteTabLastUrl: function (tabId) {
@@ -240,7 +241,6 @@ let URL_UTILS = {
 
   getStableUrl: function (url) {
     let stableUrl, urlObj, params;
-    url.endsWith('/') && (url = url.slice(0, -1));
     urlObj = this.movedToUrlObj(url);
     if (urlObj) {
       // 解决url中带有hash字段导致的页面重复计数问题。
@@ -255,7 +255,8 @@ let URL_UTILS = {
       }
     }
 
-    stableUrl = (urlObj || url).toString();
+    stableUrl = (urlObj || url).toString().replace(/\/$/, "");
+    url === stableUrl || console.debug(url + '  ==> ' + stableUrl);
     return stableUrl;
   },
 
