@@ -1,4 +1,7 @@
 # Browse Manager
+
+[![GitHub stars](https://img.shields.io/github/stars/ZDL-Git/browse-manager.svg)](https://github.com/ZDL-Git/browse-manager/stargazers)
+
 ### 项目说明
 
 Chrome扩展：实现网址/域名拉黑，访问次数统计，自动收藏。
