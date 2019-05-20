@@ -32,6 +32,7 @@ Chrome扩展：实现网址/域名拉黑，访问次数统计，自动收藏。
 <img src="https://github.com/ZDL-Git/Resource-store/blob/master/gifs/Kapture%202019-04-13%20at%2016.36.40.GIF" width="100%" />
 
 重要说明：下载后先将压缩包解压，然后将文件夹名称中的版本号删除掉，打开chrome开发者模式，将文件夹拖入即安装成功。
+
 升级时用新版本文件夹修改名称后覆盖掉原有的文件夹即可。【必须保证同位置同名称覆盖，且不要删除原版本的插件，否则会导致历史数据丢失】
 
 方法二：clone仓库，平时可git pull更新获取最新的版本
@@ -39,8 +40,11 @@ Chrome扩展：实现网址/域名拉黑，访问次数统计，自动收藏。
 #### 联系方式
 
 如遇到安装或者使用问题，可选以下联系方式联系我，欢迎
+
 QQ: 1226323187
+
 Email: zdl_daily@163.com
+
 提交bug: [Github issue](https://github.com/ZDL-Git/browse-manager/issues)
 
 ### 注意事项
