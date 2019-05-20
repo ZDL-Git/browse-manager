@@ -230,7 +230,7 @@ function notify_(content, timeout = 3000) {
 
 
 let URL_UTILS = {
-  movedToUrlObj: function (url) {
+  moveToUrlObj: function (url) {
     try {
       return new URL(url);
     } catch (e) {
@@ -241,7 +241,7 @@ let URL_UTILS = {
 
   getStableUrl: function (url) {
     let stableUrl, urlObj, params;
-    urlObj = this.movedToUrlObj(url);
+    urlObj = this.moveToUrlObj(url);
     if (urlObj) {
       // 解决url中带有hash字段导致的页面重复计数问题。
       urlObj.hash = '';

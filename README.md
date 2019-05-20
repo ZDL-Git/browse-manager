@@ -1,6 +1,6 @@
 # Browse Manager
 
-[![GitHub stars](https://img.shields.io/github/stars/ZDL-Git/browse-manager.svg)](https://github.com/ZDL-Git/browse-manager/stargazers)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE) [![GitHub stars](https://img.shields.io/github/stars/ZDL-Git/browse-manager.svg)](https://github.com/ZDL-Git/browse-manager/stargazers)
 
 ### 项目说明
 
@@ -31,11 +31,17 @@ Chrome扩展：实现网址/域名拉黑，访问次数统计，自动收藏。
 
 <img src="https://github.com/ZDL-Git/Resource-store/blob/master/gifs/Kapture%202019-04-13%20at%2016.36.40.GIF" width="100%" />
 
-注：完成安装后请将开发者模式关闭，避免Chrome的频繁提示（Windows平台）。
+重要说明：下载后先将压缩包解压，然后将文件夹名称中的版本号删除掉，打开chrome开发者模式，将文件夹拖入即安装成功。
+升级时用新版本文件夹修改名称后覆盖掉原有的文件夹即可。【必须保证同位置同名称覆盖，且不要删除原版本的插件，否则会导致历史数据丢失】
 
-方法二：clone仓库，平时可更新获取最新的版本。
+方法二：clone仓库，平时可git pull更新获取最新的版本
 
-如有问题可提[Github issue](https://github.com/ZDL-Git/browse-manager/issues)，可email:zdl_daily@163.com
+#### 联系方式
+
+如遇到安装或者使用问题，可选以下联系方式联系我，欢迎
+QQ: 1226323187
+Email: zdl_daily@163.com
+提交bug: [Github issue](https://github.com/ZDL-Git/browse-manager/issues)
 
 ### 注意事项
 
@@ -45,4 +51,4 @@ Chrome扩展：实现网址/域名拉黑，访问次数统计，自动收藏。
 
 * 将网页加入黑名单时，如果其在收藏夹中，则会自动删除收藏。
 
-## 大家如果用了请点个星星，让我知道如果不兼容升级会被多少个人揍，好吧！如果觉得不好用可以回来再把星星撤走，😄
+## 大家如果用了请点个星星，让我知道如果不兼容升级会被多少个人揍，好吧！如果觉得不好用可以回来再把星星撤走😄
