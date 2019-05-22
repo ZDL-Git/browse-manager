@@ -131,7 +131,7 @@ function addBookmarkWithCheck(tab) {
   if (browseTimes === null) return;
 
   let saveThre = parseInt(getParam('auto_save_thre'));
-  if (browseTimes < saveThre || browseTimes >= saveThre + 3) return;
+  if (browseTimes !== saveThre) return;
 
   touchBookmarkFolder(function (bookmarkId) {
     chrome.bookmarks.search({url: stableUrl}, function (results) {
