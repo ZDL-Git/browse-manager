@@ -29,7 +29,7 @@ Chrome扩展：实现网址/域名拉黑，访问次数统计，自动收藏。
 
 方法一：按gif步骤选择最新版本安装
 
-<img src="https://github.com/ZDL-Git/Resource-store/blob/master/gifs/Kapture%202019-04-13%20at%2016.36.40.GIF" width="100%" />
+<img src="https://github.com/ZDL-Git/resources-store/blob/master/gifs/installation-guide-compressed.gif" width="100%" />
 
 重要说明：下载后先将压缩包解压，然后将文件夹名称中的版本号删除掉，打开chrome开发者模式，将文件夹拖入即安装成功。
 
