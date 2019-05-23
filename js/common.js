@@ -105,58 +105,60 @@ function registerTabs() {
 }
 
 
-function touchBookmarkFolder(callback) {
-  let bookmarkTitle = getParam('bookmark_title');
-  chrome.bookmarks.search({title: bookmarkTitle}, function (results) {
-    if (results.length >= 1) {
-      callback(results[0].id);
-    } else {
-      chrome.bookmarks.create({
-        parentId: '1',
-        title: bookmarkTitle,
-      }, function (bookmark) {
-        notify_('已自动创建收藏夹 ' + getParam('bookmark_title'));
-        callback(bookmark.id);
-      });
-    }
-  })
-}
-
-function addBookmarkWithCheck(tab) {
-  if (getParam('is_auto_save') === 'false') return;
-
-  let stableUrl = URL_UTILS.getStableUrl(tab.url);
-
-  let browseTimes = getBrowsedTimes(stableUrl);
-  if (browseTimes === null) return;
-
-  let saveThre = parseInt(getParam('auto_save_thre'));
-  if (browseTimes !== saveThre) return;
-
-  touchBookmarkFolder(function (bookmarkId) {
-    chrome.bookmarks.search({url: stableUrl}, function (results) {
-      if (results.length === 0) {
+let BOOKMARK = {
+  touchBookmarkFolder: function (callback) {
+    let bookmarkTitle = getParam('bookmark_title');
+    chrome.bookmarks.search({title: bookmarkTitle}, function (results) {
+      if (results.length >= 1) {
+        callback(results[0].id);
+      } else {
         chrome.bookmarks.create({
-          parentId: bookmarkId,
-          url: stableUrl,
-          title: tab.title
+          parentId: '1',
+          title: bookmarkTitle,
         }, function (bookmark) {
-          notify_('经常访问此网页,自动加入收藏夹:\n' + bookmark.title, 5000);
-        })
+          notify_('已自动创建收藏夹 ' + getParam('bookmark_title'));
+          callback(bookmark.id);
+        });
       }
     })
-  })
-}
+  },
 
-function delBookmark(url) {
-  chrome.bookmarks.search({url: url}, function (results) {
-    results.forEach(function (result) {
-      chrome.bookmarks.remove(result.id, function () {
-        notify_('已同时从收藏夹中删除.');
+  addBookmarkWithCheck: function (tab) {
+    if (getParam('is_auto_save') === 'false') return;
+
+    let stableUrl = URL_UTILS.getStableUrl(tab.url);
+
+    let browseTimes = getBrowsedTimes(stableUrl);
+    if (browseTimes === null) return;
+
+    let saveThre = parseInt(getParam('auto_save_thre'));
+    if (browseTimes !== saveThre) return;
+
+    this.touchBookmarkFolder(function (bookmarkId) {
+      chrome.bookmarks.search({url: stableUrl}, function (results) {
+        if (results.length === 0) {
+          chrome.bookmarks.create({
+            parentId: bookmarkId,
+            url: stableUrl,
+            title: tab.title
+          }, function (bookmark) {
+            notify_('经常访问此网页,自动加入收藏夹:\n' + bookmark.title, 5000);
+          })
+        }
       })
     })
-  })
-}
+  },
+
+  delBookmark: function (url) {
+    chrome.bookmarks.search({url: url}, function (results) {
+      results.forEach(function (result) {
+        chrome.bookmarks.remove(result.id, function () {
+          notify_('已同时从收藏夹中删除.');
+        })
+      })
+    })
+  }
+};
 
 
 function showBrowseTimes(tab) {

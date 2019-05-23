@@ -41,7 +41,7 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
   switch (info.menuItemId) {
     case "Menu-" + OPERATIONS.addUrlBlacklist: {
       LS.setItem(stableUrl, OPERATIONS.addUrlBlacklist);
-      delBookmark(stableUrl);
+      BOOKMARK.delBookmark(stableUrl);
       break;
     }
     case "Menu-" + OPERATIONS.addUrlWhitelist: {
@@ -85,7 +85,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
       if (URL_UTILS.isEffectual(tab)) {
         increaseBrowseTimes(tab.url);
-        addBookmarkWithCheck(tab);
+        BOOKMARK.addBookmarkWithCheck(tab);
         if (getParam('is_page_show') === 'true') {
           showBrowseTimes(tab);
         }
