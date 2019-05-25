@@ -14,38 +14,37 @@ Chrome扩展：实现网址/域名拉黑，访问次数统计，自动收藏。
 
 ### 当前功能
 
-<img src="https://github.com/ZDL-Git/resources-store/blob/master/images/popup.jpg?raw=true" width="40%"/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="https://github.com/ZDL-Git/resources-store/blob/master/images/popup.jpg?raw=true" width="400px"/>
 
 * 拉黑地址或域名：黑名单，在页面右键-Browse Manager-URL不再访问(黑名单)/Domain不再访问(黑名单)；
 * 统计访问次数：统计除白名单外每个网页已经访问过的次数，在图标上显示；
-* 白名单：为了避免无用的统计，提供了白名单。页面右键将地址或域名加入白名单，不再统计、不再显示访问次数。"chrome:"/"www.baidu.com"/"www.google.com"开头的网页默认在白名单；
+* 白名单：为了避免无用的统计，提供了白名单。页面右键将地址或域名加入白名单，不再统计、不再显示访问次数。"chrome:"、"www.baidu.com"、"www.google.com"开头的网页默认在白名单；
 * 自动收藏：在管理界面（单击图标）设置自动收藏次数及收藏夹名称，当达到访问次数后网页会被自动收藏到指定收藏夹中，图标上的数字会变为红色。前期手动收藏过的网页不会处理。收藏夹会自动创建，如果已存在会直接使用，不会导致覆盖。此功能主要基于：如果一个网页需要频繁访问且未被拉入黑名单及证明其重要性，可配合Alfred等软件使用。
 
 ### 安装方法
 
-项目当前暂无提交Chrome Store的计划，请使用以下方式安装。
+项目暂未提交Chrome Store，请使用以下方式安装。
 
-下载地址：https://github.com/ZDL-Git/browse-manager/releases/latest
+方法一：下载最新版本crx文件，拖入Chrome或者用Chrome打开进行安装。
+[下载地址](https://github.com/ZDL-Git/browse-manager/tree/master/distribution/crx)
 
-方法一：按gif步骤选择最新版本安装
-
-<img src="https://github.com/ZDL-Git/resources-store/blob/master/gifs/installation-guide-compressed.gif" width="100%" />
-
-重要说明：下载后先将压缩包解压，然后将文件夹名称中的版本号删除掉，打开chrome开发者模式，将文件夹拖入即安装成功。
-
-升级时用新版本文件夹修改名称后覆盖掉原有的文件夹即可。【必须保证同位置同名称覆盖，且不要删除原版本的插件，否则会导致历史数据丢失】
+    重要说明：Chrome默认禁止安装外部crx扩展文件，需要修改配置后才能完成安装。[详细步骤见此博客](https://www.jianshu.com/p/a1248c522899)
 
 方法二：clone仓库，平时可git pull更新获取最新的版本
 
 #### 联系方式
 
-如遇到安装或者使用问题，可选以下联系方式联系我，欢迎
+如遇到安装或者使用问题，可选以下联系方式联系
 
-QQ: 1226323187
+QQ群: 744791224
 
-Email: zdl_daily@163.com
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="https://github.com/ZDL-Git/resources-store/blob/master/images/QQ-group-matrix-code-for-BM.png" width="200px"/>
 
 提交bug: [Github issue](https://github.com/ZDL-Git/browse-manager/issues)
+
+Email: zdl_daily@163.com
 
 ### 注意事项
 
