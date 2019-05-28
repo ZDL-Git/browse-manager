@@ -90,9 +90,6 @@ function addTableRowDeleteListener() {
 }
 
 function addSettingListener() {
-  $('#settings-detail-btn').on('click', function () {
-    $('#settings-detail').css('display', 'block');
-  });
   $('#bookmark-checkbox').on('click', function () {
     setParam('is_auto_save', $(this).prop('checked'))
   });
@@ -114,6 +111,9 @@ function addSettingListener() {
     setParam('is_page_show', $(this).prop('checked'));
   });
 
+  $('.settings-detail-btn').on('click', function () {
+    $('#settings-detail').css('display', 'block');
+  });
   $('#csdn-checkbox').on('click', function () {
     setParam('csdn_auto_expand', $(this).prop('checked'));
   });
