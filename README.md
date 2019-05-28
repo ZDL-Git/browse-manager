@@ -14,7 +14,7 @@ Chrome扩展：实现网址/域名拉黑，访问次数统计，自动收藏。
 
 ### 当前功能
 
-<img src="https://github.com/ZDL-Git/browse-manager/blob/master/others/popup-bird.gif?raw=true" width="40%"/>
+<img src="https://github.com/ZDL-Git/resources-store/blob/master/browse-manager/image/popup-bird.gif?raw=true" width="40%"/>
 
 ✑ 拉黑地址或域名：黑名单，在页面右键-Browse Manager-URL不再访问(黑名单)/Domain不再访问(黑名单)；
 
