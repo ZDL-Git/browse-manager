@@ -13,9 +13,13 @@
       position: relative;
       width: 400px;
       margin: 0;
-      background-image: url('images/bg.jpg');
-      background-size: 100%;
-      background-repeat: no-repeat;
+    }
+
+    #search-wrapper {
+      width: 100%;
+      background-color: white;
+      z-index: 9999;
+      position: fixed;
     }
 
     #search {
@@ -25,15 +29,15 @@
       padding-left: 10px;
       padding-right: 10px;
       font-size: 200%;
-      font-style: italic;
       background: #eeeeee;
+      margin: 6px 0;
     }
 
     .table-container {
       overflow: scroll;
       overflow-x: hidden;
-      height: 350px;
-      margin: 2% 1%;
+      height: 300px;
+      margin: 0 1%;
     }
 
     .tables {
@@ -42,17 +46,20 @@
       font-size: 10px;
       font-weight: normal;
       word-wrap: break-word;
-      margin: 0 2px 2px 0;
       background-color: white;
-    }
-
-    .tables td {
-      font-style: italic;
-    }
-
-    .tables th {
-      background-color: #eeeeee;
       text-align: left;
+    }
+
+    #table-url-white, #table-domain-white {
+      color: black;
+      background-color: white;
+      opacity: 0.9;
+    }
+
+    #table-url-black, #table-domain-black {
+      color: white;
+      background-color: black;
+      opacity: 0.9;
     }
 
     .delete-row {
@@ -62,6 +69,12 @@
 
     .delete-row:hover {
       color: red;
+    }
+
+    #bird-gif {
+      position: relative;
+      z-index: 0;
+      width: 100%;
     }
 
     .settings-bg {
@@ -104,27 +117,22 @@
 
 <body>
 
-<div class="search-wrapper">
+<header id="search-wrapper">
   <input id="search" autocapitalize="none" autocomplete="off" tabindex="0"
          type="text" spellcheck="false" placeholder="搜索" dir="ltr" autofocus>
-</div>
+</header>
 
+<div style="height: 60px;"></div>
 <div class="table-container">
-  <table class="tables" id="table-url-white">
-    <tr>
-      <th>URL 白名单:</th>
-      <th class="delete-row"></th>
-    </tr>
-  </table>
   <table class="tables" id="table-url-black">
     <tr>
       <th>URL 黑名单:</th>
       <th class="delete-row"></th>
     </tr>
   </table>
-  <table class="tables" id="table-domain-white">
+  <table class="tables" id="table-url-white">
     <tr>
-      <th>DOMAIN 白名单:</th>
+      <th>URL 白名单:</th>
       <th class="delete-row"></th>
     </tr>
   </table>
@@ -134,6 +142,16 @@
       <th class="delete-row"></th>
     </tr>
   </table>
+  <table class="tables" id="table-domain-white">
+    <tr>
+      <th>DOMAIN 白名单:</th>
+      <th class="delete-row"></th>
+    </tr>
+  </table>
+</div>
+
+<div>
+  <img id="bird-gif" src="images/bg.gif" alt="">
 </div>
 
 <footer>
