@@ -13,6 +13,9 @@
       position: relative;
       width: 400px;
       margin: 0;
+      background-image: url("images/bg.gif");
+      background-repeat: no-repeat;
+      background-position: bottom 20px center;
     }
 
     #search-wrapper {
@@ -48,18 +51,17 @@
       word-wrap: break-word;
       background-color: white;
       text-align: left;
+      opacity: 0.7;
     }
 
     #table-url-white, #table-domain-white {
       color: black;
       background-color: white;
-      opacity: 0.9;
     }
 
     #table-url-black, #table-domain-black {
       color: white;
       background-color: black;
-      opacity: 0.9;
     }
 
     .delete-row {
@@ -69,12 +71,6 @@
 
     .delete-row:hover {
       color: red;
-    }
-
-    #bird-gif {
-      position: relative;
-      z-index: 0;
-      width: 100%;
     }
 
     .settings-bg {
@@ -88,17 +84,22 @@
       height: 90%;
     }
 
-    .settings-row1, .settings-row2, .settings-row3 {
+    #settings-detail {
+      display: none;
+    }
+
+    .settings-row {
       height: 20px;
       margin: 0;
       padding: 0;
     }
 
-    .settings-row1 *, .settings-row2 *, .settings-row3 * {
+    .settings-row * {
       display: inline;
+      vertical-align: middle;
     }
 
-    #bookmark-threshold, #diapause-time {
+    #bookmark-doorsill, #diapause-time {
       width: 3em;
     }
 
@@ -109,6 +110,12 @@
 
     input {
       outline: none;
+    }
+
+    .icon {
+      width: 14px;
+      height: 14px;
+      vertical-align: middle;
     }
   </style>
 
@@ -150,26 +157,28 @@
   </table>
 </div>
 
-<div>
-  <img id="bird-gif" src="images/bg.gif" alt="">
-</div>
-
 <footer>
   <div class="settings-bg">
     <div class="settings—container">
-      <div class="settings-row1">
-        <input type="checkbox" id="bookmark-checkbox">
-        <label for="bookmark-threshold">访问超过</label><input type="text" id="bookmark-threshold" class="text-input">
-        <label for="bookmark-title">次自动加入收藏夹</label><input type="text" id="bookmark-title" class="text-input">
+      <div id="settings-detail">
+        <div class="settings-row">
+          <input type="checkbox" id="bookmark-checkbox">
+          <label for="bookmark-doorsill">访问达到</label><input type="text" id="bookmark-doorsill" class="text-input">
+          <label for="bookmark-title">次自动加入收藏夹</label><input type="text" id="bookmark-title" class="text-input">
+        </div>
+        <div class="settings-row">
+          <input type="checkbox" id="diapause-checkbox">
+          <input type="text" id="diapause-time" class="text-input">
+          <div>秒内重复访问不计数</div>
+        </div>
+        <div class="settings-row">
+          <input type="checkbox" id="pageshow-checkbox">
+          <div>在页面显示访问次数</div>
+        </div>
       </div>
-      <div class="settings-row2">
-        <input type="checkbox" id="diapause-checkbox">
-        <input type="text" id="diapause-time" class="text-input">
-        <div>秒内重复访问不计数</div>
-      </div>
-      <div class="settings-row3">
-        <input type="checkbox" id="pageshow-checkbox">
-        <div>在页面显示访问次数</div>
+      <div class="settings-row">
+        <img class="icon" src="images/setting.svg" alt="">
+        <div id="settings-detail-btn">设置</div>
         <span class="float-right">
           Copyright © ZDL
           <a href="https://github.com/ZDL-Git/browse-manager/tree/master/distribution/crx" target="_blank">|查看新版本</a>

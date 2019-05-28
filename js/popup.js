@@ -41,7 +41,7 @@ function appendTableContent() {
 
 function fillSettingsContent() {
   $('#bookmark-checkbox')[0].checked = getParam('is_auto_save') === 'true';
-  $('#bookmark-threshold')[0].value = getParam('auto_save_thre');
+  $('#bookmark-doorsill')[0].value = getParam('auto_save_thre');
   $('#bookmark-title')[0].value = getParam('bookmark_title');
   $('#diapause-checkbox')[0].checked = getParam('is_diapause') === 'true';
   $('#diapause-time')[0].value = getParam('diapause_time') / 1000;
@@ -89,10 +89,13 @@ function addTableRowDeleteListener() {
 }
 
 function addSettingListener() {
+  $('#settings-detail-btn').on('click', function () {
+    $('#settings-detail').css('display', 'block');
+  });
   $('#bookmark-checkbox').on('click', function () {
     setParam('is_auto_save', $(this).prop('checked'))
   });
-  $('#bookmark-threshold').on('input', function () {
+  $('#bookmark-doorsill').on('input', function () {
     setParam('auto_save_thre', $(this).val());
   });
   $('#bookmark-title').on('input', function () {
