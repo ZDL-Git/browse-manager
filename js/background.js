@@ -87,7 +87,10 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         increaseBrowseTimes(tab.url);
         BOOKMARK.addBookmarkWithCheck(tab);
         if (getParam('is_page_show') === 'true') {
-          showBrowseTimes(tab);
+          sendMessageToTab(tab.id, {
+            method: "displayBrowseTimes",
+            browseTimes: getBrowsedTimes(URL_UTILS.getStableUrl(tab.url))
+          });
         }
       }
       HISTORY.cacheUrlWithinSetTime(stableUrl);
@@ -103,6 +106,11 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     // 加判断来解决无法从黑名单跳回的问题
     if (!URL_UTILS.isBlacklist(stableUrl)) {
       HISTORY.setTabLastUrl(tab);
+      if (getParam('csdn_auto_expand') === 'true' && stableUrl.match("https://blog.csdn.net*")) {
+        sendMessageToTab(tab.id, {
+          method: "autoExpandCSDN"
+        })
+      }
     }
   }
 });

@@ -46,6 +46,7 @@ function fillSettingsContent() {
   $('#diapause-checkbox')[0].checked = getParam('is_diapause') === 'true';
   $('#diapause-time')[0].value = getParam('diapause_time') / 1000;
   $('#pageshow-checkbox')[0].checked = getParam('is_page_show') === 'true';
+  $('#csdn-checkbox')[0].checked = getParam('csdn_auto_expand') === 'true';
 }
 
 function showAllTrs() {
@@ -111,5 +112,9 @@ function addSettingListener() {
 
   $('#pageshow-checkbox').on('click', function () {
     setParam('is_page_show', $(this).prop('checked'));
+  });
+
+  $('#csdn-checkbox').on('click', function () {
+    setParam('csdn_auto_expand', $(this).prop('checked'));
   });
 }

@@ -4,6 +4,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       displayBrowseTimes(message.browseTimes);
       break;
     }
+    case "autoExpandCSDN": {
+      autoExpandCSDN();
+      break;
+    }
     // ...
   }
 });
@@ -43,6 +47,11 @@ function displayBrowseTimes(browseTimes) {
   });
 }
 
+function autoExpandCSDN() {
+  document.querySelector("#btn-readmore").click();
+}
+
+// ============================================================================
 
 function onBodyReady(callback) {
   waitFor(function () {

@@ -75,6 +75,7 @@ function initializeSettings() {
   touchSetting('is_diapause', true);
   touchSetting('diapause_time', 120000);
   touchSetting('is_page_show', true);
+  touchSetting('csdn_auto_expand', true);
 }
 
 function touchSetting(paramName, defaultValue) {
@@ -161,13 +162,10 @@ let BOOKMARK = {
 };
 
 
-function showBrowseTimes(tab) {
+function sendMessageToTab(tabId, message) {
   // 进入异步，否则前台未准备好，无法接收消息
   setTimeout(function () {
-    chrome.tabs.sendMessage(tab.id, {
-      method: "displayBrowseTimes",
-      browseTimes: getBrowsedTimes(URL_UTILS.getStableUrl(tab.url))
-    });
+    chrome.tabs.sendMessage(tabId, message);
   }, 200);
 }
 
