@@ -28,7 +28,7 @@ Chrome扩展：实现网址/域名拉黑，访问次数统计，自动收藏。�
 
 ### 安装方法
 
-项目暂未提交Chrome Store，请使用以下方式安装。
+项目暂未提交Chrome Store，需使用以下方式安装。
 
 方法一：下载最新版本crx文件，拖入Chrome或者用Chrome打开进行安装。
 [下载地址](https://github.com/ZDL-Git/browse-manager/tree/master/distribution/crx)
