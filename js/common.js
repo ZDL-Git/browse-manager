@@ -59,7 +59,7 @@ let HISTORY = (function () {
       urlsBrowsedWithinSetTime[url] = 1;
       setTimeout(function () {
         delete urlsBrowsedWithinSetTime[url];
-      }, getParam('diapause_time'));
+      }, SETTINGS.getParam('diapause_time'));
     },
 
     browsedWithinSetTime: function (url) {
@@ -68,29 +68,28 @@ let HISTORY = (function () {
   };
 })();
 
-function initializeSettings() {
-  touchSetting('is_auto_save', true);
-  touchSetting('auto_save_thre', 5);
-  touchSetting('bookmark_title', '经常访问(BM)');
-  touchSetting('is_diapause', true);
-  touchSetting('diapause_time', 120000);
-  touchSetting('is_page_show', true);
-  touchSetting('csdn_auto_expand', true);
-}
-
-function touchSetting(paramName, defaultValue) {
-  if (!getParam(paramName)) {
-    setParam(paramName, defaultValue);
+let SETTINGS = {
+  initialize: function () {
+    this.touchParam('is_auto_save', true);
+    this.touchParam('auto_save_thre', 5);
+    this.touchParam('bookmark_title', '经常访问(BM)');
+    this.touchParam('is_diapause', true);
+    this.touchParam('diapause_time', 120000);
+    this.touchParam('is_page_show', true);
+    this.touchParam('csdn_auto_expand', true);
+  },
+  touchParam: function (paramName, defaultValue) {
+    if (!this.getParam(paramName)) {
+      this.setParam(paramName, defaultValue);
+    }
+  },
+  setParam: function (paramName, value) {
+    LS.setItem('SETTINGS:' + paramName, value);
+  },
+  getParam: function (paramName) {
+    return LS.getItem('SETTINGS:' + paramName);
   }
-}
-
-function setParam(paramName, value) {
-  LS.setItem('SETTINGS:' + paramName, value);
-}
-
-function getParam(paramName) {
-  return LS.getItem('SETTINGS:' + paramName);
-}
+};
 
 
 function registerTabs() {
@@ -108,7 +107,7 @@ function registerTabs() {
 
 let BOOKMARK = {
   touchBookmarkFolder: function (callback) {
-    let bookmarkTitle = getParam('bookmark_title');
+    let bookmarkTitle = SETTINGS.getParam('bookmark_title');
     chrome.bookmarks.search({title: bookmarkTitle}, function (results) {
       if (results.length >= 1) {
         callback(results[0].id);
@@ -117,7 +116,7 @@ let BOOKMARK = {
           parentId: '1',
           title: bookmarkTitle,
         }, function (bookmark) {
-          notify_('已自动创建收藏夹 ' + getParam('bookmark_title'));
+          notify_('已自动创建收藏夹 ' + SETTINGS.getParam('bookmark_title'));
           callback(bookmark.id);
         });
       }
@@ -125,14 +124,14 @@ let BOOKMARK = {
   },
 
   addBookmarkWithCheck: function (tab) {
-    if (getParam('is_auto_save') === 'false') return;
+    if (SETTINGS.getParam('is_auto_save') === 'false') return;
 
     let stableUrl = URL_UTILS.getStableUrl(tab.url);
 
     let browseTimes = getBrowsedTimes(stableUrl);
     if (browseTimes === null) return;
 
-    let saveThre = parseInt(getParam('auto_save_thre'));
+    let saveThre = parseInt(SETTINGS.getParam('auto_save_thre'));
     if (browseTimes !== saveThre) return;
 
     this.touchBookmarkFolder(function (bookmarkId) {
@@ -189,7 +188,7 @@ function setTabBadge(tab) {
     if (URL_UTILS.isWhitelist(stableUrl) || URL_UTILS.isBlacklist(stableUrl) || !browseTimes) {
       chrome.browserAction.setBadgeText({text: '', tabId: tab.id});
     } else {
-      let bgColor = browseTimes >= parseInt(getParam('auto_save_thre')) ?
+      let bgColor = browseTimes >= parseInt(SETTINGS.getParam('auto_save_thre')) ?
         [255, 0, 0, 255] : [70, 136, 241, 255];
       chrome.browserAction.setBadgeBackgroundColor({color: bgColor, tabId: tab.id});
       chrome.browserAction.setBadgeText({text: '' + browseTimes, tabId: tab.id});
@@ -316,7 +315,7 @@ let URL_UTILS = {
     }
 
     // 忽略在diapause_time间的重复访问
-    if (getParam('is_diapause') === 'true' && HISTORY.browsedWithinSetTime(stableUrl)) {
+    if (SETTINGS.getParam('is_diapause') === 'true' && HISTORY.browsedWithinSetTime(stableUrl)) {
       console.log(stableUrl, "在设置的忽略间隔中");
       return false;
     }

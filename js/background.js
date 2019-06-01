@@ -2,7 +2,7 @@
 chrome.runtime.onInstalled.addListener(function () {
   handleCompatibility();
 
-  initializeSettings();
+  SETTINGS.initialize();
   registerTabs();
 });
 
@@ -86,7 +86,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
       if (URL_UTILS.isEffectual(tab)) {
         increaseBrowseTimes(tab.url);
         BOOKMARK.addBookmarkWithCheck(tab);
-        if (getParam('is_page_show') === 'true') {
+        if (SETTINGS.getParam('is_page_show') === 'true') {
           sendMessageToTab(tab.id, {
             method: "displayBrowseTimes",
             browseTimes: getBrowsedTimes(URL_UTILS.getStableUrl(tab.url))
@@ -106,7 +106,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     // 加判断来解决无法从黑名单跳回的问题
     if (!URL_UTILS.isBlacklist(stableUrl)) {
       HISTORY.setTabLastUrl(tab);
-      if (getParam('csdn_auto_expand') === 'true' && stableUrl.match("https://blog.csdn.net*")) {
+      if (SETTINGS.getParam('csdn_auto_expand') === 'true' && stableUrl.match("https://blog.csdn.net*")) {
         sendMessageToTab(tab.id, {
           method: "autoExpandCSDN"
         })

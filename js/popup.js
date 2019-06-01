@@ -40,13 +40,13 @@ function appendTableContent() {
 }
 
 function fillSettingsContent() {
-  $('#bookmark-checkbox')[0].checked = getParam('is_auto_save') === 'true';
-  $('#bookmark-doorsill')[0].value = getParam('auto_save_thre');
-  $('#bookmark-title')[0].value = getParam('bookmark_title');
-  $('#diapause-checkbox')[0].checked = getParam('is_diapause') === 'true';
-  $('#diapause-time')[0].value = getParam('diapause_time') / 1000;
-  $('#pageshow-checkbox')[0].checked = getParam('is_page_show') === 'true';
-  $('#csdn-checkbox')[0].checked = getParam('csdn_auto_expand') === 'true';
+  $('#bookmark-checkbox')[0].checked = SETTINGS.getParam('is_auto_save') === 'true';
+  $('#bookmark-doorsill')[0].value = SETTINGS.getParam('auto_save_thre');
+  $('#bookmark-title')[0].value = SETTINGS.getParam('bookmark_title');
+  $('#diapause-checkbox')[0].checked = SETTINGS.getParam('is_diapause') === 'true';
+  $('#diapause-time')[0].value = SETTINGS.getParam('diapause_time') / 1000;
+  $('#pageshow-checkbox')[0].checked = SETTINGS.getParam('is_page_show') === 'true';
+  $('#csdn-checkbox')[0].checked = SETTINGS.getParam('csdn_auto_expand') === 'true';
 }
 
 function showAllTrs() {
@@ -91,30 +91,30 @@ function addTableRowDeleteListener() {
 
 function addSettingListener() {
   $('#bookmark-checkbox').on('click', function () {
-    setParam('is_auto_save', $(this).prop('checked'))
+    SETTINGS.setParam('is_auto_save', $(this).prop('checked'))
   });
   $('#bookmark-doorsill').on('input', function () {
-    setParam('auto_save_thre', $(this).val());
+    SETTINGS.setParam('auto_save_thre', $(this).val());
   });
   $('#bookmark-title').on('input', function () {
-    setParam('bookmark_title', $(this).val());
+    SETTINGS.setParam('bookmark_title', $(this).val());
   });
 
   $('#diapause-checkbox').on('click', function () {
-    setParam('is_diapause', $(this).prop('checked'));
+    SETTINGS.setParam('is_diapause', $(this).prop('checked'));
   });
   $('#diapause-time').on('input', function () {
-    setParam('diapause_time', $(this).val() * 1000);
+    SETTINGS.setParam('diapause_time', $(this).val() * 1000);
   });
 
   $('#pageshow-checkbox').on('click', function () {
-    setParam('is_page_show', $(this).prop('checked'));
+    SETTINGS.setParam('is_page_show', $(this).prop('checked'));
   });
 
   $('.settings-detail-btn').on('click', function () {
     $('#settings-detail').css('display', 'block');
   });
   $('#csdn-checkbox').on('click', function () {
-    setParam('csdn_auto_expand', $(this).prop('checked'));
+    SETTINGS.setParam('csdn_auto_expand', $(this).prop('checked'));
   });
 }
