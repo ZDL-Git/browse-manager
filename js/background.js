@@ -24,7 +24,7 @@ chrome.runtime.onStartup.addListener(function () {
     });
   });
 
-  registerTabs();
+  TABS.registerTabs();
 })();
 
 // ============================================================================
@@ -57,7 +57,7 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
       break;
     }
   }
-  setTabBadge(tab);
+  TABS.setTabBadge(tab);
 });
 
 // ============================================================================
@@ -84,12 +84,12 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
       }
 
       if (URL_UTILS.isEffectual(tab)) {
-        increaseBrowseTimes(tab.url);
+        COUNTING.increaseBrowseTimes(tab.url);
         BOOKMARK.addBookmarkWithCheck(tab);
         if (SETTINGS.checkParam('is_page_show', 'true')) {
-          sendMessageToTab(tab.id, {
+          TABS.sendMessageToTab(tab.id, {
             method: "displayBrowseTimes",
-            browseTimes: getBrowsedTimes(URL_UTILS.getStableUrl(tab.url))
+            browseTimes: COUNTING.getBrowsedTimes(URL_UTILS.getStableUrl(tab.url))
           });
         }
       }
@@ -97,7 +97,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     }
 
     // 直接F5刷新时changeInfo不含url，但是需要显示badge计数
-    setTabBadge(tab);
+    TABS.setTabBadge(tab);
   }
 
   // 在complete阶段处理可以过滤掉一些中间url，如百度跳转的link，
@@ -107,7 +107,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     if (!URL_UTILS.isBlacklist(stableUrl)) {
       HISTORY.setTabLastUrl(tab);
       if (SETTINGS.checkParam('csdn_auto_expand', 'true') && stableUrl.match("https://blog.csdn.net*")) {
-        sendMessageToTab(tab.id, {
+        TABS.sendMessageToTab(tab.id, {
           method: "autoExpandCSDN"
         })
       }
@@ -131,7 +131,7 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
     // 手动切换标签时更新badge
     // 作判断的原因：在新窗口打开网页时onActivated事件在更新访问次数之前，会导致badge的数字先显示n紧接着变为n+1
     if (HISTORY.getTabLastUrl(tab.id)) {
-      setTabBadge(tab);
+      TABS.setTabBadge(tab);
     }
   })
 });

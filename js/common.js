@@ -95,19 +95,6 @@ let SETTINGS = {
 };
 
 
-function registerTabs() {
-  chrome.tabs.query({}, function (tabs) {
-    Array.from(tabs).forEach(function (tab) {
-      HISTORY.setTabLastUrl(tab);
-
-      if (tab.active) {
-        setTabBadge(tab);
-      }
-    })
-  });
-}
-
-
 let BOOKMARK = {
   touchBookmarkFolder: function (callback) {
     let bookmarkTitle = SETTINGS.getParam('bookmark_title');
@@ -131,7 +118,7 @@ let BOOKMARK = {
 
     let stableUrl = URL_UTILS.getStableUrl(tab.url);
 
-    let browsedTimes = getBrowsedTimes(stableUrl);
+    let browsedTimes = COUNTING.getBrowsedTimes(stableUrl);
     if (browsedTimes === null) return;
 
     let doorsillToSave = parseInt(SETTINGS.getParam('auto_save_thre'));
@@ -164,55 +151,71 @@ let BOOKMARK = {
 };
 
 
-function sendMessageToTab(tabId, message) {
-  // 进入异步，否则前台未准备好，无法接收消息
-  setTimeout(function () {
-    chrome.tabs.sendMessage(tabId, message);
-  }, 200);
-}
+let TABS = {
+  registerTabs: function () {
+    chrome.tabs.query({}, function (tabs) {
+      Array.from(tabs).forEach(function (tab) {
+        HISTORY.setTabLastUrl(tab);
 
-function setActiveTabBadge() {
-  chrome.tabs.query(
-    {currentWindow: true, active: true},
-    function (tabArray) {
-      setTabBadge(tabArray[0]);
-    }
-  )
-}
+        if (tab.active) {
+          this.setTabBadge(tab);
+        }
+      })
+    });
+  },
 
-function setTabBadge(tab) {
-  if (!tab) return;
+  sendMessageToTab: function (tabId, message) {
+    // 进入异步，否则前台未准备好，无法接收消息
+    setTimeout(function () {
+      chrome.tabs.sendMessage(tabId, message);
+    }, 200);
+  },
 
-  chrome.tabs.get(tab.id, function (tab) {
-    if (chrome.runtime.lastError) return;
+  setActiveTabBadge: function () {
+    chrome.tabs.query(
+      {currentWindow: true, active: true},
+      function (tabArray) {
+        this.setTabBadge(tabArray[0]);
+      }
+    )
+  },
 
-    let stableUrl = URL_UTILS.getStableUrl(tab.url);
-    let browseTimes = getBrowsedTimes(stableUrl);
-    if (URL_UTILS.isWhitelist(stableUrl) || URL_UTILS.isBlacklist(stableUrl) || !browseTimes) {
-      chrome.browserAction.setBadgeText({text: '', tabId: tab.id});
-    } else {
-      let bgColor = browseTimes >= parseInt(SETTINGS.getParam('auto_save_thre')) ?
-        [255, 0, 0, 255] : [70, 136, 241, 255];
-      chrome.browserAction.setBadgeBackgroundColor({color: bgColor, tabId: tab.id});
-      chrome.browserAction.setBadgeText({text: '' + browseTimes, tabId: tab.id});
-    }
-  });
-}
+  setTabBadge: function (tab) {
+    if (!tab) return;
 
-function increaseBrowseTimes(url) {
-  let stableUrl = URL_UTILS.getStableUrl(url);
-  let browseTimes = (getBrowsedTimes(stableUrl) || 0) + 1;
-  setBrowsedTimes(stableUrl, browseTimes);
-}
+    chrome.tabs.get(tab.id, function (tab) {
+      if (chrome.runtime.lastError) return;
 
-function getBrowsedTimes(url) {
-  let t = parseInt(LS.getItem(url));
-  return isNaN(t) ? null : t;
-}
+      let stableUrl = URL_UTILS.getStableUrl(tab.url);
+      let browseTimes = COUNTING.getBrowsedTimes(stableUrl);
+      if (URL_UTILS.isWhitelist(stableUrl) || URL_UTILS.isBlacklist(stableUrl) || !browseTimes) {
+        chrome.browserAction.setBadgeText({text: '', tabId: tab.id});
+      } else {
+        let bgColor = browseTimes >= parseInt(SETTINGS.getParam('auto_save_thre')) ?
+          [255, 0, 0, 255] : [70, 136, 241, 255];
+        chrome.browserAction.setBadgeBackgroundColor({color: bgColor, tabId: tab.id});
+        chrome.browserAction.setBadgeText({text: '' + browseTimes, tabId: tab.id});
+      }
+    });
+  }
+};
 
-function setBrowsedTimes(url, times) {
-  LS.setItem(url, times);
-}
+let COUNTING = {
+  increaseBrowseTimes: function (url) {
+    let stableUrl = URL_UTILS.getStableUrl(url);
+    let browseTimes = (this.getBrowsedTimes(stableUrl) || 0) + 1;
+    this.setBrowsedTimes(stableUrl, browseTimes);
+  },
+
+  getBrowsedTimes: function (url) {
+    let t = parseInt(LS.getItem(url));
+    return isNaN(t) ? null : t;
+  },
+
+  setBrowsedTimes: function (url, times) {
+    LS.setItem(url, times);
+  }
+};
 
 
 function notify_(content, timeout = 3000) {
@@ -312,7 +315,7 @@ let URL_UTILS = {
 
     // 'The Greate Suspender'类软件的跳转
     // 判断browseTimes，如果不在黑白名单，且以前未访问过，则为有效访问需要计数；
-    if (/^chrome-extension/.test(HISTORY.getTabLastUrl(tabId)) && getBrowsedTimes(stableUrl)) {
+    if (/^chrome-extension/.test(HISTORY.getTabLastUrl(tabId)) && COUNTING.getBrowsedTimes(stableUrl)) {
       console.log(stableUrl, "跳转自chrome-extension");
       return false;
     }
