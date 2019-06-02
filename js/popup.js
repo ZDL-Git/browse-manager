@@ -40,13 +40,13 @@ function appendTableContent() {
 }
 
 function fillSettingsContent() {
-  $('#bookmark-checkbox')[0].checked = SETTINGS.getParam('is_auto_save') === 'true';
+  $('#bookmark-checkbox')[0].checked = SETTINGS.checkParam('is_auto_save', 'true');
   $('#bookmark-doorsill')[0].value = SETTINGS.getParam('auto_save_thre');
   $('#bookmark-title')[0].value = SETTINGS.getParam('bookmark_title');
-  $('#diapause-checkbox')[0].checked = SETTINGS.getParam('is_diapause') === 'true';
+  $('#diapause-checkbox')[0].checked = SETTINGS.checkParam('is_diapause', 'true');
   $('#diapause-time')[0].value = SETTINGS.getParam('diapause_time') / 1000;
-  $('#pageshow-checkbox')[0].checked = SETTINGS.getParam('is_page_show') === 'true';
-  $('#csdn-checkbox')[0].checked = SETTINGS.getParam('csdn_auto_expand') === 'true';
+  $('#pageshow-checkbox')[0].checked = SETTINGS.checkParam('is_page_show', 'true');
+  $('#csdn-checkbox')[0].checked = SETTINGS.checkParam('csdn_auto_expand', 'true');
 }
 
 function showAllTrs() {

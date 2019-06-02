@@ -88,6 +88,9 @@ let SETTINGS = {
   },
   getParam: function (paramName) {
     return LS.getItem('SETTINGS:' + paramName);
+  },
+  checkParam: function (paramName, expect) {
+    return this.getParam(paramName) === expect;
   }
 };
 
@@ -116,7 +119,7 @@ let BOOKMARK = {
           parentId: '1',
           title: bookmarkTitle,
         }, function (bookmark) {
-          notify_('已自动创建收藏夹 ' + SETTINGS.getParam('bookmark_title'));
+          notify_('已自动创建收藏夹 ' + bookmarkTitle);
           callback(bookmark.id);
         });
       }
@@ -124,15 +127,15 @@ let BOOKMARK = {
   },
 
   addBookmarkWithCheck: function (tab) {
-    if (SETTINGS.getParam('is_auto_save') === 'false') return;
+    if (SETTINGS.checkParam('is_auto_save', 'false')) return;
 
     let stableUrl = URL_UTILS.getStableUrl(tab.url);
 
-    let browseTimes = getBrowsedTimes(stableUrl);
-    if (browseTimes === null) return;
+    let browsedTimes = getBrowsedTimes(stableUrl);
+    if (browsedTimes === null) return;
 
-    let saveThre = parseInt(SETTINGS.getParam('auto_save_thre'));
-    if (browseTimes !== saveThre) return;
+    let doorsillToSave = parseInt(SETTINGS.getParam('auto_save_thre'));
+    if (browsedTimes !== doorsillToSave) return;
 
     this.touchBookmarkFolder(function (bookmarkId) {
       chrome.bookmarks.search({url: stableUrl}, function (results) {
@@ -315,7 +318,7 @@ let URL_UTILS = {
     }
 
     // 忽略在diapause_time间的重复访问
-    if (SETTINGS.getParam('is_diapause') === 'true' && HISTORY.browsedWithinSetTime(stableUrl)) {
+    if (SETTINGS.checkParam('is_diapause', 'true') && HISTORY.browsedWithinSetTime(stableUrl)) {
       console.log(stableUrl, "在设置的忽略间隔中");
       return false;
     }
