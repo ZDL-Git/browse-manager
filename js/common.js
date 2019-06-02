@@ -153,12 +153,13 @@ let BOOKMARK = {
 
 let TABS = {
   registerTabs: function () {
+    let this_ = this;
     chrome.tabs.query({}, function (tabs) {
       Array.from(tabs).forEach(function (tab) {
         HISTORY.setTabLastUrl(tab);
 
         if (tab.active) {
-          this.setTabBadge(tab);
+          this_.setTabBadge(tab);
         }
       })
     });

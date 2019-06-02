@@ -3,7 +3,7 @@ chrome.runtime.onInstalled.addListener(function () {
   handleCompatibility();
 
   SETTINGS.initialize();
-  registerTabs();
+  TABS.registerTabs();
 });
 
 // ============================================================================
