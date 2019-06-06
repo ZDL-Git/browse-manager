@@ -240,7 +240,7 @@ let URL_UTILS = {
     try {
       return new URL(url);
     } catch (e) {
-      console.error("Error, new URL() failed, orgUrl:", url);
+      console.warn("Error, new URL() failed, orgUrl:", url);
       return null;
     }
   },
