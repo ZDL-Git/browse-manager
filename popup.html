@@ -40,14 +40,14 @@
       height: 45px;
     }
 
-    .table-container {
+    .tables-container {
       overflow: scroll;
       overflow-x: hidden;
       height: 300px;
       margin: 0 1%;
     }
 
-    .tables {
+    table {
       table-layout: fixed;
       width: 100%;
       font-size: 10px;
@@ -84,8 +84,16 @@
       text-shadow: 1px 1px 1px #ffffff;
     }
 
-    .settings-bg .text-input {
+    input {
+      outline: none;
+    }
+
+    .input-settings {
       height: 90%;
+    }
+
+    .input-num {
+      width: 3em;
     }
 
     #settings-detail {
@@ -103,17 +111,9 @@
       vertical-align: middle;
     }
 
-    #bookmark-doorsill, #diapause-time {
-      width: 3em;
-    }
-
     .float-right {
       float: right;
       margin: 0;
-    }
-
-    input {
-      outline: none;
     }
 
     .icon {
@@ -134,7 +134,7 @@
 
 <div id="background-spacer"></div>
 
-<div class="table-container">
+<div class="tables-container">
   <table class="tables" id="table-url-black">
     <tr>
       <th>URL 黑名单:</th>
@@ -166,26 +166,29 @@
     <div class="settings—container">
       <div id="settings-detail">
         <div class="settings-row">
-          <input type="checkbox" id="bookmark-checkbox">
-          <label for="bookmark-doorsill">访问达到</label><input type="text" id="bookmark-doorsill" class="text-input">
-          <label for="bookmark-title">次自动加入收藏夹</label><input type="text" id="bookmark-title" class="text-input">
+          <input type="checkbox" setting="is_auto_save">
+          <label for="bookmark-doorsill">访问达到</label><input type="text" id="bookmark-doorsill"
+                                                            class="input-settings input-num"
+                                                            setting="auto_save_thre">
+          <label for="bookmark-title">次自动加入收藏夹</label><input type="text" id="bookmark-title" class="input-settings"
+                                                             setting="bookmark_title">
         </div>
         <div class="settings-row">
-          <input type="checkbox" id="diapause-checkbox">
-          <input type="text" id="diapause-time" class="text-input">
+          <input type="checkbox" setting="is_diapause">
+          <input type="text" class="input-settings input-num" setting="diapause_time">
           <div>秒内重复访问不计数</div>
           &ensp;&ensp;
-          <input type="checkbox" id="pageshow-checkbox">
+          <input type="checkbox" setting="is_page_show">
           <div>在页面显示访问次数</div>
         </div>
         <div class="settings-row">
-          <input type="checkbox" id="csdn-checkbox">
+          <input type="checkbox" setting="csdn_auto_expand">
           <div>CSDN自动展开全文</div>
         </div>
       </div>
       <div class="settings-row">
-        <img class="icon settings-detail-btn" src="images/setting.svg" alt="">
-        <div class="settings-detail-btn">设置</div>
+        <img id="setting-btn-icon" class="icon" src="images/setting.svg" alt="">
+        <div id="setting-btn">设置</div>
         <span class="float-right">
           Copyright © ZDL
           <a href="https://github.com/ZDL-Git/browse-manager/tree/master/distribution/crx" target="_blank">|检查新版本</a>

@@ -40,13 +40,16 @@ function appendTableContent() {
 }
 
 function fillSettingsContent() {
-  $('#bookmark-checkbox')[0].checked = SETTINGS.checkParam('is_auto_save', 'true');
-  $('#bookmark-doorsill')[0].value = SETTINGS.getParam('auto_save_thre');
-  $('#bookmark-title')[0].value = SETTINGS.getParam('bookmark_title');
-  $('#diapause-checkbox')[0].checked = SETTINGS.checkParam('is_diapause', 'true');
-  $('#diapause-time')[0].value = SETTINGS.getParam('diapause_time') / 1000;
-  $('#pageshow-checkbox')[0].checked = SETTINGS.checkParam('is_page_show', 'true');
-  $('#csdn-checkbox')[0].checked = SETTINGS.checkParam('csdn_auto_expand', 'true');
+  $('input[type=checkbox]').each(function () {
+    $(this)[0].checked = SETTINGS.checkParam($(this).attr('setting'), 'true');
+  });
+
+  $('input[type=text]').each(function () {
+    let param = $(this).attr('setting');
+    let paramValue = SETTINGS.getParam(param);
+    if (param === 'diapause_time') paramValue = paramValue / 1000;
+    $(this)[0].value = paramValue;
+  });
 }
 
 function showAllTrs() {
@@ -90,31 +93,18 @@ function addTableRowDeleteListener() {
 }
 
 function addSettingListener() {
-  $('#bookmark-checkbox').on('click', function () {
-    SETTINGS.setParam('is_auto_save', $(this).prop('checked'))
-  });
-  $('#bookmark-doorsill').on('input', function () {
-    SETTINGS.setParam('auto_save_thre', $(this).val());
-  });
-  $('#bookmark-title').on('input', function () {
-    SETTINGS.setParam('bookmark_title', $(this).val());
-  });
-
-  $('#diapause-checkbox').on('click', function () {
-    SETTINGS.setParam('is_diapause', $(this).prop('checked'));
-  });
-  $('#diapause-time').on('input', function () {
-    SETTINGS.setParam('diapause_time', $(this).val() * 1000);
-  });
-
-  $('#pageshow-checkbox').on('click', function () {
-    SETTINGS.setParam('is_page_show', $(this).prop('checked'));
-  });
-
-  $('.settings-detail-btn').on('click', function () {
+  $('#setting-btn, #setting-btn-icon').on('click', function () {
     $('#settings-detail').css('display', 'block');
   });
-  $('#csdn-checkbox').on('click', function () {
-    SETTINGS.setParam('csdn_auto_expand', $(this).prop('checked'));
+
+  $('input[type=checkbox]').on('click', function () {
+    SETTINGS.setParam($(this).attr('setting'), $(this).prop('checked'));
+  });
+
+  $('input[type=text]').on('input', function () {
+    let param = $(this).attr('setting');
+    let paramValue = $(this).val();
+    if (param === 'diapause_time') paramValue = paramValue * 1000;
+    SETTINGS.setParam(param, paramValue);
   });
 }
