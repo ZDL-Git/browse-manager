@@ -85,15 +85,12 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
       if (URL_UTILS.isEffectual(tab)) {
         COUNTING.increaseBrowseTimes(tab.url);
+        CONTENT.pageShowWithCheck(tab);
         BOOKMARK.addBookmarkWithCheck(tab);
-        if (SETTINGS.checkParam('is_page_show', 'true')) {
-          TABS.sendMessageToTab(tab.id, {
-            method: "displayBrowseTimes",
-            browseTimes: COUNTING.getBrowsedTimes(URL_UTILS.getStableUrl(tab.url))
-          });
-        }
       }
       HISTORY.cacheUrlWithinSetTime(stableUrl);
+      HISTORY.setTabLastUrl(tab);
+      CONTENT.individuateSite(tab);
     }
 
     // 直接F5刷新时changeInfo不含url，但是需要显示badge计数
@@ -105,12 +102,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo['status'] === 'complete') {
     // 加判断来解决无法从黑名单跳回的问题
     if (!URL_UTILS.isBlacklist(stableUrl)) {
-      HISTORY.setTabLastUrl(tab);
-      if (SETTINGS.checkParam('csdn_auto_expand', 'true') && stableUrl.match("https://blog.csdn.net*")) {
-        TABS.sendMessageToTab(tab.id, {
-          method: "autoExpandCSDN"
-        })
-      }
+      // ...
     }
   }
 });

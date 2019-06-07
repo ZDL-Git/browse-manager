@@ -338,3 +338,24 @@ let URL_UTILS = {
     return true;
   }
 };
+
+let CONTENT = {
+  pageShowWithCheck: function (tab) {
+    if (SETTINGS.checkParam('is_page_show', 'true')) {
+      TABS.sendMessageToTab(tab.id, {
+        method: "displayBrowseTimes",
+        browseTimes: COUNTING.getBrowsedTimes(URL_UTILS.getStableUrl(tab.url))
+      });
+    }
+  },
+
+  individuateSite: function (tab) {
+    let stableUrl = URL_UTILS.getStableUrl(tab.url);
+    if (SETTINGS.checkParam('csdn_auto_expand', 'true')
+      && stableUrl.match("https://blog.csdn.net*")) {
+      TABS.sendMessageToTab(tab.id, {
+        method: "autoExpandCSDN"
+      })
+    }
+  },
+};

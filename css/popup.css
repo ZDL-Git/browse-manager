@@ -4,7 +4,6 @@
   background: transparent;
   /* optional: just make scrollbar invisible */
 }
-
 body {
   position: relative;
   width: 400px;
@@ -13,14 +12,12 @@ body {
   background-repeat: no-repeat;
   background-position: bottom 20px center;
 }
-
 body #search-wrapper {
   width: 100%;
   background-color: white;
   z-index: 9999;
   position: fixed;
 }
-
 body #search-wrapper #search {
   width: 100%;
   height: 30px;
@@ -31,18 +28,15 @@ body #search-wrapper #search {
   background: #eeeeee;
   margin: 6px 0;
 }
-
 body #background-spacer {
   height: 45px;
 }
-
 body .tables-container {
   overflow: scroll;
   overflow-x: hidden;
   height: 300px;
   margin: 0 1%;
 }
-
 body .tables-container table {
   table-layout: fixed;
   width: 100%;
@@ -53,70 +47,56 @@ body .tables-container table {
   text-align: left;
   opacity: 0.7;
 }
-
 body .tables-container table .delete-row {
   width: 4%;
   text-align: center;
 }
-
 body .tables-container table .delete-row:hover {
   color: red;
 }
-
 body .tables-container #table-url-white,
 body .tables-container #table-domain-white {
   color: black;
   background-color: white;
 }
-
 body .tables-container #table-url-black,
 body .tables-container #table-domain-black {
   color: white;
   background-color: black;
 }
-
 body .settings-bg {
   padding: 4px 8px;
   bottom: 0;
   background: #eeeeee;
   text-shadow: 1px 1px 1px #ffffff;
 }
-
 body .settings-bg .settings-row {
   height: 20px;
   margin: 0;
   padding: 0;
 }
-
 body .settings-bg .settings-row * {
   display: inline;
   vertical-align: middle;
 }
-
 body .settings-bg .input-settings {
   height: 90%;
 }
-
 body .settings-bg .input-num {
   width: 3em;
 }
-
 body .settings-bg #settings-detail {
   display: none;
 }
-
 body input {
   outline: none;
 }
-
 body .float-right {
   float: right;
   margin: 0;
 }
-
 body .icon {
   width: 14px;
   height: 14px;
 }
-
 /*# sourceMappingURL=popup.css.map */

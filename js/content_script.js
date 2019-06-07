@@ -12,18 +12,15 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
 });
 
+// ============================================================================
 
 function displayBrowseTimes(browseTimes) {
   if (!browseTimes) {
     return;
   }
 
-  onBodyReady(function () {
-    let dstDiv = document.getElementById("BrowseManager-TemporaryDisplayBrowseTimesDiv")
-      || document.createElement("div");
-
-    dstDiv.id = "BrowseManager-TemporaryDisplayBrowseTimesDiv";
-    // dstDiv.style.all = "unset";
+  document.addEventListener('DOMContentLoaded', function () {
+    let dstDiv = document.createElement("div");
     dstDiv.style.position = "fixed";
     dstDiv.style.top = "15vh";
     dstDiv.style.left = "20vw";
@@ -43,28 +40,18 @@ function displayBrowseTimes(browseTimes) {
         document.body.removeChild(dstDiv)
       } catch (e) {
       }
-    }, 1200);
+    }, 1300);
   });
 }
 
 function autoExpandCSDN() {
-  document.querySelector("#btn-readmore").click();
+  document.addEventListener('DOMContentLoaded', function (event) {
+    let readmoreBtn = document.getElementById("btn-readmore");
+    if (!!readmoreBtn) {
+      readmoreBtn.click();
+      readmoreBtn.remove();
+    }
+  })
 }
 
 // ============================================================================
-
-function onBodyReady(callback) {
-  waitFor(function () {
-    return document.body;
-  }, function () {
-    callback();
-  });
-}
-
-function waitFor(condition, callback) {
-  if (!condition()) {
-    window.setTimeout(waitFor.bind(null, condition, callback), 100);
-  } else {
-    callback();
-  }
-}
