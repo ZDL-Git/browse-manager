@@ -15,11 +15,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 // ============================================================================
 
 function displayBrowseTimes(browseTimes) {
-  if (!browseTimes) {
-    return;
-  }
-
-  document.addEventListener('DOMContentLoaded', function () {
+  onBodyReady(function () {
     let dstDiv = document.createElement("div");
     dstDiv.style.position = "fixed";
     dstDiv.style.top = "15vh";
@@ -40,7 +36,7 @@ function displayBrowseTimes(browseTimes) {
         document.body.removeChild(dstDiv)
       } catch (e) {
       }
-    }, 1300);
+    }, 1800);
   });
 }
 
@@ -55,3 +51,17 @@ function autoExpandCSDN() {
 }
 
 // ============================================================================
+
+function onBodyReady(callback) {
+  waitFor(function () {
+    return document.body;
+  }, callback);
+}
+
+function waitFor(condition, callback) {
+  if (!condition()) {
+    window.setTimeout(waitFor.bind(null, condition, callback), 100);
+  } else {
+    callback();
+  }
+}
