@@ -18,7 +18,7 @@
     "background": {
         "scripts": [
             "js/common.js",
-            "js/compatibility.js",
+            "js/versions_glue.js",
             "js/background.js"
         ]
     },

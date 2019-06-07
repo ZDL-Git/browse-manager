@@ -1,0 +1,118 @@
+
+::-webkit-scrollbar {
+  width: 0; /* remove scrollbar space */
+  background: transparent; /* optional: just make scrollbar invisible */
+}
+
+body {
+  position: relative;
+  width: 400px;
+  margin: 0;
+  background-image: url("/images/bg.gif");
+  background-repeat: no-repeat;
+  background-position: bottom 20px center;
+
+  #search-wrapper {
+    width: 100%;
+    background-color: white;
+    z-index: 9999;
+    position: fixed;
+
+    #search {
+      width: 100%;
+      height: 30px;
+      border: none;
+      padding-left: 10px;
+      padding-right: 10px;
+      font-size: 150%;
+      background: #eeeeee;
+      margin: 6px 0;
+    }
+  }
+
+  #background-spacer {
+    height: 45px;
+  }
+
+  .tables-container {
+    overflow: scroll;
+    overflow-x: hidden;
+    height: 300px;
+    margin: 0 1%;
+
+    table {
+      table-layout: fixed;
+      width: 100%;
+      font-size: 10px;
+      font-weight: normal;
+      word-wrap: break-word;
+      background-color: white;
+      text-align: left;
+      opacity: 0.7;
+
+      .delete-row {
+        width: 4%;
+        text-align: center;
+      }
+
+      .delete-row:hover {
+        color: red;
+      }
+    }
+
+    #table-url-white, #table-domain-white {
+      color: black;
+      background-color: white;
+    }
+
+    #table-url-black, #table-domain-black {
+      color: white;
+      background-color: black;
+    }
+  }
+
+
+  .settings-bg {
+    padding: 4px 8px;
+    bottom: 0;
+    background: #eeeeee;
+    text-shadow: 1px 1px 1px #ffffff;
+
+    .settings-row {
+      height: 20px;
+      margin: 0;
+      padding: 0;
+
+      * {
+        display: inline;
+        vertical-align: middle;
+      }
+    }
+
+    .input-settings {
+      height: 90%;
+    }
+
+    .input-num {
+      width: 3em;
+    }
+
+    #settings-detail {
+      display: none;
+    }
+  }
+
+  input {
+    outline: none;
+  }
+
+  .float-right {
+    float: right;
+    margin: 0;
+  }
+
+  .icon {
+    width: 14px;
+    height: 14px;
+  }
+}

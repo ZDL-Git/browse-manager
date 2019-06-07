@@ -86,8 +86,8 @@ function addTableFilterListener() {
 //列表行删除事件
 function addTableRowDeleteListener() {
   $('td.delete-row').on('click', function () {
-    COUNTING.setBrowsedTimes(encodeURI($(this).prev().text()), 1);
-    TABS.setActiveTabBadge();
+    COUNTING.setBrowsedTimes(encodeURI($(this).prev().text()), 0);
+    TABS.refreshActiveTabBadge();
     $(this).parent().remove();
   });
 }

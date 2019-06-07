@@ -172,11 +172,12 @@ let TABS = {
     }, 200);
   },
 
-  setActiveTabBadge: function () {
+  refreshActiveTabBadge: function () {
+    let this_ = this;
     chrome.tabs.query(
       {currentWindow: true, active: true},
       function (tabArray) {
-        this.setTabBadge(tabArray[0]);
+        this_.setTabBadge(tabArray[0]);
       }
     )
   },
