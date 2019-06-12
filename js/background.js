@@ -67,7 +67,7 @@ chrome.tabs.onCreated.addListener(function (tab) {
   // 浏览器设置为新窗口打开链接的，在此判断。速度比在onUpdated中处理快
   // 跳转过来的tab.url可能为""，需要重新get。但是人工new tab时 url一定为'chrome://newtab/'
   // 特殊情况：百度跳转时有个link的中间环节，会导致失效，在onUpdated中处理
-  tab.url === 'chrome://newtab/' && HISTORY.setTabLastUrl(tab);
+  tab.url === 'chrome://newtab/' && HISTORY.setTabLastUrlWithCheck(tab);
   chrome.tabs.get(tab.id, function (tab) {
     let stableUrl = URL_UTILS.getStableUrl(tab.url);
     URL_UTILS.filterBlacklistUrl(tab.id, stableUrl);
@@ -89,7 +89,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         BOOKMARK.addBookmarkWithCheck(tab);
       }
       HISTORY.cacheUrlWithinSetTime(stableUrl);
-      HISTORY.setTabLastUrl(tab);
+      HISTORY.setTabLastUrlWithCheck(tab);
       CONTENT.individuateSite(tab);
     }
 
@@ -117,7 +117,7 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
     // 为了解决'The Great Suspender'类软件造成的重复计次问题。
     // 加判断剔除new tab时的activated事件。
     if (HISTORY.tabLastUrlExists(tab.id)) {
-      HISTORY.setTabLastUrl(tab);
+      HISTORY.setTabLastUrlWithCheck(tab);
     }
 
     // 手动切换标签时更新badge

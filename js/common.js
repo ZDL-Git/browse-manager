@@ -36,9 +36,10 @@ let HISTORY = (function () {
       return tabsLastUrl[tabId];
     },
 
-    setTabLastUrl: function (tab) {
+    setTabLastUrlWithCheck: function (tab) {
       let tabId = tab.id;
       let stableUrl = URL_UTILS.getStableUrl(tab.url);
+      if (/^https?:\/\/www\.baidu\.com\/link\?/.test(stableUrl)) return;
       // 在跳转到其它页面前重新激活，以关闭时间作为最后访问时间。解决临时切换到其它标签再切回导致的次数增加
       if (this.tabLastUrlExists(tabId)) {
         this.cacheUrlWithinSetTime(this.getTabLastUrl(tabId));
@@ -156,7 +157,7 @@ let TABS = {
     let this_ = this;
     chrome.tabs.query({}, function (tabs) {
       Array.from(tabs).forEach(function (tab) {
-        HISTORY.setTabLastUrl(tab);
+        HISTORY.setTabLastUrlWithCheck(tab);
 
         if (tab.active) {
           this_.setTabBadge(tab);
