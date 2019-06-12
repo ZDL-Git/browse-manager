@@ -352,9 +352,9 @@ let CONTENT = {
   individuateSite: function (tab) {
     let stableUrl = URL_UTILS.getStableUrl(tab.url);
     if (SETTINGS.checkParam('csdn_auto_expand', 'true')
-      && stableUrl.match("https://blog.csdn.net*")) {
+      && (stableUrl.match("^https://blog.csdn.net") || stableUrl.match("^https://.*.iteye.com"))) {
       TABS.sendMessageToTab(tab.id, {
-        method: "autoExpandCSDN"
+        method: "autoExpandContent"
       })
     }
   },

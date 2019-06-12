@@ -4,8 +4,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       displayBrowseTimes(message.browseTimes);
       break;
     }
-    case "autoExpandCSDN": {
-      autoExpandCSDN();
+    case "autoExpandContent": {
+      autoExpandContent();
       break;
     }
     // ...
@@ -36,11 +36,11 @@ function displayBrowseTimes(browseTimes) {
         document.body.removeChild(dstDiv)
       } catch (e) {
       }
-    }, 1800);
+    }, 1300);
   });
 }
 
-function autoExpandCSDN() {
+function autoExpandContent() {
   document.addEventListener('DOMContentLoaded', function (event) {
     let readmoreBtn = document.getElementById("btn-readmore");
     if (!!readmoreBtn) {

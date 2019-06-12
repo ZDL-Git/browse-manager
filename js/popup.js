@@ -31,7 +31,7 @@ function appendTableContent() {
 
       $('#' + table).append(
         '<tr>' +
-        '<td>' + url + '</td>' +
+        '<td class="url-column">' + url + '</td>' +
         '<td class="delete-row">✕</td>' +
         '</tr>'
       );
@@ -86,7 +86,7 @@ function addTableFilterListener() {
 //列表行删除事件
 function addTableRowDeleteListener() {
   $('td.delete-row').on('click', function () {
-    COUNTING.setBrowsedTimes(encodeURI($(this).prev().text()), 0);
+    COUNTING.setBrowsedTimes(encodeURI($(this).parent().find('.url-column').text()), 0);
     TABS.refreshActiveTabBadge();
     $(this).parent().remove();
   });
