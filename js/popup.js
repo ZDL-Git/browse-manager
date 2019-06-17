@@ -107,4 +107,53 @@ function addSettingListener() {
     if (param === 'diapause_time') paramValue = paramValue * 1000;
     SETTINGS.setParam(param, paramValue);
   });
+
+  $('#import-data').on('click', function () {
+    $('#hidden-file-input').click();
+  });
+
+  $('#hidden-file-input').on("change", function () {
+    importFileToLocalstorage(this);
+    // 以支持多次导入同名文件
+    $(this).val('');
+  });
+
+  $('#export-data').on('click', function () {
+    exportLocalstorageData();
+  });
+
+}
+
+function exportLocalstorageData() {
+  let data = JSON.stringify(localStorage, null, 2);
+  chrome.downloads.download({
+    url: "data:text/json," + data,
+    filename: "BrowseManager_data.json",
+    conflictAction: "prompt", // or "overwrite" / "prompt"
+    saveAs: false, // true gives save-as dialogue
+  }, function (downloadId) {
+    console.log('localStorage导出成功');
+  });
+}
+
+function importFileToLocalstorage(inputFile) {
+  let file, fr, data;
+  if (!(file = inputFile.files[0])) return;
+  fr = new FileReader();
+  fr.onload = function () {
+    data = this.result;
+    // 导出时为了便捷使用了JSON.stringify，但导出的文件并不是严格的json格式，
+    // 内容中的双引号并没有加反斜杠，这里导入时手动处理
+    data = data.replace('{\n  "', '{",\n  "');
+    data = data.replace('"\n}', '",\n  "}');
+    data = data.split('",\n  "');
+    data = data.slice(1, -1);
+    data.forEach(function (line) {
+      let kv = line.split('": "');
+      let key = kv.slice(0, -1).join('');
+      let value = kv[kv.length - 1];
+      LS.setItem(key, value);
+    });
+  };
+  fr.readAsText(file);
 }
