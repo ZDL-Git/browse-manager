@@ -1,12 +1,12 @@
 window.onload = function () {
-  appendTableContent();
+  loadTableContent();
   addTableFilterListener();
   addTableRowDeleteListener();
-  fillSettingsContent();
+  loadSettingsToPage();
   addSettingListener();
 };
 
-function appendTableContent() {
+function loadTableContent() {
 
   LS.forEach(function (key, value) {
       let table, url;
@@ -39,12 +39,12 @@ function appendTableContent() {
   )
 }
 
-function fillSettingsContent() {
-  $('input[type=checkbox]').each(function () {
+function loadSettingsToPage() {
+  $('.settings—container input[type=checkbox]').each(function () {
     $(this)[0].checked = SETTINGS.checkParam($(this).attr('setting'), 'true');
   });
 
-  $('input[type=text]').each(function () {
+  $('.settings—container input[type=text]').each(function () {
     let param = $(this).attr('setting');
     let paramValue = SETTINGS.getParam(param);
     if (param === 'diapause_time') paramValue = paramValue / 1000;
@@ -97,11 +97,11 @@ function addSettingListener() {
     $('#settings-detail').css('display', 'block');
   });
 
-  $('input[type=checkbox]').on('click', function () {
+  $('.settings—container input[type=checkbox]').on('click', function () {
     SETTINGS.setParam($(this).attr('setting'), $(this).prop('checked'));
   });
 
-  $('input[type=text]').on('input', function () {
+  $('.settings—container input[type=text]').on('input', function () {
     let param = $(this).attr('setting');
     let paramValue = $(this).val();
     if (param === 'diapause_time') paramValue = paramValue * 1000;
@@ -119,12 +119,12 @@ function addSettingListener() {
   });
 
   $('#export-data').on('click', function () {
-    exportLocalstorageData();
+    exportLocalstorageToFile();
   });
 
 }
 
-function exportLocalstorageData() {
+function exportLocalstorageToFile() {
   let data = JSON.stringify(localStorage, null, 2);
   chrome.downloads.download({
     url: "data:text/json," + data,
