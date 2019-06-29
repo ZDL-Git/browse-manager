@@ -42,7 +42,7 @@ function displayBrowseTimes(browseTimes) {
 
 function autoExpandContent() {
   document.addEventListener('DOMContentLoaded', function (event) {
-    let readmoreBtn = document.getElementById("btn-readmore");
+    let readmoreBtn = document.querySelectorAll("#btn-readmore,.btn-readmore")[0];
     if (!!readmoreBtn) {
       readmoreBtn.click();
       readmoreBtn.remove();
