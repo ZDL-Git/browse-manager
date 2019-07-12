@@ -1,15 +1,6 @@
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  switch (message.method) {
-    case "displayBrowseTimes": {
-      displayBrowseTimes(message.browseTimes);
-      break;
-    }
-    case "autoExpandContent": {
-      autoExpandContent();
-      break;
-    }
-    // ...
-  }
+  console.debug('Front end received message:', message, sender);
+  eval(message.method + '(' + (message.hasOwnProperty('params') ? message.params : '') + ')');
 });
 
 // ============================================================================

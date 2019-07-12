@@ -85,7 +85,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
       if (URL_UTILS.isEffectual(tab)) {
         COUNTING.increaseBrowseTimes(tab.url);
-        CONTENT.pageShowWithCheck(tab);
+        CONTENT.displayBrowseTimesOnPageWithCheck(tab);
         BOOKMARK.addBookmarkWithCheck(tab);
       }
       HISTORY.cacheUrlWithinSetTime(stableUrl);
@@ -97,14 +97,6 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     TABS.setTabBadge(tab);
   }
 
-  // 在complete阶段处理可以过滤掉一些中间url，如百度跳转的link，
-  // 但是部分页面从loading到complete需要很长时间，或者一直在loading，所以可能会存在一些问题
-  if (changeInfo['status'] === 'complete') {
-    // 加判断来解决无法从黑名单跳回的问题
-    if (!URL_UTILS.isBlacklist(stableUrl)) {
-      // ...
-    }
-  }
 });
 
 chrome.tabs.onRemoved.addListener(function (tabid, removeInfo) {

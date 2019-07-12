@@ -242,7 +242,7 @@ let URL_UTILS = {
     try {
       return new URL(url);
     } catch (e) {
-      console.warn("Error, new URL() failed, orgUrl:", url);
+      console.warn("Warning, new URL() failed, orgUrl:", url);
       return null;
     }
   },
@@ -341,11 +341,11 @@ let URL_UTILS = {
 };
 
 let CONTENT = {
-  pageShowWithCheck: function (tab) {
+  displayBrowseTimesOnPageWithCheck: function (tab) {
     if (SETTINGS.checkParam('is_page_show', 'true')) {
       TABS.sendMessageToTab(tab.id, {
         method: "displayBrowseTimes",
-        browseTimes: COUNTING.getBrowsedTimes(URL_UTILS.getStableUrl(tab.url))
+        params: COUNTING.getBrowsedTimes(URL_UTILS.getStableUrl(tab.url))
       });
     }
   },
