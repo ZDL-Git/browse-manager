@@ -45,19 +45,6 @@ Windows：
 
 方法二：clone仓库（平时可git pull方便获取最新的版本），用"加载已解压的扩展程序"的方式加载目录即可
 
-#### 联系方式
-
-如遇到安装或者使用问题，可选以下联系方式联系
-
-QQ群: 744791224
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<img src="https://github.com/ZDL-Git/resources-store/blob/master/images/QQ-group-matrix-code-for-BM.png" width="200px"/>
-
-提交bug: [Github issue](https://github.com/ZDL-Git/browse-manager/issues)
-
-Email: zdl_daily@163.com
-
 ### 注意事项
 
 ✁ 由于是在后台js中listen事件，黑名单功能当前模式：在新tab打开黑名单网页时，会自动将这个tab关闭掉；在当前tab打开黑名单网页时，会自动后退到上一个非黑名单网页。如果环境对tab的管理要求严格，请谨慎使用。
@@ -69,3 +56,17 @@ Email: zdl_daily@163.com
 ✁ 安装后默认开启了"120s内重复访问不计数"，即如果你刚打开或者刚关闭网页A未超过120s，则再次访问网页A次数不会+1。
 
 ### 大家如果用了请点个星星，让我知道如果不兼容升级会被多少个人揍，好吧！如果觉得不好用可以回来再把星星撤走😄
+
+### 联系方式
+
+如遇到安装或者使用问题，可选以下方式联系
+
+QQ群: 744791224
+
+<img src="https://github.com/ZDL-Git/resources-store/blob/master/images/QQ-group-matrix-code-for-BM.png" width="200px"/>
+
+Email: zdl_daily@163.com
+
+留言：
+
+[<img src="https://github.com/ZDL-Git/resources-store/blob/master/browse-manager/image/msg-board.png" width="90%">](https://github.com/ZDL-Git/browse-manager/issues/3)
