@@ -57,9 +57,11 @@ let HISTORY = (function () {
     },
 
     cacheUrlWithinSetTime: function (url) {
-      urlsBrowsedWithinSetTime[url] = 1;
+      let sequence = Date.now();
+      urlsBrowsedWithinSetTime[url] = sequence;
       setTimeout(function () {
-        delete urlsBrowsedWithinSetTime[url];
+        if (urlsBrowsedWithinSetTime[url] === sequence)
+          delete urlsBrowsedWithinSetTime[url];
       }, SETTINGS.getParam('diapause_time'));
     },
 
