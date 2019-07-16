@@ -343,9 +343,11 @@ let URL_UTILS = {
 let CONTENT = {
   displayBrowseTimesOnPageWithCheck: function (tab) {
     if (SETTINGS.checkParam('is_page_show', 'true')) {
+      let browseTimes = COUNTING.getBrowsedTimes(URL_UTILS.getStableUrl(tab.url));
+      let css = browseTimes > 3 ? {color: '#fe4a49'} : {};
       TABS.sendMessageToTab(tab.id, {
-        method: "displayBrowseTimes",
-        params: COUNTING.getBrowsedTimes(URL_UTILS.getStableUrl(tab.url))
+        function: "DISPLAYER.display",
+        paramsArray: [browseTimes, css]
       });
     }
   },
@@ -355,7 +357,7 @@ let CONTENT = {
     if (SETTINGS.checkParam('csdn_auto_expand', 'true')
       && (stableUrl.match("^https://blog.csdn.net") || stableUrl.match("^https://.*.iteye.com"))) {
       TABS.sendMessageToTab(tab.id, {
-        method: "autoExpandContent"
+        function: "autoExpandContent"
       })
     }
   },
