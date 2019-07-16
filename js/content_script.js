@@ -35,9 +35,10 @@ let DISPLAYER = (function () {
     display: function (c, css) {
       DISPLAYER.create();
       let div_tmp = div.cloneNode(true);
-      for (let [k, v] of Object.entries(css)) {
-        div_tmp.style.setProperty(k, v);
-      }
+      if (css)
+        for (let [k, v] of Object.entries(css)) {
+          div_tmp.style.setProperty(k, v);
+        }
       div_tmp.innerHTML = c;
 
       onBodyReady(function () {

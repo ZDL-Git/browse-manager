@@ -323,15 +323,19 @@ let URL_UTILS = {
       return false;
     }
 
-    // 忽略在diapause_time间的重复访问
-    if (SETTINGS.checkParam('is_diapause', 'true') && HISTORY.browsedWithinSetTime(stableUrl)) {
-      console.log(stableUrl, "在设置的忽略间隔中");
-      return false;
-    }
-
     // 不包括刷新操作，刷新时url没有变化。
     if (HISTORY.getTabLastUrl(tabId) === stableUrl) {
       console.log(stableUrl, "地址未发生变化");
+      return false;
+    }
+
+    // 忽略在diapause_time间的重复访问
+    if (SETTINGS.checkParam('is_diapause', 'true') && HISTORY.browsedWithinSetTime(stableUrl)) {
+      console.log(stableUrl, "在设置的忽略间隔中");
+      TABS.sendMessageToTab(tab.id, {
+        function: "DISPLAYER.display",
+        paramsArray: ['DUPLICATE', {'font-size': '50px'}]
+      });
       return false;
     }
 
