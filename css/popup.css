@@ -88,7 +88,6 @@ body .settings-bg .input-num {
 body .settings-bg #settings-detail {
   display: none;
 }
-
 body .settings-bg #hidden-file-input {
   width: 0;
   visibility: hidden;
@@ -104,8 +103,7 @@ body .icon {
   width: 14px;
   height: 14px;
 }
-
 body .splitter {
-  margin: 0 0.8em;
+  margin: 0 0.4em;
 }
 /*# sourceMappingURL=popup.css.map */

@@ -77,6 +77,7 @@ let SETTINGS = {
     this.touchParam('auto_save_thre', 5);
     this.touchParam('bookmark_title', '经常访问(BM)');
     this.touchParam('is_diapause', true);
+    this.touchParam('is_prompt_duplicate', true);
     this.touchParam('diapause_time', 120000);
     this.touchParam('is_page_show', true);
     this.touchParam('csdn_auto_expand', true);
@@ -334,10 +335,11 @@ let URL_UTILS = {
     // 忽略在diapause_time间的重复访问
     if (SETTINGS.checkParam('is_diapause', 'true') && HISTORY.browsedWithinSetTime(stableUrl)) {
       console.log(stableUrl, "在设置的忽略间隔中");
-      TABS.sendMessageToTab(tab.id, {
-        function: "DISPLAYER.display",
-        paramsArray: ['DUPLICATE', {'font-size': '50px'}]
-      });
+      if (SETTINGS.checkParam('is_prompt_duplicate', 'true'))
+        TABS.sendMessageToTab(tab.id, {
+          function: "DISPLAYER.display",
+          paramsArray: ['DUPLICATE', {'font-size': '50px'}]
+        });
       return false;
     }
 

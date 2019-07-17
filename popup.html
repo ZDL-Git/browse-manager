@@ -48,20 +48,22 @@
     <div class="settings—container">
       <div id="settings-detail">
         <div class="settings-row">
+          <input type="checkbox" setting="is_page_show">
+          <div>在页面显示访问次数</div>
+          <div class="splitter">|</div>
+          <input type="checkbox" setting="is_diapause">
+          <input type="text" class="input-settings input-num" setting="diapause_time">
+          <div>秒内重复访问不计数</div>
+          <input type="checkbox" setting="is_prompt_duplicate">
+          <div>并提示</div>
+        </div>
+        <div class="settings-row">
           <input type="checkbox" setting="is_auto_save">
           <label for="bookmark-doorsill">访问达到</label><input type="text" id="bookmark-doorsill"
                                                             class="input-settings input-num"
                                                             setting="auto_save_thre">
           <label for="bookmark-title">次自动加入收藏夹</label><input type="text" id="bookmark-title" class="input-settings"
                                                              setting="bookmark_title">
-        </div>
-        <div class="settings-row">
-          <input type="checkbox" setting="is_diapause">
-          <input type="text" class="input-settings input-num" setting="diapause_time">
-          <div>秒内重复访问不计数</div>
-          &ensp;&ensp;
-          <input type="checkbox" setting="is_page_show">
-          <div>在页面显示访问次数</div>
         </div>
         <div class="settings-row">
           <input type="checkbox" setting="csdn_auto_expand">
