@@ -262,6 +262,13 @@ let URL_UTILS = {
           params.delete('t');
           break;
         }
+        case "www.bilibili.com": {
+          params.forEach(function (v, k, parent) {
+            if (k === 'p') return;
+            params.delete(k);
+          });
+          break;
+        }
         // ...
       }
     }

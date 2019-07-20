@@ -18,36 +18,41 @@ function autoExpandContent() {
 
 let DISPLAYER = (function () {
   let div;
+  let dis;
 
   return {
     create: function () {
-      if (div) return;
       div = document.createElement("div");
       div.style.position = "fixed";
       div.style.top = "15vh";
       div.style.left = "20vw";
-      div.style.zIndex = "9999";
+      div.style.zIndex = "2147483647";
       div.style.fontSize = "200px";
       div.style.textShadow = "-2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue";
       div.style.lineHeight = "1";// 解决因从body继承line-height属性导致纵向位置错误的问题
     },
 
+    clearDis: function () {
+      try {
+        document.body.removeChild(dis);
+      } catch (e) {
+      }
+    },
+
     display: function (c, css) {
-      DISPLAYER.create();
-      let div_tmp = div.cloneNode(true);
+      DISPLAYER.clearDis();
+      div || DISPLAYER.create();
+      dis = div.cloneNode(true);
       if (css)
         for (let [k, v] of Object.entries(css)) {
-          div_tmp.style.setProperty(k, v);
+          dis.style.setProperty(k, v);
         }
-      div_tmp.innerHTML = c;
+      dis.innerHTML = c;
 
       onBodyReady(function () {
-        document.body.appendChild(div_tmp);
+        document.body.appendChild(dis);
         setTimeout(function () {
-          try {
-            document.body.removeChild(div_tmp)
-          } catch (e) {
-          }
+          DISPLAYER.clearDis();
         }, 1300);
       });
     }
