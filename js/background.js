@@ -17,16 +17,18 @@ chrome.runtime.onStartup.addListener(function () {
 // ============================================================================
 
 (function onLoading() {
-  Object.values(OPERATIONS).forEach(function (title) {
-    chrome.contextMenus.create({
-      type: 'normal',
-      title: title, id: "Menu-" + title, contexts: ['all']
-    });
-  });
+  createContextMenus();
 
   TABS.registerTabs();
+
+  setTimeout(checkForUpdates, 10000);
 })();
 
+chrome.notifications.onClicked.addListener(function (notificationId) {
+  URL_UTILS.moveToUrlObj(notificationId) && chrome.tabs.create({url: notificationId});
+
+  chrome.notifications.clear(notificationId);
+});
 // ============================================================================
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {

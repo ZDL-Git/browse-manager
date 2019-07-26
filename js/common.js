@@ -224,28 +224,12 @@ let COUNTING = {
 };
 
 
-function notify_(content, timeout = 3000) {
-  let opt = {
-    type: 'basic',
-    title: chrome.i18n.getMessage('extension_name'),
-    message: content,
-    iconUrl: 'images/icon_notify_48.png',
-  };
-  chrome.notifications.create('', opt, function (id) {
-    setTimeout(function () {
-      chrome.notifications.clear(id, function () {
-      });
-    }, timeout);
-  });
-}
-
-
 let URL_UTILS = {
   moveToUrlObj: function (url) {
     try {
       return new URL(url);
     } catch (e) {
-      console.warn("Warning, new URL() failed, orgUrl:", url);
+      // console.warn("Warning, new URL() failed, orgUrl:", url);
       return null;
     }
   },
@@ -259,13 +243,14 @@ let URL_UTILS = {
       params = urlObj.searchParams;
       switch (urlObj.hostname) {
         case "www.youtube.com": {
-          params.delete('t');
+          params.forEach(function (v, k, parent) {
+            if (k !== 'v') params.delete(k);
+          });
           break;
         }
         case "www.bilibili.com": {
           params.forEach(function (v, k, parent) {
-            if (k === 'p') return;
-            params.delete(k);
+            if (k !== 'p') params.delete(k);
           });
           break;
         }
@@ -377,3 +362,47 @@ let CONTENT = {
     }
   },
 };
+
+
+function notify_(content, timeout = 3000, notificationId = '') {
+  let opt = {
+    type: 'basic',
+    title: chrome.i18n.getMessage('extension_name'),
+    message: content,
+    iconUrl: 'images/icon48.png',
+    requireInteraction: true,
+  };
+  chrome.notifications.create(notificationId, opt, function (id) {
+    if (timeout !== 0) {
+      setTimeout(function () {
+        chrome.notifications.clear(id);
+      }, timeout);
+    }
+  });
+}
+
+function createContextMenus() {
+  Object.values(OPERATIONS).forEach(function (title) {
+    chrome.contextMenus.create({
+      type: 'normal',
+      title: title, id: "Menu-" + title, contexts: ['all']
+    });
+  });
+}
+
+function checkForUpdates() {
+  let local = chrome.runtime.getManifest().version;
+  fetch('https://raw.githubusercontent.com/ZDL-Git/browse-manager/master/manifest.json')
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (json) {
+      let newest = json.version;
+      if (LS.getItem(newest) !== 'checked' && local !== newest) {
+        LS.setItem(newest, 'checked');
+        let content = `检测到新版本 ${newest}，本地版本 ${local}，点此更新。`;
+        let link = 'https://github.com/ZDL-Git/browse-manager/tree/master/distribution/crx';
+        notify_(content, 0, link);
+      }
+    });
+}

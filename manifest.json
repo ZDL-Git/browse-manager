@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "__MSG_extension_name__",
-    "version": "3.3.1",
+    "version": "3.4.0",
     "description": "__MSG_extension_description__",
     "default_locale": "zh_CN",
     "permissions": [
@@ -40,6 +40,6 @@
         "default_popup": "popup.html"
     },
     "web_accessible_resources": [
-        "images/icon_notify_*.png"
+        "images/icon*.png"
     ]
 }

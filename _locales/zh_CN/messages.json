@@ -5,6 +5,6 @@
     },
     "extension_description": {
         "description": "Description of the extension",
-        "message": "自动收藏经常访问的网站；统计访问次数；拉黑指定网站。"
+        "message": "统计访问次数；拉黑网站；自动收藏；其它。"
     }
 }
