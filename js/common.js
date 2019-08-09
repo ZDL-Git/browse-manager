@@ -57,6 +57,10 @@ let HISTORY = (function () {
     },
 
     cacheUrlWithinSetTime: function (url) {
+      if (SETTINGS.checkParam('is_diapause', 'false')
+        || SETTINGS.checkParam('diapause_time', '0'))
+        return;
+
       let sequence = Date.now();
       urlsBrowsedWithinSetTime[url] = sequence;
       setTimeout(function () {
@@ -203,6 +207,31 @@ let TABS = {
         chrome.browserAction.setBadgeText({text: '' + browseTimes, tabId: tab.id});
       }
     });
+  },
+
+  filterBlacklistUrl: function (tabId, url) {
+    if (!URL_UTILS.isBlacklist(url)) return false;
+    let noticeContent = '黑名单网站，不再访问';
+    if (HISTORY.tabLastUrlExists(tabId)) {
+      chrome.tabs.update(tabId, {url: HISTORY.getTabLastUrl(tabId)}, function (tab) {
+        notify_(noticeContent);
+        console.log(url, "黑名单网站，页面返回");
+      });
+    } else {
+      chrome.tabs.query({}, function (tabs) {
+        if (tabs.length > 1) {
+          chrome.tabs.remove(tabId);
+          notify_(noticeContent);
+          console.log(url, "黑名单网站，标签关闭");
+        } else {
+          chrome.tabs.update(tabId, {url: 'chrome-search://local-ntp/local-ntp.html'}, function () {
+            notify_(noticeContent);
+            console.log(url, "黑名单网站，页面返回");
+          });
+        }
+      });
+    }
+    return true;
   }
 };
 
@@ -283,22 +312,6 @@ let URL_UTILS = {
 
     return LS.getItem(url) === OPERATIONS.addUrlBlacklist
       || LS.getItem(this.getDomain(url)) === OPERATIONS.addDomainBlacklist;
-  },
-
-  filterBlacklistUrl: function (tabId, url) {
-    if (!this.isBlacklist(url)) return false;
-    let noticeContent = '黑名单网站，不再访问';
-    if (HISTORY.tabLastUrlExists(tabId)) {
-      chrome.tabs.update(tabId, {url: HISTORY.getTabLastUrl(tabId)}, function (tab) {
-        notify_(noticeContent);
-        console.log(url, "黑名单网站，页面返回");
-      });
-    } else {
-      chrome.tabs.remove(tabId);
-      notify_(noticeContent);
-      console.log(url, "黑名单网站，标签关闭");
-    }
-    return true;
   },
 
   isEffectual: function (tab) {

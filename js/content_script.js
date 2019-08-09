@@ -1,5 +1,5 @@
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  console.debug('Front end received message:', message, sender);
+  console.debug('Received message from BrowseManager extension background:', message, sender);
   eval(message.function).apply(this, message.hasOwnProperty('paramsArray') ? message.paramsArray : []);
 });
 
