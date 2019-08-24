@@ -29,10 +29,11 @@ function loadTableContent() {
         url = key;
       }
 
-      $('#' + table).append(
+    $(`#${table} tbody`).append(
         '<tr>' +
-        '<td class="url-column">' + url + '</td>' +
+      '<td class="decode-url">' + url + '</td>' +
         '<td class="delete-row">✕</td>' +
+      '<td class="hidden-org-url">' + key + '</td>' +
         '</tr>'
       );
     }
@@ -41,26 +42,22 @@ function loadTableContent() {
 
 function loadSettingsToPage() {
   $('.settings—container input[type=checkbox]').each(function () {
-    $(this)[0].checked = SETTINGS.checkParam($(this).attr('setting'), 'true');
+    this.checked = SETTINGS.checkParam($(this).attr('setting'), 'true');
   });
 
   $('.settings—container input[type=text]').each(function () {
     let param = $(this).attr('setting');
     let paramValue = SETTINGS.getParam(param);
-    if (param === 'diapause_time') paramValue = paramValue / 1000;
-    $(this)[0].value = paramValue;
+    if (param === SETTINGS.PARAMS.timeIgnoreDuplicate) paramValue = paramValue / 1000;
+    this.value = paramValue;
   });
 }
 
 function showAllTrs() {
-  let trs = document.getElementsByTagName("tr");
-  Array.from(trs).forEach(function (tr) {
-      tr.hidden = false;
-    }
-  );
+  document.querySelectorAll("tr").forEach(tr => tr.hidden = false);
 }
 
-//实现search时列表的实时过滤
+// 实现search时列表的实时过滤
 function addTableFilterListener() {
   let input = document.getElementById("search");
 
@@ -72,22 +69,23 @@ function addTableFilterListener() {
       return;
     }
 
-    let trs = document.getElementsByTagName("tr");
-    Array.from(trs).forEach(function (tr) {
-      let td = tr.getElementsByTagName("td")[0];
-      if (td) {
-        tr.hidden = encodeURI((td.textContent || td.innerText).trim()).toUpperCase()
-          .indexOf(encodeURI(input.value.trim()).toUpperCase()) === -1;
-      }
+    let search = input.value.trim().toUpperCase();
+    document.querySelectorAll('table > tbody > tr').forEach(function (tr) {
+      let decode_url = tr.querySelector('td.decode-url');
+      let org_url = tr.querySelector('td.hidden-org-url');
+      tr.hidden = (decode_url.textContent || decode_url.innerText).trim().toUpperCase().indexOf(search) === -1
+        && (org_url.textContent || org_url.innerText).trim().toUpperCase().indexOf(search) === -1;
     });
   };
 }
 
-//列表行删除事件
+// 列表行删除事件
 function addTableRowDeleteListener() {
   $('td.delete-row').on('click', function () {
-    COUNTING.setBrowsedTimes(encodeURI($(this).parent().find('.url-column').text()), 0);
+    let url = $(this).siblings('.hidden-org-url').text();
+    LS.removeItem(url);
     TABS.refreshActiveTabBadge();
+
     $(this).parent().remove();
   });
 }
@@ -104,7 +102,7 @@ function addSettingListener() {
   $('.settings—container input[type=text]').on('input', function () {
     let param = $(this).attr('setting');
     let paramValue = $(this).val();
-    if (param === 'diapause_time') paramValue = paramValue * 1000;
+    if (param === SETTINGS.PARAMS.timeIgnoreDuplicate) paramValue = paramValue * 1000;
     SETTINGS.setParam(param, paramValue);
   });
 
@@ -113,47 +111,45 @@ function addSettingListener() {
   });
 
   $('#hidden-file-input').on("change", function () {
-    importFileToLocalstorage(this);
+    importDataFromFile(this);
     // 以支持多次导入同名文件
     $(this).val('');
   });
 
   $('#export-data').on('click', function () {
-    exportLocalstorageToFile();
+    exportDataToFile();
   });
 
 }
 
-function exportLocalstorageToFile() {
-  let data = JSON.stringify(localStorage, null, 2);
-  chrome.downloads.download({
-    url: "data:text/json," + data,
-    filename: "BrowseManager_data.json",
-    conflictAction: "prompt", // or "overwrite" / "prompt"
-    saveAs: false, // true gives save-as dialogue
-  }, function (downloadId) {
-    console.log('localStorage导出成功');
-  });
+function exportDataToFile() {
+  chrome.storage.local.get(null,
+    function (items) {
+      let data = JSON.stringify({'LS': localStorage, 'STORAGE': items}, null, 2);
+      chrome.downloads.download({
+        url: "data:text/json;base64," + btoa(unescape(encodeURIComponent(data))),
+        filename: "BrowseManager_data.json",
+        conflictAction: "prompt", // or "overwrite" / "prompt"
+        saveAs: false, // true gives save-as dialogue
+      }, function (downloadId) {
+        console.log('localStorage导出结束');
+      });
+    }
+  )
 }
 
-function importFileToLocalstorage(inputFile) {
+function importDataFromFile(inputFile) {
   let file, fr, data;
   if (!(file = inputFile.files[0])) return;
   fr = new FileReader();
   fr.onload = function () {
-    data = this.result;
-    // 导出时为了便捷使用了JSON.stringify，但导出的文件并不是严格的json格式，
-    // 内容中的双引号并没有加反斜杠，这里导入时手动处理
-    data = data.replace('{\n  "', '{",\n  "');
-    data = data.replace('"\n}', '",\n  "}');
-    data = data.split('",\n  "');
-    data = data.slice(1, -1);
-    data.forEach(function (line) {
-      let kv = line.split('": "');
-      let key = kv.slice(0, -1).join('');
-      let value = kv[kv.length - 1];
-      LS.setItem(key, value);
-    });
+    data = JSON.parse(this.result);
+    for (let [k, v] of Object.entries(data.LS)) {
+      LS.setItem(k, v);
+    }
+    for (let [k, v] of Object.entries(data.STORAGE)) {
+      STORAGE.setItem(k, v);
+    }
   };
   fr.readAsText(file);
 }

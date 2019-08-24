@@ -18,28 +18,44 @@
 
 <div class="tables-container">
   <table class="tables" id="table-url-black">
+    <thead>
     <tr>
       <th>URL 黑名单:</th>
       <th class="delete-row"></th>
+      <th class="hidden-org-url">org url</th>
     </tr>
+    </thead>
+    <tbody></tbody>
   </table>
   <table class="tables" id="table-url-white">
+    <thead>
     <tr>
       <th>URL 白名单:</th>
       <th class="delete-row"></th>
+      <th class="hidden-org-url">org url</th>
     </tr>
+    </thead>
+    <tbody></tbody>
   </table>
   <table class="tables" id="table-domain-black">
+    <thead>
     <tr>
       <th>DOMAIN 黑名单:</th>
       <th class="delete-row"></th>
+      <th class="hidden-org-url">org url</th>
     </tr>
+    </thead>
+    <tbody></tbody>
   </table>
   <table class="tables" id="table-domain-white">
+    <thead>
     <tr>
       <th>DOMAIN 白名单:</th>
       <th class="delete-row"></th>
+      <th class="hidden-org-url">org url</th>
     </tr>
+    </thead>
+    <tbody></tbody>
   </table>
 </div>
 
@@ -48,25 +64,25 @@
     <div class="settings—container">
       <div id="settings-detail">
         <div class="settings-row">
-          <input type="checkbox" setting="is_page_show">
+          <input type="checkbox" setting="bPageShowBrowseTimes">
           <div>在页面显示访问次数</div>
           <div class="splitter">|</div>
-          <input type="checkbox" setting="is_diapause">
-          <input type="text" class="input-settings input-num" setting="diapause_time">
+          <input type="checkbox" setting="bIgnoreDuplicate">
+          <input type="text" class="input-settings input-num" setting="timeIgnoreDuplicate">
           <div>秒内重复访问不计数</div>
-          <input type="checkbox" setting="is_prompt_duplicate">
+          <input type="checkbox" setting="bPageShowDuplicate">
           <div>并提示</div>
         </div>
         <div class="settings-row">
-          <input type="checkbox" setting="is_auto_save">
+          <input type="checkbox" setting="bAutoSaveBookmark">
           <label for="bookmark-doorsill">访问达到</label><input type="text" id="bookmark-doorsill"
                                                             class="input-settings input-num"
-                                                            setting="auto_save_thre">
+                                                            setting="browseTimesTriggerAutoSaveBookmark">
           <label for="bookmark-title">次自动加入收藏夹</label><input type="text" id="bookmark-title" class="input-settings"
-                                                             setting="bookmark_title">
+                                                             setting="bookmarkFolderName">
         </div>
         <div class="settings-row">
-          <input type="checkbox" setting="csdn_auto_expand">
+          <input type="checkbox" setting="bCsdnAutoExpand">
           <div>CSDN自动展开全文</div>
           <div class="splitter">|</div>
           <input type="file" id="hidden-file-input" value="hidden">

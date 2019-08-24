@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 function autoExpandContent() {
   document.addEventListener('DOMContentLoaded', function (event) {
-    let readmoreBtn = document.querySelectorAll("#btn-readmore,.btn-readmore")[0];
+    let readmoreBtn = document.querySelector("#btn-readmore,.btn-readmore");
     if (!!readmoreBtn) {
       readmoreBtn.click() && readmoreBtn.remove();
     }
