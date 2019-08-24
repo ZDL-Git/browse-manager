@@ -314,10 +314,8 @@ let URL_UTILS = {
     return function (url) {
       let h = stableUrlCache[url];
       if (h) {
-        consoleDebug('use cache', url);
         return h;
       } else {
-        consoleDebug('new stable', url);
         let stableUrl, urlObj, params;
         urlObj = this.moveToUrlObj(url);
         if (urlObj) {
