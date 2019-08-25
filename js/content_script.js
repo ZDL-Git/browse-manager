@@ -17,46 +17,44 @@ function autoExpandContent() {
 // ============================================================================
 
 let DISPLAYER = (function () {
-  let div;
+  let template = (function () {
+    let d = document.createElement("div");
+    d.style.position = "fixed";
+    d.style.top = "15vh";
+    d.style.left = "20vw";
+    d.style.zIndex = "2147483647";
+    d.style.fontSize = "200px";
+    d.style.textShadow = "-2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue";
+    d.style.lineHeight = "1";// 解决因从body继承line-height属性导致纵向位置错误的问题
+    return d;
+  })();
   let dis;
 
   return {
-    create: function () {
-      div = document.createElement("div");
-      div.style.position = "fixed";
-      div.style.top = "15vh";
-      div.style.left = "20vw";
-      div.style.zIndex = "2147483647";
-      div.style.fontSize = "200px";
-      div.style.textShadow = "-2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue";
-      div.style.lineHeight = "1";// 解决因从body继承line-height属性导致纵向位置错误的问题
-    },
-
-    clearDis: function () {
-      try {
-        document.body.removeChild(dis);
-      } catch (e) {
-      }
-    },
-
-    display: function (c, css) {
-      DISPLAYER.clearDis();
-      div || DISPLAYER.create();
-      dis = div.cloneNode(true);
-      if (css)
+    display: function (content, css) {
+      DISPLAYER.remove(dis);
+      dis = template.cloneNode(true);
+      if (css) {
         for (let [k, v] of Object.entries(css)) {
           dis.style.setProperty(k, v);
         }
-      dis.innerHTML = c;
-
+      }
+      dis.innerHTML = content;
       onBodyReady(function () {
-        document.body.appendChild(dis);
+        let local = dis;
+        document.body.appendChild(local);
         setTimeout(function () {
-          DISPLAYER.clearDis();
+          DISPLAYER.remove(local);
         }, 1300);
       });
-    }
-  };
+    },
+    remove: function (d) {
+      try {
+        document.body.removeChild(d);
+      } catch (e) {
+      }
+    },
+  }
 })();
 
 function onBodyReady(callback) {
