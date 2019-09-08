@@ -54,14 +54,13 @@ body .tables-container table .delete-row {
 body .tables-container table .delete-row:hover {
   color: red;
 }
-
 body .tables-container table .hidden-org-url {
   display: none;
 }
 body .tables-container #table-url-white,
 body .tables-container #table-domain-white {
   color: black;
-  background-color: white;
+  background-color: ghostwhite;
 }
 body .tables-container #table-url-black,
 body .tables-container #table-domain-black {
