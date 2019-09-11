@@ -10,7 +10,7 @@ if git status --porcelain | grep -v "??"; then
 fi
 
 rm -rfv ${work_path}/${tmp_path}; mkdir ${tmp_path}
-git clone https://github.com/ZDL-Git/${project_name} ${work_path}/${tmp_path}/${project_name}
+git clone --depth 1 https://github.com/ZDL-Git/${project_name} ${work_path}/${tmp_path}/${project_name}
 
 version=`cat ${tmp_path}/${project_name}/manifest.json | jq -r '.version'`
 echo "当前版本号 ${version}"
