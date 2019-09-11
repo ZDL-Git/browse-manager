@@ -26,24 +26,12 @@ Chrome扩展：实现网址/域名拉黑，访问次数统计，自动收藏。�
 
 ✑ CSDN自动展开全文：帮你自动点击csdn的"展开阅读全文"。（有类似想法的话可以fork后自己添加）
 
-### 安装方法
+### 安装
 
-项目暂未提交Chrome Store，需使用以下方式安装。
+[从Chrome应用商店安装](https://chrome.google.com/webstore/detail/browse-manager/fibpimjmadkibpjkhlngcapnkkhhikpf?hl=zh-CN)
 
-方法一：下载最新版本crx文件 
-[下载地址](https://github.com/ZDL-Git/browse-manager/tree/master/distribution/crx)
-
-Mac/Linux：
-
-    安装：浏览器打开地址 chrome://extensions/ 然后将下载的crx文件拖入页面，确认安装即可。
-    升级：与安装一样不用删除旧版本，直接拖入新版本crx即可。
-
-Windows：
-
-    安装：Windows系统下Chrome阻止安装非商店来源的crx文件，只能安装已解压的扩展程序，可以按照这篇文章中的方法二处理 [详细步骤见此博客](https://www.jianshu.com/p/bb51dc91b93a)
-    升级：下载新版本，按博客方法解压后将目录中的子文件拷贝到旧版本目录，覆盖旧版本文件，后在插件管理界面点击刷新按钮即可。注意不能删除原版本插件，否则会导致历史数据丢失。
-
-方法二：clone仓库（平时可git pull方便获取最新的版本），用"加载已解压的扩展程序"的方式加载目录即可
+注：需要科学上网；
+前期使用crx文件或clone方式安装的，可以导出数据后切换到商店安装方式（建议先用原先方式升级到Github中发布的最新版本，然后导出数据）。
 
 ### 注意事项
 
