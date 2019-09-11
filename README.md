@@ -28,10 +28,18 @@ Chrome扩展：实现网址/域名拉黑，访问次数统计，自动收藏。�
 
 ### 安装
 
-[从Chrome应用商店安装](https://chrome.google.com/webstore/detail/browse-manager/fibpimjmadkibpjkhlngcapnkkhhikpf?hl=zh-CN)
+#### 方法一：[从Chrome应用商店安装](https://chrome.google.com/webstore/detail/browse-manager/fibpimjmadkibpjkhlngcapnkkhhikpf?hl=zh-CN)
 
-注：需要科学上网；
-前期使用crx文件或clone方式安装的，可以导出数据后切换到商店安装方式（建议先用原先方式升级到Github中发布的最新版本，然后导出数据）。
+推荐，需要科学上网。
+
+注：前期使用crx文件或clone方式安装的，可以导出数据后切换到商店安装方式（建议先用原先方式升级到Github中发布的最新版本，然后导出数据）。
+
+#### 方法二：安装crx文件，[下载地址](https://github.com/ZDL-Git/browse-manager/tree/master/distribution/crx)
+
+只适用Mac/Linux，不需要科学上网：
+
+    安装：浏览器打开地址 chrome://extensions/ 然后将下载的crx文件拖入页面，确认安装即可。
+    升级：与安装一样不用删除旧版本，直接拖入新版本crx即可。
 
 ### 注意事项
 
