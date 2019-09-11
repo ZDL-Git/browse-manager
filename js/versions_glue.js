@@ -34,6 +34,8 @@ function moveToStorage(key, value) {
 }
 
 function changeParamName(src, dst) {
-  SETTINGS.getParam(dst) || SETTINGS.setParam(dst, SETTINGS.getParam(src));
+  if (!SETTINGS.getParam(src) || SETTINGS.getParam(dst)) return;
+
+  SETTINGS.setParam(dst, SETTINGS.getParam(src));
   SETTINGS.delParam(src);
 }
