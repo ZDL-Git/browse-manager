@@ -67,7 +67,7 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
 });
 
 // ============================================================================
-
+// 浏览器启动时无此事件
 chrome.tabs.onCreated.addListener(function (tab) {
   // 此处主要拦截黑名单
   // 浏览器设置为新窗口打开链接的，在此判断。速度比在onUpdated中处理快
@@ -124,6 +124,13 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
   })
 });
 
+// 浏览器启动时无此事件
+chrome.windows.onCreated.addListener(function (a) {
+  consoleDebug('window onCreated', a);
+  chrome.windows.getAll(function (windows) {
+    windows.length === 1 && EVENTS.onChromeUserOpening(windows[0]["id"]);
+  });
+});
 // ============================================================================
 
 // TODO 修改timeIgnoreDuplicate值后有时不会立即生效：只有已经执行的setTimeout达到了以前设置的时长才会释放。在改回设置时也有此问题

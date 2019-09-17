@@ -56,8 +56,11 @@ let RUNLOG = {
 let HISTORY = (function () {
   // 对设定时间内频繁访问做过滤，不计数
   let urlsBrowsedWithinSetTime = {};
-  // 记录上次访问url，实现在对应页面打开黑名单网页时的拦截
+  // 记录tab最近一次访问的url
+  // 新url先判断是否黑名单，是则指向tabsLastUrl中的值（为空则关闭标签），非黑名单则更新
   let tabsLastUrl = {};
+  // 解决浏览器多用户环境切换导致的计数增加问题
+  let tabsOnChromeUserOpening = {};
 
   return {
     getTabLastUrl: function (tabId) {
@@ -99,9 +102,32 @@ let HISTORY = (function () {
 
     browsedWithinSetTime: function (url) {
       return urlsBrowsedWithinSetTime.hasOwnProperty(url);
-    }
+    },
+
+    setTabsOnChromeUserOpening: function (tabs) {
+      tabsOnChromeUserOpening = tabs;
+    },
+
+    inTabsOnChromeUserOpening: function (tab) {
+      for (const [key, value] of Object.entries(tabsOnChromeUserOpening)) {
+        console.log(key, value);
+        if (value.id === tab.id && value.url === tab.url) {
+          delete tabsOnChromeUserOpening[key];
+          return true;
+        }
+      }
+      return false;
+    },
   };
 })();
+
+let EVENTS = {
+  onChromeUserOpening: function (windowId) {
+    chrome.tabs.query({windowId: windowId}, function (tabs) {
+      HISTORY.setTabsOnChromeUserOpening(tabs);
+    })
+  },
+};
 
 let SETTINGS = {
   PARAMS: Object.freeze({
@@ -378,7 +404,7 @@ let URL_UTILS = {
     let tabId = tab.id;
 
     // 黑白名单
-    if (this.isWhitelist(stableUrl) || this.isBlacklist(stableUrl)) {
+    if (URL_UTILS.isWhitelist(stableUrl) || URL_UTILS.isBlacklist(stableUrl)) {
       consoleDebug(stableUrl, "黑白名单");
       return URL_UTILS.STATUS.INVALID;
     }
@@ -400,6 +426,12 @@ let URL_UTILS = {
     if (SETTINGS.checkParam(SETTINGS.PARAMS.bIgnoreDuplicate, 'true') && HISTORY.browsedWithinSetTime(stableUrl)) {
       consoleDebug(stableUrl, "在设置的忽略间隔中");
       return URL_UTILS.STATUS.DUPLICATE;
+    }
+
+    // 避免浏览器启动后打开另一用户导致其所有默认启动页面计数加一
+    if (HISTORY.inTabsOnChromeUserOpening(tab)) {
+      consoleDebug(stableUrl, "浏览器用户启动恢复页面");
+      return URL_UTILS.STATUS.INVALID;
     }
 
     consoleDebug(stableUrl, "计数有效");
