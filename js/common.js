@@ -545,19 +545,20 @@ let UTILS = {
   },
 
   checkForUpdates: function () {
-    let local = chrome.runtime.getManifest().version;
-    fetch('https://raw.githubusercontent.com/ZDL-Git/browse-manager/master/manifest.json')
+    let installFromWBS = chrome.runtime.getManifest().update_url;
+    installFromWBS || fetch('https://raw.githubusercontent.com/ZDL-Git/browse-manager/master/manifest.json')
       .then(function (response) {
         return response.json();
       })
       .then(function (json) {
-        let newest = json.version;
-        if (local !== newest && RUNLOG.read(newest) !== 'notified') {
-          let content = `检测到新版本 ${newest}，本地版本 ${local}，点此更新。`;
+        let localVersion = chrome.runtime.getManifest().version;
+        let githubNewest = json.version;
+        if (localVersion !== githubNewest && RUNLOG.read(githubNewest) !== 'notified') {
+          let content = `检测到新版本 ${githubNewest}，本地版本 ${localVersion}，点此更新。`;
           let link = 'https://github.com/ZDL-Git/browse-manager/tree/master/distribution/crx';
           UTILS.notify_(content, 0, link);
         }
-        RUNLOG.write(newest, 'notified');
+        RUNLOG.write(githubNewest, 'notified');
       });
   },
 
