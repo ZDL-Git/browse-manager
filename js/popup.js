@@ -1,44 +1,121 @@
 window.onload = function () {
-  loadTableContent();
-  addTableFilterListener();
-  addTableRowDeleteListener();
+  TABLES.init();
+
   loadSettingsToPage();
   addSettingListener();
 };
 
-function loadTableContent() {
+let TABLES = {
+  input: $('input#search'),
+  tables: $('table'),
+  init: function () {
+    TABLES.loadTables();
+    TABLES.addTheadEventsListeners();
+    TABLES.addContentEventsListeners();
+    TABLES.addSearchFilterListener();
+  },
+  loadTables: function () {
+    LS.forEach(function (key, value) {
+        TABLES.appendToTable(key, null, value);
+      }
+    )
+  },
+  reLoadTables: function () {
+    TABLES.tables.find('tbody tr').remove();
+    TABLES.loadTables();
+  },
+  appendToTable: function (orgUrl, tableName, op) {
+    if (tableName) {
+    } else if (op === OPERATIONS.menu.addUrlWhitelist) {
+      tableName = 'table-url-white';
+    } else if (op === OPERATIONS.menu.addUrlBlacklist) {
+      tableName = 'table-url-black';
+    } else if (op === OPERATIONS.menu.addDomainWhitelist) {
+      tableName = 'table-domain-white';
+    } else if (op === OPERATIONS.menu.addDomainBlacklist) {
+      tableName = 'table-domain-black';
+    } else {
+      return;
+    }
 
-  LS.forEach(function (key, value) {
-      let table, url;
-      if (value === OPERATIONS.addUrlWhitelist) {
-        table = 'table-url-white';
-      } else if (value === OPERATIONS.addUrlBlacklist) {
-        table = 'table-url-black';
-      } else if (value === OPERATIONS.addDomainWhitelist) {
-        table = 'table-domain-white';
-      } else if (value === OPERATIONS.addDomainBlacklist) {
-        table = 'table-domain-black';
-      } else {
-        // 相当于continue
+    let url;
+    try {
+      url = decodeURI(orgUrl);
+    } catch (e) {
+      url = orgUrl;
+    }
+
+    $(`table#${tableName} tbody`).append(
+      '<tr>' +
+      '<td class="decode-url">' + url + '</td>' +
+      '<td class="delete-row">✘</td>' +
+      '<td class="hidden-org-url">' + orgUrl + '</td>' +
+      '</tr>'
+    );
+  },
+  showAllTrs: function () {
+    document.querySelectorAll("tr").forEach(tr => tr.hidden = false);
+  },
+  addTheadEventsListeners: function () {
+    $('th.add-row').on('click', function () {
+      let tableName, url, op, tip = '请先在此处输入需要添加的网址';
+      if (!(url = TABLES.input.val()) && TABLES.input.val(tip) || url === tip) {
         return;
       }
 
-      try {
-        url = decodeURI(key);
-      } catch (e) {
-        url = key;
+      tableName = $(this).closest('table').attr('id');
+      tableName === 'table-url-white' && (op = OPERATIONS.menu.addUrlWhitelist)
+      || tableName === 'table-url-black' && (op = OPERATIONS.menu.addUrlBlacklist)
+      || tableName === 'table-domain-white' && (op = OPERATIONS.menu.addDomainWhitelist)
+      || tableName === 'table-domain-black' && (op = OPERATIONS.menu.addDomainBlacklist);
+      OPERATIONS.execOp(null, url, op);
+      TABLES.reLoadTables();
+      TABLES.addContentEventsListeners();
+      TABLES.input.trigger('input');
+    });
+  },
+  addContentEventsListeners: function () {
+    $('td.delete-row').on('click', function () {
+      let url = $(this).siblings('.hidden-org-url').text();
+      LS.removeItem(url);
+      TABS.refreshActiveTabBadge();
+
+      $(this).closest('tr').remove();
+    });
+  },
+  // 实现search时列表的实时过滤
+  addSearchFilterListener: function () {
+    let input = document.getElementById("search");
+    input.oninput = function () {
+      // 先全部show再判断隐藏的模式比较稳定
+      TABLES.showAllTrs();
+
+      if (!input.value) {
+        return;
       }
 
-    $(`#${table} tbody`).append(
-        '<tr>' +
-      '<td class="decode-url">' + url + '</td>' +
-        '<td class="delete-row">✕</td>' +
-      '<td class="hidden-org-url">' + key + '</td>' +
-        '</tr>'
-      );
-    }
-  )
-}
+      let searchLC = input.value.trim().toLowerCase();
+      document.querySelectorAll('table > tbody > tr').forEach(function (tr) {
+        let decodeUrl = tr.querySelector('td.decode-url');
+        let orgUrl = tr.querySelector('td.hidden-org-url');
+        let table = tr.closest('table').id;
+        if (
+          ['table-domain-black', 'table-domain-white'].includes(table)
+          && (decodeUrl.innerText.trim().toLowerCase() === URL_UTILS.getDomain(searchLC)
+          || orgUrl.innerText.trim().toLowerCase() === URL_UTILS.getDomain(searchLC))
+        ) {
+          return;
+        }
+        if (
+          decodeUrl.innerText.trim().toLowerCase().indexOf(searchLC) === -1
+          && orgUrl.innerText.trim().toLowerCase().indexOf(searchLC) === -1
+        ) {
+          tr.hidden = true;
+        }
+      });
+    };
+  },
+};
 
 function loadSettingsToPage() {
   $('.settings—container input[type=checkbox]').each(function () {
@@ -50,43 +127,6 @@ function loadSettingsToPage() {
     let paramValue = SETTINGS.getParam(param);
     if (param === SETTINGS.PARAMS.timeIgnoreDuplicate) paramValue = paramValue / 1000;
     this.value = paramValue;
-  });
-}
-
-function showAllTrs() {
-  document.querySelectorAll("tr").forEach(tr => tr.hidden = false);
-}
-
-// 实现search时列表的实时过滤
-function addTableFilterListener() {
-  let input = document.getElementById("search");
-
-  input.oninput = function () {
-    // 先全部show再判断隐藏的模式比较稳定
-    showAllTrs();
-
-    if (!input.value) {
-      return;
-    }
-
-    let search = input.value.trim().toUpperCase();
-    document.querySelectorAll('table > tbody > tr').forEach(function (tr) {
-      let decode_url = tr.querySelector('td.decode-url');
-      let org_url = tr.querySelector('td.hidden-org-url');
-      tr.hidden = (decode_url.textContent || decode_url.innerText).trim().toUpperCase().indexOf(search) === -1
-        && (org_url.textContent || org_url.innerText).trim().toUpperCase().indexOf(search) === -1;
-    });
-  };
-}
-
-// 列表行删除事件
-function addTableRowDeleteListener() {
-  $('td.delete-row').on('click', function () {
-    let url = $(this).siblings('.hidden-org-url').text();
-    LS.removeItem(url);
-    TABS.refreshActiveTabBadge();
-
-    $(this).parent().remove();
   });
 }
 

@@ -47,12 +47,20 @@ body .tables-container table {
   text-align: left;
   opacity: 0.7;
 }
-body .tables-container table .delete-row {
+
+body .tables-container table th.add-row,
+body .tables-container table td.delete-row {
   width: 4%;
   text-align: center;
 }
-body .tables-container table .delete-row:hover {
+
+body .tables-container table th.add-row:hover,
+body .tables-container table td.delete-row:hover {
   color: red;
+}
+
+body .tables-container table th.add-row {
+  color: rgba(0, 128, 0, 0.81);
 }
 body .tables-container table .hidden-org-url {
   display: none;

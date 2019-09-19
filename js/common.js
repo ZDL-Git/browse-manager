@@ -1,8 +1,41 @@
 let OPERATIONS = {
-  addUrlBlacklist: "URL加入黑名单（不再访问）",
-  addUrlWhitelist: "URL加入白名单（不再统计）",
-  addDomainBlacklist: "Domain加入黑名单（不再访问）",
-  addDomainWhitelist: "Domain加入白名单（不再统计）",
+  menu: {
+    addUrlBlacklist: "URL加入黑名单（不再访问）",
+    addUrlWhitelist: "URL加入白名单（不再统计）",
+    addDomainBlacklist: "Domain加入黑名单（不再访问）",
+    addDomainWhitelist: "Domain加入白名单（不再统计）"
+  },
+
+  execOp: function (tab, url, op) {
+    let stableUrl = URL_UTILS.getStableUrl(tab && tab.url || url);
+    let domain = URL_UTILS.getDomain(stableUrl);
+
+    if (/^chrome/.test(stableUrl)) {
+      UTILS.notify_('chrome相关的网页默认在白名单。');
+      return;
+    }
+
+    switch (op) {
+      case OPERATIONS.menu.addUrlBlacklist: {
+        LS.setItem(stableUrl, OPERATIONS.menu.addUrlBlacklist);
+        BOOKMARK.delBookmark(stableUrl);
+        break;
+      }
+      case OPERATIONS.menu.addUrlWhitelist: {
+        LS.setItem(stableUrl, OPERATIONS.menu.addUrlWhitelist);
+        break;
+      }
+      case OPERATIONS.menu.addDomainBlacklist: {
+        LS.setItem(domain, OPERATIONS.menu.addDomainBlacklist);
+        break;
+      }
+      case OPERATIONS.menu.addDomainWhitelist: {
+        LS.setItem(domain, OPERATIONS.menu.addDomainWhitelist);
+        break;
+      }
+    }
+    tab && TABS.setTabBadge(tab);
+  }
 };
 
 let LS = {
@@ -31,7 +64,6 @@ let STORAGE = {
   },
 
   setItem: function (key, value) {
-    consoleDebug(key, value);
     chrome.storage.local.set({[key]: value}, function () {
       consoleDebug(`chrome.storage.local.set\n key: ${key}\n value: ${value}`);
     });
@@ -110,7 +142,6 @@ let HISTORY = (function () {
 
     inTabsOnChromeUserOpening: function (tab) {
       for (const [key, value] of Object.entries(tabsOnChromeUserOpening)) {
-        console.log(key, value);
         if (value.id === tab.id && value.url === tab.url) {
           delete tabsOnChromeUserOpening[key];
           return true;
@@ -335,51 +366,61 @@ let URL_UTILS = {
     }
   },
 
+  isValidUrl: function (url) {
+    try {
+      new URL(url);
+      return true;
+    } catch (e) {
+    }
+    // TODO 需优化
+    // 部分百度等网站url无法转URL对象，但是能正常访问，在此兼容
+    let arr = url.split("/");
+    return arr[0] && arr[1] === '' && arr[2];
+  },
+
   getStableUrl: (function () {
     let stableUrlCache = {};
     return function (url) {
       let h = stableUrlCache[url];
-      if (h) {
-        return h;
-      } else {
-        let stableUrl, urlObj, params;
-        urlObj = this.moveToUrlObj(url);
-        if (urlObj) {
-          urlObj.hash = '';  // 解决url中带有hash字段导致的页面重复计数问题。
-          params = urlObj.searchParams;
-          switch (urlObj.hostname) {
-            case "www.youtube.com": {
-              params.forEach(function (v, k, parent) {
-                if (k !== 'v') params.delete(k);
-              });
-              break;
-            }
-            case "www.bilibili.com": {
-              params.forEach(function (v, k, parent) {
-                if (k !== 'p') params.delete(k);
-              });
-              break;
-            }
-            // ...
+      if (h) return h;
+
+      let stableUrl, urlObj, params;
+      urlObj = URL_UTILS.moveToUrlObj(url);
+      if (urlObj) {
+        urlObj.hash = '';  // 解决url中带有hash字段导致的页面重复计数问题。
+        params = urlObj.searchParams;
+        switch (urlObj.hostname) {
+          case "www.youtube.com": {
+            params.forEach(function (v, k, parent) {
+              if (k !== 'v') params.delete(k);
+            });
+            break;
           }
+          case "www.bilibili.com": {
+            params.forEach(function (v, k, parent) {
+              if (k !== 'p') params.delete(k);
+            });
+            break;
+          }
+          // ...
         }
-
-        stableUrl = (urlObj || url).toString().replace(/\/$/, "");
-        url === stableUrl || consoleDebug(url + '  ==>stableUrl: ' + stableUrl);
-
-        if (Object.keys(stableUrlCache).length > 20) {
-          stableUrlCache = {};
-        }
-        stableUrlCache[url] = stableUrl;
-
-        return stableUrl;
       }
+
+      stableUrl = (urlObj || URL_UTILS.isValidUrl(url) && url || url + '(网址格式错误)').toString().replace(/\/$/, "");
+      url === stableUrl || consoleDebug(url + '  ==>stableUrl: ' + stableUrl);
+
+      Object.keys(stableUrlCache).length > 20 && (stableUrlCache = {});
+      stableUrlCache[url] = stableUrl;
+
+      return stableUrl;
     }
   })(),
 
   getDomain: function (url) {
-    let arr = url.split("/");
-    return arr[0] + "//" + arr[2];
+    let arr, urlObj;
+    return (urlObj = URL_UTILS.moveToUrlObj(url)) && urlObj.origin !== 'null' && urlObj.origin
+      || URL_UTILS.isValidUrl(url) && (arr = url.split("/")) && arr[0] + "//" + arr[2]
+      || url + "(域名格式错误)";
   },
 
   isWhitelist: function (url) {
@@ -388,15 +429,15 @@ let URL_UTILS = {
       || /^https?:\/\/www\.google\.com/.test(url);
 
     return isDefaultWhitelist
-      || LS.getItem(url) === OPERATIONS.addUrlWhitelist
-      || LS.getItem(this.getDomain(url)) === OPERATIONS.addDomainWhitelist;
+      || LS.getItem(url) === OPERATIONS.menu.addUrlWhitelist
+      || LS.getItem(this.getDomain(url)) === OPERATIONS.menu.addDomainWhitelist;
   },
 
   isBlacklist: function (url) {
     if (/^chrome/.test(url)) return false;
 
-    return LS.getItem(url) === OPERATIONS.addUrlBlacklist
-      || LS.getItem(this.getDomain(url)) === OPERATIONS.addDomainBlacklist;
+    return LS.getItem(url) === OPERATIONS.menu.addUrlBlacklist
+      || LS.getItem(this.getDomain(url)) === OPERATIONS.menu.addDomainBlacklist;
   },
 
   checkBrowsingStatus: function (tab) {
@@ -495,7 +536,7 @@ let UTILS = {
   },
 
   createContextMenus: function () {
-    Object.values(OPERATIONS).forEach(function (title) {
+    Object.values(OPERATIONS.menu).forEach(function (title) {
       chrome.contextMenus.create({
         type: 'normal',
         title: title, id: "Menu-" + title, contexts: ['all']
@@ -521,7 +562,7 @@ let UTILS = {
   },
 
   getStorage: function (key, value) {
-    return (key.startsWith('SETTINGS:') || key.startsWith('RUNLOG:') || Object.values(OPERATIONS).includes(value))
+    return (key.startsWith('SETTINGS:') || key.startsWith('RUNLOG:') || Object.values(OPERATIONS.menu).includes(value))
       ? 'LS' : 'STORAGE';
   },
 };

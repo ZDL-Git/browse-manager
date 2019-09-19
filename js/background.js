@@ -36,34 +36,7 @@ chrome.storage.onChanged.addListener(function (changes, area) {
 // ============================================================================
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-  let stableUrl = URL_UTILS.getStableUrl(tab.url);
-  let domain = URL_UTILS.getDomain(stableUrl);
-
-  if (/^chrome/.test(stableUrl)) {
-    UTILS.notify_('chrome相关的网页默认在白名单。');
-    return;
-  }
-
-  switch (info.menuItemId) {
-    case "Menu-" + OPERATIONS.addUrlBlacklist: {
-      LS.setItem(stableUrl, OPERATIONS.addUrlBlacklist);
-      BOOKMARK.delBookmark(stableUrl);
-      break;
-    }
-    case "Menu-" + OPERATIONS.addUrlWhitelist: {
-      LS.setItem(stableUrl, OPERATIONS.addUrlWhitelist);
-      break;
-    }
-    case "Menu-" + OPERATIONS.addDomainBlacklist: {
-      LS.setItem(domain, OPERATIONS.addDomainBlacklist);
-      break;
-    }
-    case "Menu-" + OPERATIONS.addDomainWhitelist: {
-      LS.setItem(domain, OPERATIONS.addDomainWhitelist);
-      break;
-    }
-  }
-  TABS.setTabBadge(tab);
+  OPERATIONS.execOp(tab, null, info.menuItemId.slice(5));
 });
 
 // ============================================================================
