@@ -61,10 +61,6 @@ Chrome扩展：实现网址/域名拉黑，访问次数统计，自动收藏。�
 
 如遇到安装或者使用问题，可选以下方式联系
 
-QQ群: 744791224
-
-<img src="https://github.com/ZDL-Git/resources-store/blob/master/images/QQ-group-matrix-code-for-BM.png" width="200px"/>
-
 Email: zdl_daily@163.com
 
 留言：
