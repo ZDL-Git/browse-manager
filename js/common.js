@@ -223,8 +223,10 @@ let BOOKMARK = {
     let stableUrl = URL_UTILS.getStableUrl(tab.url);
 
     BOOKMARK.touchBookmarkFolder(function (bookmarkId) {
-      chrome.bookmarks.search({url: stableUrl}, function (results) {
-        if (results.length === 0) {
+      chrome.bookmarks.search({url: tab.url}, function (results) {
+        if (results.length > 0) return;
+        chrome.bookmarks.search({url: stableUrl}, function (results) {
+          if (results.length > 0) return;
           chrome.bookmarks.create({
             parentId: bookmarkId,
             url: stableUrl,
@@ -232,7 +234,7 @@ let BOOKMARK = {
           }, function (bookmark) {
             UTILS.notify_('经常访问此网页,自动加入收藏夹:\n' + bookmark.title, 5000);
           })
-        }
+        })
       })
     })
   },
@@ -387,7 +389,7 @@ let URL_UTILS = {
       let stableUrl, urlObj, params;
       urlObj = URL_UTILS.moveToUrlObj(url);
       if (urlObj) {
-        urlObj.hash = '';  // 解决url中带有hash字段导致的页面重复计数问题。
+        url.match('#.*/') || (urlObj.hash = '');  // 解决url中带有hash字段导致的页面重复计数问题。match剔除导航到其它页面的hash格式
         params = urlObj.searchParams;
         switch (urlObj.hostname) {
           case "www.youtube.com": {
