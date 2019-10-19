@@ -192,6 +192,13 @@ let SETTINGS = {
   getParam: function (paramName) {
     return LS.getItem('SETTINGS:' + paramName);
   },
+  getAllParams: function () {
+    let obj = {};
+    for (let [k, v] of Object.entries(SETTINGS.PARAMS)) {
+      obj[v] = SETTINGS.getParam(v);
+    }
+    return obj;
+  },
   checkParam: function (paramName, expect) {
     return SETTINGS.getParam(paramName) === expect;
   },
@@ -513,8 +520,8 @@ let CONTENT = {
     if (SETTINGS.checkParam(SETTINGS.PARAMS.bCsdnAutoExpand, 'true')
       && (stableUrl.match("^https://blog.csdn.net") || stableUrl.match("^https://.*.iteye.com"))) {
       TABS.sendMessageToTab(tab.id, {
-        function: "autoExpandContent"
-      })
+        function: "csdnExpandContent"
+      });
     }
   },
 };

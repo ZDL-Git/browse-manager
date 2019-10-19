@@ -3,15 +3,39 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   eval(message.function).apply(this, message.hasOwnProperty('paramsArray') ? message.paramsArray : []);
 });
 
+let sendMessageToBackground = function (msg,
+                                        responseCallback = (response) =>
+                                          console.log('get response from background: ', response)
+) {
+  chrome.runtime.sendMessage(msg, responseCallback);
+};
+
 // ============================================================================
 
-function autoExpandContent() {
-  document.addEventListener('DOMContentLoaded', function (event) {
-    let readmoreBtn = document.querySelector("#btn-readmore,.btn-readmore");
-    if (!!readmoreBtn) {
-      readmoreBtn.click() && readmoreBtn.remove();
-    }
+(function onLoading() {
+  console.log('content_script.js onLoading...');
+  sendMessageToBackground({function: "SETTINGS.getAllParams"}, function (response) {
+    console.log('response from extension:', response);
+    response.bCsdnAutoExpand === 'true'
+    && window.location.href.match(/((^)(https:\/\/blog.csdn.net|https:\/\/.*.iteye.com))/g)
+    && csdnExpandContent();
+
   })
+})();
+
+// ============================================================================
+
+function csdnExpandContent() {
+  function rbc_() {
+    console.debug('csdnExpandContent exec');
+    let readmoreBtn = document.querySelector("#btn-readmore,.btn-readmore");
+    readmoreBtn && readmoreBtn.click() && readmoreBtn.remove();
+  }
+
+  document.addEventListener('DOMContentLoaded', function (event) {
+    rbc_();
+  });
+  rbc_();
 }
 
 // ============================================================================

@@ -6,8 +6,6 @@ chrome.runtime.onInstalled.addListener(function () {
   TABS.registerTabs();
 });
 
-// ============================================================================
-
 // Fired when a profile that has this extension installed first starts up.
 // This event is not fired when an incognito profile is started,
 // even if this extension is operating in 'split' incognito mode.
@@ -23,6 +21,14 @@ chrome.runtime.onStartup.addListener(function () {
 
   setTimeout(UTILS.checkForUpdates, 10000);
 })();
+
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  consoleDebug(sender.tab ? "from a content script:" + sender.tab.url : "from the extension", request);
+  // sendResponse(eval(request.function).apply(this, message.hasOwnProperty('paramsArray') ? message.paramsArray : []));
+  if (request.function === 'SETTINGS.getAllParams') {
+    sendResponse(SETTINGS.getAllParams());
+  }
+});
 
 chrome.notifications.onClicked.addListener(function (notificationId) {
   URL_UTILS.moveToUrlObj(notificationId) && chrome.tabs.create({url: notificationId});
