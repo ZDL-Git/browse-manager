@@ -18,7 +18,7 @@ confirm(){
     esac
 }
 
-if git cherry -v; then
+if git status --porcelain | grep -v "??" || git cherry -v; then
     echo "===有未提交或push的代码"
     confirm
 fi
