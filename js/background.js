@@ -42,7 +42,8 @@ chrome.storage.onChanged.addListener(function (changes, area) {
 // ============================================================================
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-  OPERATIONS.execOp(tab, null, info.menuItemId.slice(5));
+  consoleDebug('contextMenus clicked->', info, tab);
+  OPERATIONS.execOp(tab, info.srcUrl, info.menuItemId.slice(5));
 });
 
 // ============================================================================

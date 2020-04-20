@@ -537,6 +537,7 @@ let UTILS = {
       requireInteraction: true,
     };
     chrome.notifications.create(notificationId, opt, function (id) {
+      consoleDebug('chrome notification:', opt);
       timeout !== 0
       && setTimeout(function () {
         chrome.notifications.clear(id);
