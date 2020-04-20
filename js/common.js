@@ -7,7 +7,7 @@ let OPERATIONS = {
   },
 
   execOp: function (tab, url, op) {
-    let stableUrl = URL_UTILS.getStableUrl(tab && tab.url || url);
+    let stableUrl = URL_UTILS.getStableUrl(url || tab && tab.url);
     let domain = URL_UTILS.getDomain(stableUrl);
 
     if (/^chrome/.test(stableUrl)) {
