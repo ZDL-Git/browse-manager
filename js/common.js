@@ -11,7 +11,7 @@ let OPERATIONS = {
     let domain = URL_UTILS.getDomain(stableUrl);
 
     if (/^chrome/.test(stableUrl)) {
-      UTILS.notify_('chrome相关的网页默认在白名单。');
+      UTILS.notify_('chrome相关的网页默认在白名单->' + stableUrl);
       return;
     }
 
