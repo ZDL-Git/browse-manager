@@ -22,7 +22,8 @@
         "scripts": [
             "js/common.js",
             "js/versions_glue.js",
-            "js/background.js"
+            "js/background.js",
+            "js/bookmark.js"
         ]
     },
     "content_scripts": [

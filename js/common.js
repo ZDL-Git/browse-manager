@@ -502,7 +502,7 @@ let CONTENT = {
     let css = times > 3 ? {color: '#fe4a49'} : {};
     TABS.sendMessageToTab(tab.id, {
       function: "DISPLAYER.display",
-      paramsArray: [times, css]
+      paramsArray: [times, css, 'tip_template']
     });
   },
 
@@ -511,7 +511,7 @@ let CONTENT = {
 
     TABS.sendMessageToTab(tab.id, {
       function: "DISPLAYER.display",
-      paramsArray: ['DUPLICATE', {'font-size': '50px'}]
+      paramsArray: ['DUPLICATE', {'font-size': '50px'}, 'tip_template']
     });
   },
 

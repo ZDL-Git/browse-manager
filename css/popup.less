@@ -24,7 +24,7 @@ body {
       border: none;
       padding-left: 10px;
       padding-right: 10px;
-      font-size: 150%;
+      font-size: 1.3em;
       background: #eeeeee;
       margin: 6px 0;
     }
@@ -80,11 +80,19 @@ body {
   }
 
 
-  .settings-bg {
-    padding: 4px 8px;
+  .settings—container {
     bottom: 0;
     background: #eeeeee;
-    text-shadow: 1px 1px 1px #ffffff;
+    //text-shadow: 1px 1px 1px #ffffff;
+
+    #settings-detail {
+      display: none;
+      padding: 4px 4px 0;
+    }
+
+    #settings-resident {
+      padding: 4px 8px;
+    }
 
     .settings-row {
       height: 20px;
@@ -94,6 +102,24 @@ body {
       * {
         display: inline;
         vertical-align: middle;
+      }
+
+      input {
+        height: 16px;
+        color: #3d3c3c;
+
+        &[type='button'] {
+          padding: 0 2px;
+          border-width: 1px;
+          border-radius: 2px;
+          font-size: 1px;
+        }
+
+        &[type='text'] {
+          margin-left: 4px;
+          font-size: 10px !important;
+          text-align: center;
+        }
       }
     }
 
@@ -105,9 +131,6 @@ body {
       width: 3em;
     }
 
-    #settings-detail {
-      display: none;
-    }
 
     #hidden-file-input {
       width: 0;
@@ -130,6 +153,6 @@ body {
   }
 
   .splitter {
-    margin: 0 0.4em;
+    margin: 0 0.2em;
   }
 }

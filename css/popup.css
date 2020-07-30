@@ -24,7 +24,7 @@ body #search-wrapper #search {
   border: none;
   padding-left: 10px;
   padding-right: 10px;
-  font-size: 150%;
+  font-size: 1.3em;
   background: #eeeeee;
   margin: 6px 0;
 }
@@ -47,18 +47,15 @@ body .tables-container table {
   text-align: left;
   opacity: 0.7;
 }
-
 body .tables-container table th.add-row,
 body .tables-container table td.delete-row {
   width: 4%;
   text-align: center;
 }
-
 body .tables-container table th.add-row:hover,
 body .tables-container table td.delete-row:hover {
   color: red;
 }
-
 body .tables-container table th.add-row {
   color: rgba(0, 128, 0, 0.81);
 }
@@ -70,39 +67,69 @@ body .tables-container #table-domain-white {
   color: black;
   background-color: ghostwhite;
 }
+
 body .tables-container #table-url-black,
 body .tables-container #table-domain-black {
   color: white;
   background-color: black;
 }
-body .settings-bg {
-  padding: 4px 8px;
+
+body .settings—container {
   bottom: 0;
   background: #eeeeee;
-  text-shadow: 1px 1px 1px #ffffff;
 }
-body .settings-bg .settings-row {
+
+body .settings—container #settings-detail {
+  display: none;
+  padding: 4px 4px 0;
+}
+
+body .settings—container #settings-resident {
+  padding: 4px 8px;
+}
+
+body .settings—container .settings-row {
   height: 20px;
   margin: 0;
   padding: 0;
 }
-body .settings-bg .settings-row * {
+
+body .settings—container .settings-row * {
   display: inline;
   vertical-align: middle;
 }
-body .settings-bg .input-settings {
+
+body .settings—container .settings-row input {
+  height: 16px;
+  color: #3d3c3c;
+}
+
+body .settings—container .settings-row input[type='button'] {
+  padding: 0 2px;
+  border-width: 1px;
+  border-radius: 2px;
+  font-size: 1px;
+}
+
+body .settings—container .settings-row input[type='text'] {
+  margin-left: 4px;
+  font-size: 10px !important;
+  text-align: center;
+}
+
+body .settings—container .input-settings {
   height: 90%;
 }
-body .settings-bg .input-num {
+
+body .settings—container .input-num {
   width: 3em;
 }
-body .settings-bg #settings-detail {
-  display: none;
-}
-body .settings-bg #hidden-file-input {
+
+body .settings—container #hidden-file-input {
   width: 0;
   visibility: hidden;
 }
+
 body input {
   outline: none;
 }
@@ -115,6 +142,6 @@ body .icon {
   height: 14px;
 }
 body .splitter {
-  margin: 0 0.4em;
+  margin: 0 0.2em;
 }
 /*# sourceMappingURL=popup.css.map */
