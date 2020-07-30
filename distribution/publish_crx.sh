@@ -28,6 +28,7 @@ rm -rf ${work_path}/${tmp_path}; mkdir ${tmp_path}
 #为了保证源码和发布版本的严格统一，从github库clone代码
 git clone --depth 1 https://github.com/ZDL-Git/${project_name} ${work_path}/${tmp_path}/${project_name}
 rm -rf ${work_path}/${tmp_path}/${project_name}/distribution
+
 version=`cat ${tmp_path}/${project_name}/manifest.json | jq -r '.version'`
 echo "===当前版本号 ${version}"
 if [[ -f ${work_path}/${tmp_path}/${project_name}/distribution/crx/${project_name}-${version}.crx ]]
