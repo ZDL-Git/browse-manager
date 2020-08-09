@@ -65,23 +65,27 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
   if (changeInfo['status'] === 'loading') {
     if (changeInfo.hasOwnProperty('url')) {
+      // 白名单还需更新badge，判重，页面个性化等
       if (TABS.filterBlacklistUrl(tabId, stableUrl)) {
         return;
       }
 
       let s;
       if ((s = URL_UTILS.checkBrowsingStatus(tab)) === URL_UTILS.STATUS.INCREASE) {
-        COUNTING.increaseBrowseTimes(tab);
+        COUNTING.increaseAndShowBrowseTimes(tab);
       } else if (s === URL_UTILS.STATUS.DUPLICATE) {
         CONTENT.displayDuplicateOnPageWithCheck(tab);
+        TABS.setTabBadge(tab);
+      } else {
+        TABS.setTabBadge(tab);
       }
       HISTORY.cacheUrlWithinSetTime(stableUrl);
       HISTORY.updateTabLastUrl(tab);
       CONTENT.individuateSite(tab);
+    } else {
+      // 直接F5刷新时changeInfo不含url，但是需要显示badge计数
+      tab.active && TABS.setTabBadge(tab);
     }
-
-    // 直接F5刷新时changeInfo不含url，但是需要显示badge计数
-    tab.active && TABS.setTabBadge(tab);
   }
 });
 

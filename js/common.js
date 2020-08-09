@@ -336,8 +336,8 @@ let TABS = {
 };
 
 let COUNTING = {
-  increaseBrowseTimes: function (tab) { // 含异步接口，妥协单一职责
-    consoleDebug('COUNTING.increaseBrowseTimes()');
+  increaseAndShowBrowseTimes: function (tab) { // 含异步接口，妥协单一职责
+    consoleDebug('COUNTING.increaseAndShowBrowseTimes()');
     let stableUrl = URL_UTILS.getStableUrl(tab.url);
     COUNTING.getBrowsedTimes(stableUrl, function (times) {
       times = (times || 0) + 1;
