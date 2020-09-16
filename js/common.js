@@ -344,7 +344,7 @@ let COUNTING = {
       COUNTING.setBrowsedTimes(stableUrl, times);
 
       TABS.setTabBadge(tab);
-      CONTENT.displayBrowseTimesOnPageWithCheck(tab, times);
+      CONTENT.displayBrowseTimesOnPageIfEnabled(tab, times);
 
       SETTINGS.checkParam(SETTINGS.PARAMS.bAutoSaveBookmark, 'true')
       && times === parseInt(SETTINGS.getParam(SETTINGS.PARAMS.browseTimesTriggerAutoSaveBookmark))
@@ -496,7 +496,7 @@ let URL_UTILS = {
 };
 
 let CONTENT = {
-  displayBrowseTimesOnPageWithCheck: function (tab, times) {
+  displayBrowseTimesOnPageIfEnabled: function (tab, times) {
     if (!tab.active || SETTINGS.checkParam(SETTINGS.PARAMS.bPageShowBrowseTimes, 'false')) return;
 
     let css = times > 3 ? {color: '#fe4a49'} : {};
@@ -506,7 +506,7 @@ let CONTENT = {
     });
   },
 
-  displayDuplicateOnPageWithCheck: function (tab) {
+  displayDuplicateOnPageIfEnabled: function (tab) {
     if (!tab.active || SETTINGS.checkParam(SETTINGS.PARAMS.bPageShowDuplicate, 'false')) return;
 
     TABS.sendMessageToTab(tab.id, {

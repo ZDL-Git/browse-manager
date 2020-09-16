@@ -74,7 +74,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
       if ((s = URL_UTILS.checkBrowsingStatus(tab)) === URL_UTILS.STATUS.INCREASE) {
         COUNTING.increaseAndShowBrowseTimes(tab);
       } else if (s === URL_UTILS.STATUS.DUPLICATE) {
-        CONTENT.displayDuplicateOnPageWithCheck(tab);
+        CONTENT.displayDuplicateOnPageIfEnabled(tab);
         TABS.setTabBadge(tab);
       } else {
         TABS.setTabBadge(tab);
