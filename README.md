@@ -1,6 +1,22 @@
 # Browse Manager
 
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE) [![GitHub stars](https://img.shields.io/github/stars/ZDL-Git/browse-manager.svg)](https://github.com/ZDL-Git/browse-manager/stargazers)
+<p>
+<a href="https://github.com/ZDL-Git/browse-manager/blob/master/LICENSE">
+<img src="https://img.shields.io/badge/license-MIT-brightgreen.svg" alt="">
+</a>
+<a href="https://zdl.cool/#browse-manager" target="_blank">
+<img src="https://img.shields.io/website-up-down-green-red/https/github.io.svg?label=author%20website" alt="">
+</a>
+<a href="https://chrome.google.com/webstore/detail/browse-manager/fibpimjmadkibpjkhlngcapnkkhhikpf">
+<img src="https://img.shields.io/chrome-web-store/v/fibpimjmadkibpjkhlngcapnkkhhikpf.svg?style=flat&color=green" alt="">
+</a>
+<a href="https://github.com/ZDL-Git/browse-manager">
+<img src="https://img.shields.io/badge/github-browse--manager-blue" alt="">
+</a>
+<a href="https://github.com/ZDL-Git/browse-manager/stargazers">
+<img src="https://img.shields.io/github/stars/ZDL-Git/browse-manager.svg?label=stars" alt="">
+</a>
+</p>
 
 ### 项目说明
 

@@ -58,7 +58,7 @@ let TABLES = {
   },
   addTheadEventsListeners: function () {
     $('th.add-row').on('click', function () {
-      let tableName, url, op, tip = '请先在此处输入需要添加的网址';
+      let tableName, url, op, tip = '请先在此处输入需要添加的网址 [推荐在页面右键操作]';
       if (!(url = TABLES.input.val()) && TABLES.input.attr('placeholder', tip).focus() || url === tip) {
         return;
       }
