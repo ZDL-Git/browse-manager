@@ -170,6 +170,7 @@ let SETTINGS = {
     bPageShowDuplicate: 'bPageShowDuplicate',
     bPageShowBrowseTimes: 'bPageShowBrowseTimes',
     bCsdnAutoExpand: 'bCsdnAutoExpand',
+    bNotifyBlacklist: 'bNotifyBlacklist',
   }),
   initialize: function () {
     this.touchParam(this.PARAMS.bAutoSaveBookmark, true);
@@ -180,6 +181,7 @@ let SETTINGS = {
     this.touchParam(this.PARAMS.bPageShowDuplicate, true);
     this.touchParam(this.PARAMS.bPageShowBrowseTimes, true);
     this.touchParam(this.PARAMS.bCsdnAutoExpand, false);
+    this.touchParam(this.PARAMS.bNotifyBlacklist, true);
   },
   touchParam: function (paramName, defaultValue) {
     if (!SETTINGS.getParam(paramName)) {
@@ -314,18 +316,21 @@ let TABS = {
     let noticeContent = '黑名单网站，不再访问';
     if (HISTORY.tabLastUrlExists(tabId)) {
       chrome.tabs.update(tabId, {url: HISTORY.getTabLastUrl(tabId)}, function (tab) {
-        UTILS.notify_(noticeContent);
+        SETTINGS.checkParam(SETTINGS.PARAMS.bNotifyBlacklist, 'true')
+        && UTILS.notify_(noticeContent);
         console.log(url, "黑名单网站，页面返回");
       });
     } else {
       chrome.tabs.query({}, function (tabs) {
         if (tabs.length > 1) {
           chrome.tabs.remove(tabId);
-          UTILS.notify_(noticeContent);
+          SETTINGS.checkParam(SETTINGS.PARAMS.bNotifyBlacklist, 'true')
+          && UTILS.notify_(noticeContent);
           console.log(url, "黑名单网站，标签关闭");
         } else {
           chrome.tabs.update(tabId, {url: 'chrome-search://local-ntp/local-ntp.html'}, function () {
-            UTILS.notify_(noticeContent);
+            SETTINGS.checkParam(SETTINGS.PARAMS.bNotifyBlacklist, 'true')
+            && UTILS.notify_(noticeContent);
             console.log(url, "黑名单网站，页面返回");
           });
         }
