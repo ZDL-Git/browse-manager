@@ -11,11 +11,14 @@ let sendMessageToBackground = function (msg,
 };
 
 // ============================================================================
-
+// 1.页面执行的方式一
 (function onLoading() {
   console.log('content_script.js onLoading...');
   sendMessageToBackground({function: "SETTINGS.getAllParams"}, function (response) {
     console.log('response from extension:', response);
+
+    // TODO: 此处进行网站个性化
+    // csdn 网站目前已经取消了默认折叠内容的设置，所以此功能不再使用，只作为demo供参考。
     response.bCsdnAutoExpand === 'true'
     && window.location.href.match(/((^)(https:\/\/blog.csdn.net|https:\/\/.*.iteye.com))/g)
     && csdnExpandContent();
@@ -26,16 +29,20 @@ let sendMessageToBackground = function (msg,
 // ============================================================================
 
 function csdnExpandContent() {
+  // csdn 网站目前已经取消了默认折叠内容的设置，所以此功能不再使用，只作为demo供参考。
   function rbc_() {
     console.debug('csdnExpandContent exec');
     let readmoreBtn = document.querySelector("#btn-readmore,.btn-readmore");
     readmoreBtn && readmoreBtn.click() && readmoreBtn.remove();
   }
 
-  document.addEventListener('DOMContentLoaded', function (event) {
+  if (['loaded', 'interactive', 'complete'].includes(document.readyState)) {
     rbc_();
-  });
-  rbc_();
+  } else {
+    document.addEventListener('DOMContentLoaded', function (event) {
+      rbc_();
+    });
+  }
 }
 
 // ============================================================================

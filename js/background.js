@@ -81,7 +81,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
       }
       HISTORY.cacheUrlWithinSetTime(stableUrl);
       HISTORY.updateTabLastUrl(tab);
-      CONTENT.individuateSite(tab);
+      // CONTENT.individuateSite(tab);
     } else {
       // 直接F5刷新时changeInfo不含url，但是需要显示badge计数
       tab.active && TABS.setTabBadge(tab);
@@ -117,4 +117,4 @@ chrome.windows.onCreated.addListener(function (a) {
 });
 // ============================================================================
 
-// TODO 修改timeIgnoreDuplicate值后有时不会立即生效：只有已经执行的setTimeout达到了以前设置的时长才会释放。在改回设置时也有此问题
+// TODO: 修改timeIgnoreDuplicate值后有时不会立即生效：只有已经执行的setTimeout达到了以前设置的时长才会释放。在改回设置时也有此问题

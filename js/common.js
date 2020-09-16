@@ -179,7 +179,7 @@ let SETTINGS = {
     this.touchParam(this.PARAMS.timeIgnoreDuplicate, 120000);
     this.touchParam(this.PARAMS.bPageShowDuplicate, true);
     this.touchParam(this.PARAMS.bPageShowBrowseTimes, true);
-    this.touchParam(this.PARAMS.bCsdnAutoExpand, true);
+    this.touchParam(this.PARAMS.bCsdnAutoExpand, false);
   },
   touchParam: function (paramName, defaultValue) {
     if (!SETTINGS.getParam(paramName)) {
@@ -381,7 +381,7 @@ let URL_UTILS = {
       return true;
     } catch (e) {
     }
-    // TODO 需优化
+    // TODO: 需优化
     // 部分百度等网站url无法转URL对象，但是能正常访问，在此兼容
     let arr = url.split("/");
     return arr[0] && arr[1] === '' && arr[2];
@@ -515,8 +515,10 @@ let CONTENT = {
     });
   },
 
+  // 2.页面执行的方式二
   individuateSite: function (tab) {
     let stableUrl = URL_UTILS.getStableUrl(tab.url);
+    // csdn 网站目前已经取消了默认折叠内容的设置，所以此功能不再使用，只作为demo供参考。
     if (SETTINGS.checkParam(SETTINGS.PARAMS.bCsdnAutoExpand, 'true')
       && (stableUrl.match("^https://blog.csdn.net") || stableUrl.match("^https://.*.iteye.com"))) {
       TABS.sendMessageToTab(tab.id, {
