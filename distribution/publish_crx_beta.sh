@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+#####################
+# 本地开发文件打包
+#####################
 
 project_name="browse-manager"
 work_path=$(dirname $0)
