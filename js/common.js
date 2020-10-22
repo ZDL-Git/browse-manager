@@ -124,16 +124,12 @@ let HISTORY = (function () {
         || SETTINGS.checkParam(SETTINGS.PARAMS.timeIgnoreDuplicate, '0'))
         return;
 
-      let sequence = Date.now();
-      urlsBrowsedWithinSetTime[url] = sequence;
-      setTimeout(function () {
-        if (urlsBrowsedWithinSetTime[url] === sequence)
-          delete urlsBrowsedWithinSetTime[url];
-      }, SETTINGS.getParam(SETTINGS.PARAMS.timeIgnoreDuplicate));
+      urlsBrowsedWithinSetTime[url] = Date.now();
     },
 
     browsedWithinSetTime: function (url) {
-      return urlsBrowsedWithinSetTime.hasOwnProperty(url);
+      if (!urlsBrowsedWithinSetTime.hasOwnProperty(url)) return false;
+      return Date.now() - urlsBrowsedWithinSetTime[url] < SETTINGS.getParam(SETTINGS.PARAMS.timeIgnoreDuplicate);
     },
 
     setTabsOnChromeUserOpening: function (tabs) {
