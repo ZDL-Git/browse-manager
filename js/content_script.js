@@ -77,15 +77,17 @@ let DISPLAYER = (function () {
 
   return {
     display: function (content, css, template_) {
+      typeof dis === 'object' && DISPLAYER._remove(dis);
+
       let template = eval(template_);
-      DISPLAYER._remove(dis);
       dis = template.cloneNode(true);
+      dis.innerHTML = content;
       if (css) {
         for (let [k, v] of Object.entries(css)) {
           dis.style.setProperty(k, v);
         }
       }
-      dis.innerHTML = content;
+
       onBodyReady(function () {
         let local = dis;
         document.body.appendChild(local);
@@ -95,10 +97,7 @@ let DISPLAYER = (function () {
       });
     },
     _remove: function (d) {
-      try {
-        document.body.removeChild(d);
-      } catch (e) {
-      }
+      document.body.removeChild(d);
     },
   }
 })();
