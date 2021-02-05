@@ -279,10 +279,19 @@ let TABS = {
   },
   sendMessageToTab: function (tabId, message) {
     // 解决阻塞问题
-    setTimeout(function () {
+    let try_times = 0;
+    let intervalID = setInterval(function () {
+      consoleDebug(try_times + 1 + ' time sendMesage trying...');
       try {
-        chrome.tabs.sendMessage(tabId, message);
+        chrome.tabs.sendMessage(tabId, message, responseCallback = function (response) {
+          window.clearInterval(intervalID);
+          consoleDebug('sendMessage finished. response:', response);
+        });
       } catch (e) {
+      }
+      if (++try_times === 4) {
+        console.warn('try sendMessageToTab 4 times, still failed! stop');
+        window.clearInterval(intervalID);
       }
     }, 200);
   },
@@ -502,8 +511,8 @@ let CONTENT = {
 
     let css = times > 3 ? {color: '#fe4a49'} : {};
     TABS.sendMessageToTab(tab.id, {
-      function: "DISPLAYER.display",
-      paramsArray: [times, css, 'tip_template']
+      function: "DISPLAYER.displayText",
+      paramsArray: [times, css]
     });
   },
 
@@ -511,21 +520,9 @@ let CONTENT = {
     if (!tab.active || SETTINGS.checkParam(SETTINGS.PARAMS.bPageShowDuplicate, 'false')) return;
 
     TABS.sendMessageToTab(tab.id, {
-      function: "DISPLAYER.display",
-      paramsArray: ['DUPLICATE', {'font-size': '50px'}, 'tip_template']
+      function: "DISPLAYER.displayText",
+      paramsArray: ['DUPLICATE', {'font-size': '50px'}]
     });
-  },
-
-  // 2.页面执行的方式二
-  individuateSite: function (tab) {
-    let stableUrl = URL_UTILS.getStableUrl(tab.url);
-    // csdn 网站目前已经取消了默认折叠内容的设置，所以此功能不再使用，只作为demo供参考。
-    if (SETTINGS.checkParam(SETTINGS.PARAMS.bCsdnAutoExpand, 'true')
-      && (stableUrl.match("^https://blog.csdn.net") || stableUrl.match("^https://.*.iteye.com"))) {
-      TABS.sendMessageToTab(tab.id, {
-        function: "csdnExpandContent"
-      });
-    }
   },
 };
 
@@ -581,8 +578,5 @@ let UTILS = {
   },
 };
 
-let consoleDebug = (function () {
-  return (SETTINGS.checkParam('debug', 'true'))
-    ? console.debug : () => {
-    };
-})();
+let consoleDebug =
+  SETTINGS.checkParam('debug', 'true') ? console.debug : () => void 0;

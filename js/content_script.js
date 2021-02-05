@@ -1,6 +1,7 @@
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  console.debug('Received message from BrowseManager extension background:', message, sender);
+  console.debug('received message from BrowseManager extension background:', message, sender);
   eval(message.function).apply(this, message.hasOwnProperty('paramsArray') ? message.paramsArray : []);
+  sendResponse('finished');
 });
 
 let sendMessageToBackground = function (msg,
@@ -10,9 +11,7 @@ let sendMessageToBackground = function (msg,
   chrome.runtime.sendMessage(msg, responseCallback);
 };
 
-// ============================================================================
-// 1.页面执行的方式一
-(function onLoading() {
+function onLoading() {
   console.log('content_script.js onLoading...');
   sendMessageToBackground({function: "SETTINGS.getAllParams"}, function (response) {
     console.log('response from extension:', response);
@@ -24,7 +23,85 @@ let sendMessageToBackground = function (msg,
     && csdnExpandContent();
 
   })
-})();
+}
+
+// onLoading();
+
+// ============================================================================
+
+class DISPLAYER {
+  static tip_template = function () {
+    let d = document.createElement('div');
+    d.innerHTML = '<div style="position: fixed;' +
+      'top: 15vh; left: 20vw;' +
+      'z-index: 2147483647;' +
+      'font-size: 200px;' +
+      'text-shadow: -2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue;' +
+      'line-height: 1;"></div>'
+    return d.firstChild;
+  };
+  static bookmark_template = function () {
+    let d = document.createElement('div');
+    d.innerHTML = '<div style="position: fixed;' +
+      'top: 15vh; bottom: 15vh; left: 20vw; right: 20vw;' +
+      'z-index: 2147483647;' +
+      'font-size: 200px;' +
+      'background-color: white;' +
+      'text-shadow: -2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue;' +
+      'line-height: 1;"></div>'
+    return d.firstChild;
+  };
+  // 用来多次删除，防止重叠
+  static tip_div;
+  static bookmark_div;
+
+  static displayText(content, css) {
+    typeof DISPLAYER.tip_div === 'object' && DISPLAYER._remove(DISPLAYER.tip_div);
+
+    DISPLAYER.tip_div = DISPLAYER.tip_template();
+    DISPLAYER.tip_div.innerHTML = content;
+    DISPLAYER._apply_css(DISPLAYER.tip_div, css);
+
+    CONDITION.onBodyReady(function () {
+      document.body.appendChild(DISPLAYER.tip_div);
+      setTimeout(function () {
+        DISPLAYER._remove(DISPLAYER.tip_div);
+      }, 1300);
+    });
+  }
+
+  static _apply_css(div, css) {
+    if (typeof css !== 'object') {
+      console.warn('css type error:', typeof css, css);
+      return;
+    }
+    for (let [p, v] of Object.entries(css)) {
+      div.style.setProperty(p, v);
+    }
+  }
+
+  static _remove(div) {
+    document.body.removeChild(div);
+  }
+}
+
+
+class CONDITION {
+  static onBodyReady(callback) {
+    this.waitFor(function () {
+      return document.body;
+    }, callback);
+  }
+
+  static waitFor(condition, callback) {
+    if (!condition()) {
+      window.setTimeout(this.waitFor.bind(null, condition, callback), 100);
+    } else {
+      callback();
+    }
+  }
+}
+
 
 // ============================================================================
 
@@ -42,76 +119,5 @@ function csdnExpandContent() {
     document.addEventListener('DOMContentLoaded', function (event) {
       rbc_();
     });
-  }
-}
-
-// ============================================================================
-
-let DISPLAYER = (function () {
-  let tip_template = (function () {
-    let d = document.createElement("div");
-    d.style.position = "fixed";
-    d.style.top = "15vh";
-    d.style.left = "20vw";
-    d.style.zIndex = "2147483647";
-    d.style.fontSize = "200px";
-    d.style.textShadow = "-2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue";
-    d.style.lineHeight = "1";// 解决因从body继承line-height属性导致纵向位置错误的问题
-    return d;
-  })();
-  let bookmark_template = (function () {
-    let d = document.createElement("div");
-    d.style.position = "fixed";
-    d.style.top = "15vh";
-    d.style.bottom = "15vh";
-    d.style.left = "20vw";
-    d.style.right = "20vw";
-    d.style.zIndex = "2147483647";
-    d.style.fontSize = "200px";
-    d.style.backgroundColor = 'white';
-    d.style.textShadow = "-2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue";
-    d.style.lineHeight = "1";// 解决因从body继承line-height属性导致纵向位置错误的问题
-    return d;
-  })();
-  let dis;
-
-  return {
-    display: function (content, css, template_) {
-      typeof dis === 'object' && DISPLAYER._remove(dis);
-
-      let template = eval(template_);
-      dis = template.cloneNode(true);
-      dis.innerHTML = content;
-      if (css) {
-        for (let [k, v] of Object.entries(css)) {
-          dis.style.setProperty(k, v);
-        }
-      }
-
-      onBodyReady(function () {
-        let local = dis;
-        document.body.appendChild(local);
-        setTimeout(function () {
-          DISPLAYER._remove(local);
-        }, 1300);
-      });
-    },
-    _remove: function (d) {
-      document.body.removeChild(d);
-    },
-  }
-})();
-
-function onBodyReady(callback) {
-  waitFor(function () {
-    return document.body;
-  }, callback);
-}
-
-function waitFor(condition, callback) {
-  if (!condition()) {
-    window.setTimeout(waitFor.bind(null, condition, callback), 100);
-  } else {
-    callback();
   }
 }

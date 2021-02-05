@@ -81,7 +81,6 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
       }
       HISTORY.cacheUrlWithinSetTime(stableUrl);
       HISTORY.updateTabLastUrl(tab);
-      // CONTENT.individuateSite(tab);
     } else {
       // 直接F5刷新时changeInfo不含url，但是需要显示badge计数
       tab.active && TABS.setTabBadge(tab);
