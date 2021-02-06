@@ -3,8 +3,10 @@ let OPERATIONS = {
     addUrlBlacklist: "URL加入黑名单（不再访问）",
     addUrlWhitelist: "URL加入白名单（不再统计）",
     addDomainBlacklist: "Domain加入黑名单（不再访问）",
-    addDomainWhitelist: "Domain加入白名单（不再统计）"
+    addDomainWhitelist: "Domain加入白名单（不再统计）",
+    addPrefixBlacklist: "Prefix加入黑名单（不再访问）"
   },
+  PrefixBlacklist_LS_key: 'PrefixBlacklist_list',
 
   execOp: function (tab, url, op) {
     let stableUrl = URL_UTILS.getStableUrl(url || tab && tab.url);
@@ -31,6 +33,29 @@ let OPERATIONS = {
       }
       case OPERATIONS.menu.addDomainWhitelist: {
         LS.setItem(domain, OPERATIONS.menu.addDomainWhitelist);
+        break;
+      }
+      case OPERATIONS.menu.addPrefixBlacklist: {
+        if (tab) {
+          let css = {
+            'font-size': '30px',
+            'background-color': '#87CEEB',
+            'text-shadow': '',
+            'padding': '2vh',
+            'left': '10vw',
+          };
+          TABS.sendMessageToTab(tab.id, {
+            function: "DISPLAYER.displayText",
+            params: [{
+              'content': '请点击插件图标，输入后点击前缀黑名单表表头➕号即可',
+              'css': css,
+              'keep_time': 10000,
+            }]
+          });
+        } else {
+          // url is prefix, here
+          PREFIXBLACKLIST.push(url);
+        }
         break;
       }
     }
@@ -374,7 +399,7 @@ let COUNTING = {
   }
 };
 
-
+// TODO: 切换到class
 let URL_UTILS = {
   moveToUrlObj: function (url) {
     try {
@@ -399,6 +424,11 @@ let URL_UTILS = {
 
   getStableUrl: (function () {
     let stableUrlCache = {};
+    let filter = function (params, keep_param) {
+      params.forEach(function (v, k, parent) {
+        if (k !== keep_param) params.delete(k);
+      });
+    };
     return function (url) {
       let h = stableUrlCache[url];
       if (h) return h;
@@ -410,15 +440,11 @@ let URL_UTILS = {
         params = urlObj.searchParams;
         switch (urlObj.hostname) {
           case "www.youtube.com": {
-            params.forEach(function (v, k, parent) {
-              if (k !== 'v') params.delete(k);
-            });
+            filter(params, 'v');
             break;
           }
           case "www.bilibili.com": {
-            params.forEach(function (v, k, parent) {
-              if (k !== 'p') params.delete(k);
-            });
+            filter(params, 'p')
             break;
           }
           // ...
@@ -456,7 +482,8 @@ let URL_UTILS = {
     if (/^chrome/.test(url)) return false;
 
     return LS.getItem(url) === OPERATIONS.menu.addUrlBlacklist
-      || LS.getItem(this.getDomain(url)) === OPERATIONS.menu.addDomainBlacklist;
+      || LS.getItem(this.getDomain(url)) === OPERATIONS.menu.addDomainBlacklist
+      || PREFIXBLACKLIST.isMember(url);
   },
 
   checkBrowsingStatus: function (tab) {
@@ -505,6 +532,33 @@ let URL_UTILS = {
   })
 };
 
+let PREFIXBLACKLIST = {
+  fetchAll: function () {
+    return JSON.parse(LS.getItem(OPERATIONS.PrefixBlacklist_LS_key) || '[]');
+  },
+  push: function (url) {
+    let prefixBlackList = this.fetchAll();
+    prefixBlackList.includes(url) || prefixBlackList.push(url);
+    this._save(prefixBlackList);
+  },
+  remove: function (url) {
+    let prefixBlackList = this.fetchAll();
+    prefixBlackList = prefixBlackList.filter(function (p) {
+      return p !== url;
+    });
+    this._save(prefixBlackList);
+  },
+  _save: function (prefixBlackList) {
+    console.debug('_save()');
+    LS.setItem(OPERATIONS.PrefixBlacklist_LS_key, JSON.stringify(prefixBlackList));
+  },
+  isMember: function (url) {
+    return this.fetchAll().some(function (prefix) {
+      return url.startsWith(prefix);
+    });
+  },
+};
+
 let CONTENT = {
   displayBrowseTimesOnPageIfEnabled: function (tab, times) {
     if (!tab.active || SETTINGS.checkParam(SETTINGS.PARAMS.bPageShowBrowseTimes, 'false')) return;
@@ -512,7 +566,10 @@ let CONTENT = {
     let css = times > 3 ? {color: '#fe4a49'} : {};
     TABS.sendMessageToTab(tab.id, {
       function: "DISPLAYER.displayText",
-      paramsArray: [times, css]
+      params: [{
+        'content': times,
+        'css': css,
+      }]
     });
   },
 
@@ -521,7 +578,10 @@ let CONTENT = {
 
     TABS.sendMessageToTab(tab.id, {
       function: "DISPLAYER.displayText",
-      paramsArray: ['DUPLICATE', {'font-size': '50px'}]
+      params: [{
+        'content': 'DUPLICATE',
+        'css': {'font-size': '50px'},
+      }]
     });
   },
 };
@@ -573,7 +633,7 @@ let UTILS = {
   },
 
   getStorage: function (key, value) {
-    return (key.startsWith('SETTINGS:') || key.startsWith('RUNLOG:') || Object.values(OPERATIONS.menu).includes(value))
+    return (key.startsWith('SETTINGS:') || key.startsWith('RUNLOG:') || Object.values(OPERATIONS.menu).includes(value) || key === OPERATIONS.PrefixBlacklist_LS_key)
       ? 'LS' : 'STORAGE';
   },
 };

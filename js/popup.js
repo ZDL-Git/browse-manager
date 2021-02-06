@@ -16,7 +16,14 @@ let TABLES = {
   },
   loadTables: function () {
     LS.forEach(function (key, value) {
-        TABLES.appendToTable(key, null, value);
+        if (key === OPERATIONS.PrefixBlacklist_LS_key) {
+          let prefixes = PREFIXBLACKLIST.fetchAll();
+          prefixes.forEach(function (prefix) {
+            TABLES.appendToTable(prefix, OPERATIONS.menu.addPrefixBlacklist);
+          });
+        } else {
+          TABLES.appendToTable(key, value);
+        }
       }
     )
   },
@@ -24,9 +31,8 @@ let TABLES = {
     TABLES.tables.find('tbody tr').remove();
     TABLES.loadTables();
   },
-  appendToTable: function (orgUrl, tableName, op) {
-    if (tableName) {
-    } else if (op === OPERATIONS.menu.addUrlWhitelist) {
+  appendToTable: function (orgUrl, op) {
+    if (op === OPERATIONS.menu.addUrlWhitelist) {
       tableName = 'table-url-white';
     } else if (op === OPERATIONS.menu.addUrlBlacklist) {
       tableName = 'table-url-black';
@@ -34,6 +40,8 @@ let TABLES = {
       tableName = 'table-domain-white';
     } else if (op === OPERATIONS.menu.addDomainBlacklist) {
       tableName = 'table-domain-black';
+    } else if (op === OPERATIONS.menu.addPrefixBlacklist) {
+      tableName = 'table-prefix-black';
     } else {
       return;
     }
@@ -67,7 +75,8 @@ let TABLES = {
       tableName === 'table-url-white' && (op = OPERATIONS.menu.addUrlWhitelist)
       || tableName === 'table-url-black' && (op = OPERATIONS.menu.addUrlBlacklist)
       || tableName === 'table-domain-white' && (op = OPERATIONS.menu.addDomainWhitelist)
-      || tableName === 'table-domain-black' && (op = OPERATIONS.menu.addDomainBlacklist);
+      || tableName === 'table-domain-black' && (op = OPERATIONS.menu.addDomainBlacklist)
+      || tableName === 'table-prefix-black' && (op = OPERATIONS.menu.addPrefixBlacklist);
       OPERATIONS.execOp(null, url, op);
       TABLES.reLoadTables();
       TABLES.addContentEventsListeners();
@@ -77,7 +86,11 @@ let TABLES = {
   addContentEventsListeners: function () {
     $('td.delete-row').on('click', function () {
       let url = $(this).siblings('.hidden-org-url').text();
-      LS.removeItem(url);
+      if ($(this).closest('table')[0].id === 'table-prefix-black') {
+        PREFIXBLACKLIST.remove(url);
+      } else {
+        LS.removeItem(url);
+      }
       TABS.refreshActiveTabBadge();
 
       $(this).closest('tr').remove();

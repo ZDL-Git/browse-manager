@@ -1,6 +1,6 @@
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   console.debug('BM::received message from BrowseManager extension background:', message, sender);
-  eval(message.function).apply(this, message.hasOwnProperty('paramsArray') ? message.paramsArray : []);
+  eval(message.function).apply(this, message.hasOwnProperty('params') ? message.params : {});
   sendResponse('finished');
 });
 
@@ -55,7 +55,11 @@ class DISPLAYER {
   static tip_div;
   static bookmark_div;
 
-  static displayText(content, css) {
+  static displayText(params) {
+    let content = params['content'] || '';
+    let css = params['css'] || {};
+    let keep_time = params['keep_time'] || 1300;
+
     typeof DISPLAYER.tip_div === 'object' && DISPLAYER._remove(DISPLAYER.tip_div);
 
     DISPLAYER.tip_div = DISPLAYER.tip_template();
@@ -70,7 +74,7 @@ class DISPLAYER {
       document.body.appendChild(DISPLAYER.tip_div);
       setTimeout(function () {
         DISPLAYER._remove(DISPLAYER.tip_div);
-      }, 1300);
+      }, keep_time);
     });
   }
 
@@ -85,7 +89,7 @@ class DISPLAYER {
   }
 
   static _remove(div) {
-    div.outerHTML = "";
+    div.remove();
   }
 }
 

@@ -67,69 +67,57 @@ body .tables-container #table-domain-white {
   color: black;
   background-color: ghostwhite;
 }
-
+body .tables-container #table-prefix-black,
 body .tables-container #table-url-black,
 body .tables-container #table-domain-black {
   color: white;
   background-color: black;
 }
-
 body .settings—container {
   bottom: 0;
   background: #eeeeee;
 }
-
 body .settings—container #settings-detail {
   display: none;
   padding: 4px 4px 0;
 }
-
 body .settings—container #settings-resident {
   padding: 4px 8px;
 }
-
 body .settings—container .settings-row {
   height: 20px;
   margin: 0;
   padding: 0;
 }
-
 body .settings—container .settings-row * {
   display: inline;
   vertical-align: middle;
 }
-
 body .settings—container .settings-row input {
   height: 16px;
   color: #3d3c3c;
 }
-
 body .settings—container .settings-row input[type='button'] {
   padding: 0 2px;
   border-width: 1px;
   border-radius: 2px;
   font-size: 1px;
 }
-
 body .settings—container .settings-row input[type='text'] {
   margin-left: 4px;
   font-size: 10px !important;
   text-align: center;
 }
-
 body .settings—container .input-settings {
   height: 90%;
 }
-
 body .settings—container .input-num {
   width: 3em;
 }
-
 body .settings—container #hidden-file-input {
   width: 0;
   visibility: hidden;
 }
-
 body input {
   outline: none;
 }
