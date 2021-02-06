@@ -1,20 +1,20 @@
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  console.debug('received message from BrowseManager extension background:', message, sender);
+  console.debug('BM::received message from BrowseManager extension background:', message, sender);
   eval(message.function).apply(this, message.hasOwnProperty('paramsArray') ? message.paramsArray : []);
   sendResponse('finished');
 });
 
 let sendMessageToBackground = function (msg,
                                         responseCallback = (response) =>
-                                          console.log('get response from background: ', response)
+                                          console.log('BM::get response from background: ', response)
 ) {
   chrome.runtime.sendMessage(msg, responseCallback);
 };
 
 function onLoading() {
-  console.log('content_script.js onLoading...');
+  console.log('BM::content_script.js onLoading...');
   sendMessageToBackground({function: "SETTINGS.getAllParams"}, function (response) {
-    console.log('response from extension:', response);
+    console.log('BM::response from extension:', response);
 
     // TODO: 此处进行网站个性化
     // csdn 网站目前已经取消了默认折叠内容的设置，所以此功能不再使用，只作为demo供参考。
@@ -37,7 +37,7 @@ class DISPLAYER {
       'z-index: 2147483647;' +
       'font-size: 200px;' +
       'text-shadow: -2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue;' +
-      'line-height: 1;"></div>'
+      'line-height: 1;"></div>';
     return d.firstChild;
   };
   static bookmark_template = function () {
@@ -48,7 +48,7 @@ class DISPLAYER {
       'font-size: 200px;' +
       'background-color: white;' +
       'text-shadow: -2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue;' +
-      'line-height: 1;"></div>'
+      'line-height: 1;"></div>';
     return d.firstChild;
   };
   // 用来多次删除，防止重叠
@@ -61,6 +61,10 @@ class DISPLAYER {
     DISPLAYER.tip_div = DISPLAYER.tip_template();
     DISPLAYER.tip_div.innerHTML = content;
     DISPLAYER._apply_css(DISPLAYER.tip_div, css);
+    DISPLAYER.tip_div.onmousedown = function (e) {
+      DISPLAYER._remove(e.target);
+      console.debug('BM::onmousedown, div deleted manually!');
+    };
 
     CONDITION.onBodyReady(function () {
       document.body.appendChild(DISPLAYER.tip_div);
@@ -72,7 +76,7 @@ class DISPLAYER {
 
   static _apply_css(div, css) {
     if (typeof css !== 'object') {
-      console.warn('css type error:', typeof css, css);
+      console.warn('BM::css type error:', typeof css, css);
       return;
     }
     for (let [p, v] of Object.entries(css)) {
@@ -81,7 +85,7 @@ class DISPLAYER {
   }
 
   static _remove(div) {
-    document.body.removeChild(div);
+    div.outerHTML = "";
   }
 }
 
@@ -108,7 +112,7 @@ class CONDITION {
 function csdnExpandContent() {
   // csdn 网站目前已经取消了默认折叠内容的设置，所以此功能不再使用，只作为demo供参考。
   function rbc_() {
-    console.debug('csdnExpandContent exec');
+    console.debug('BM::csdnExpandContent exec');
     let readmoreBtn = document.querySelector("#btn-readmore,.btn-readmore");
     readmoreBtn && readmoreBtn.click() && readmoreBtn.remove();
   }
