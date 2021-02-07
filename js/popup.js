@@ -109,19 +109,19 @@ let TABLES = {
 
       let searchLC = input.value.trim().toLowerCase();
       document.querySelectorAll('table > tbody > tr').forEach(function (tr) {
-        let decodeUrl = tr.querySelector('td.decode-url');
-        let orgUrl = tr.querySelector('td.hidden-org-url');
+        let decodeUrlLC = tr.querySelector('td.decode-url').innerText.trim().toLowerCase();
+        let orgUrlLC = tr.querySelector('td.hidden-org-url').innerText.trim().toLowerCase();
         let table = tr.closest('table').id;
         if (
-          ['table-domain-black', 'table-domain-white'].includes(table)
-          && (decodeUrl.innerText.trim().toLowerCase() === URL_UTILS.getDomain(searchLC)
-          || orgUrl.innerText.trim().toLowerCase() === URL_UTILS.getDomain(searchLC))
+          ['table-domain-black', 'table-domain-white'].includes(table) && (decodeUrlLC === URL_UTILS.getDomain(searchLC)
+          || orgUrlLC === URL_UTILS.getDomain(searchLC))
+          || 'table-prefix-black' === table && (searchLC.startsWith(decodeUrlLC) || searchLC.startsWith(orgUrlLC))
         ) {
           return;
         }
         if (
-          decodeUrl.innerText.trim().toLowerCase().indexOf(searchLC) === -1
-          && orgUrl.innerText.trim().toLowerCase().indexOf(searchLC) === -1
+          decodeUrlLC.indexOf(searchLC) === -1
+          && orgUrlLC.indexOf(searchLC) === -1
         ) {
           tr.hidden = true;
         }
