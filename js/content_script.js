@@ -103,7 +103,7 @@ class CONDITION {
 
   static waitFor(condition, callback) {
     if (!condition()) {
-      window.setTimeout(this.waitFor.bind(null, condition, callback), 100);
+      window.setTimeout(CONDITION.waitFor.bind(null, condition, callback), 100);
     } else {
       callback();
     }
