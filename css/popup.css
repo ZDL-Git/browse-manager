@@ -65,7 +65,7 @@ body .tables-container table .hidden-org-url {
 body .tables-container #table-url-white,
 body .tables-container #table-domain-white {
   color: black;
-  background-color: ghostwhite;
+  background-color: #cdcde3;
 }
 body .tables-container #table-prefix-black,
 body .tables-container #table-url-black,

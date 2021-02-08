@@ -117,7 +117,7 @@ let HISTORY = (function () {
   // 新url先判断是否黑名单，是则指向tabsLastUrl中的值（为空则关闭标签），非黑名单则更新
   let tabsLastUrl = {};
   // 解决浏览器多用户环境切换导致的计数增加问题
-  let tabsOnChromeUserOpening = {};
+  let tabsOnChromeUserOpen = {};
 
   return {
     getTabLastUrl: function (tabId) {
@@ -157,14 +157,14 @@ let HISTORY = (function () {
       return Date.now() - urlsBrowsedWithinSetTime[url] < SETTINGS.getParam(SETTINGS.PARAMS.timeIgnoreDuplicate);
     },
 
-    setTabsOnChromeUserOpening: function (tabs) {
-      tabsOnChromeUserOpening = tabs;
+    setTabsOnChromeUserOpen: function (tabs) {
+      tabsOnChromeUserOpen = tabs;
     },
 
-    inTabsOnChromeUserOpening: function (tab) {
-      for (const [key, value] of Object.entries(tabsOnChromeUserOpening)) {
+    inTabsOnChromeUserOpen: function (tab) {
+      for (const [key, value] of Object.entries(tabsOnChromeUserOpen)) {
         if (value.id === tab.id && value.url === tab.url) {
-          delete tabsOnChromeUserOpening[key];
+          delete tabsOnChromeUserOpen[key];
           return true;
         }
       }
@@ -176,7 +176,7 @@ let HISTORY = (function () {
 let EVENTS = {
   onChromeUserOpening: function (windowId) {
     chrome.tabs.query({windowId: windowId}, function (tabs) {
-      HISTORY.setTabsOnChromeUserOpening(tabs);
+      HISTORY.setTabsOnChromeUserOpen(tabs);
     })
   },
 };
@@ -516,7 +516,7 @@ let URL_UTILS = {
     }
 
     // 避免浏览器启动后打开另一用户导致其所有默认启动页面计数加一
-    if (HISTORY.inTabsOnChromeUserOpening(tab)) {
+    if (HISTORY.inTabsOnChromeUserOpen(tab)) {
       consoleDebug(stableUrl, "浏览器用户启动恢复页面");
       return URL_UTILS.STATUS.INVALID;
     }
