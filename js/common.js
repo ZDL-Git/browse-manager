@@ -41,13 +41,18 @@ let OPERATIONS = {
             'font-size': '30px',
             'background-color': '#87CEEB',
             'text-shadow': '',
-            'padding': '2vh',
+            'box-shadow': 'black 0px 0px 5px',
+            'padding': '1.6vh',
             'left': '10vw',
           };
+          let content = 'Prefix名单添加方法' +
+            '<p style="font-size: 16px; color: ghostwhite; padding-top: 1.4vh">' +
+            '>点击插件图标，输入prefix后点击前缀黑名单表头➕号完成添加' +
+            '</p>';
           TABS.sendMessageToTab(tab.id, {
             function: "DISPLAYER.displayText",
             params: [{
-              'content': '请点击插件图标，输入后点击前缀黑名单表表头➕号即可',
+              'content': content,
               'css': css,
               'keep_time': 10000,
             }]
@@ -283,7 +288,10 @@ let BOOKMARK = {
 
 let TABS = {
   retrieveTab: function (tabId, callback) {
-    chrome.tabs.get(tabId, callback);
+    try {
+      chrome.tabs.get(tabId, callback);
+    } catch (e) {
+    }
   },
   queryActiveTab: function (callback) {
     chrome.tabs.query(

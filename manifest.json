@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "__MSG_extension_name__",
-    "version": "3.7.0",
+    "version": "3.7.1",
     "description": "__MSG_extension_description__",
     "default_locale": "zh_CN",
     "permissions": [
@@ -22,8 +22,7 @@
         "scripts": [
             "js/common.js",
             "js/versions_glue.js",
-            "js/background.js",
-            "js/bookmark.js"
+            "js/background.js"
         ]
     },
     "content_scripts": [

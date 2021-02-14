@@ -4,12 +4,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   sendResponse('finished');
 });
 
-let sendMessageToBackground = function (msg,
-                                        responseCallback = (response) =>
-                                          console.log('BM::get response from background: ', response)
+function sendMessageToBackground(msg,
+                                 responseCallback = (response) =>
+                                   console.log('BM::get response from background: ', response)
 ) {
   chrome.runtime.sendMessage(msg, responseCallback);
-};
+}
 
 function onLoading() {
   console.log('BM::content_script.js onLoading...');
@@ -36,6 +36,7 @@ class DISPLAYER {
       'top: 15vh; left: 20vw;' +
       'z-index: 2147483647;' +
       'font-size: 200px;' +
+      'text-align: left;' +
       'text-shadow: -2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue;' +
       'line-height: 1;"></div>';
     return d.firstChild;
@@ -51,29 +52,35 @@ class DISPLAYER {
       'line-height: 1;"></div>';
     return d.firstChild;
   };
+  static abort_remove = 'mousedown';
   // 用来多次删除，防止重叠
-  static tip_div;
-  static bookmark_div;
+  static tip_div = {obj: undefined, state: undefined};
+  static bookmark_div = {obj: undefined, state: undefined};
 
   static displayText(params) {
     let content = params['content'] || '';
     let css = params['css'] || {};
     let keep_time = params['keep_time'] || 1300;
 
-    typeof DISPLAYER.tip_div === 'object' && DISPLAYER._remove(DISPLAYER.tip_div);
+    typeof DISPLAYER.tip_div.obj === 'object' && DISPLAYER._remove(DISPLAYER.tip_div.obj);
 
-    DISPLAYER.tip_div = DISPLAYER.tip_template();
-    DISPLAYER.tip_div.innerHTML = content;
-    DISPLAYER._apply_css(DISPLAYER.tip_div, css);
-    DISPLAYER.tip_div.onmousedown = function (e) {
-      DISPLAYER._remove(e.target);
-      console.debug('BM::onmousedown, div deleted manually!');
+    DISPLAYER.tip_div.obj = DISPLAYER.tip_template();
+    DISPLAYER.tip_div.obj.innerHTML = content;
+    DISPLAYER._apply_css(DISPLAYER.tip_div.obj, css);
+    DISPLAYER.tip_div.obj.onmouseup = function (e) {
+      DISPLAYER.tip_div.state = undefined;
+      DISPLAYER._remove(DISPLAYER.tip_div.obj);
+      console.debug('BM::onmouseup, div deleted manually!');
+    };
+    DISPLAYER.tip_div.obj.onmousedown = function (e) {
+      DISPLAYER.tip_div.state = DISPLAYER.abort_remove;
     };
 
     CONDITION.onBodyReady(function () {
-      document.body.appendChild(DISPLAYER.tip_div);
+      document.body.appendChild(DISPLAYER.tip_div.obj);
       setTimeout(function () {
-        DISPLAYER._remove(DISPLAYER.tip_div);
+        DISPLAYER.tip_div.state !== DISPLAYER.abort_remove
+        && DISPLAYER._remove(DISPLAYER.tip_div.obj);
       }, keep_time);
     });
   }
