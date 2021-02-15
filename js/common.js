@@ -42,13 +42,13 @@ let OPERATIONS = {
             'background-color': '#87CEEB',
             'text-shadow': '',
             'box-shadow': 'black 0px 0px 5px',
-            'padding': '1.6vh',
+            'padding': '1.4vh',
             'left': '10vw',
           };
-          let content = 'Prefix名单添加方法' +
-            '<p style="font-size: 16px; color: ghostwhite; padding-top: 1.4vh">' +
-            '>点击插件图标，输入prefix后点击前缀黑名单表头➕号完成添加' +
-            '</p>';
+          let content = `Prefix名单添加方法
+            <p style="margin: 0; padding-top: 1.4vh; font-size: 16px; color: ghostwhite;">
+            >点击插件图标，输入prefix后点击前缀黑名单表头➕号完成添加
+            </p>`;
           TABS.sendMessageToTab(tab.id, {
             function: "DISPLAYER.displayText",
             params: [{

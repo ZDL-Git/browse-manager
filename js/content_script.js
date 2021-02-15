@@ -32,27 +32,37 @@ function onLoading() {
 class DISPLAYER {
   static tip_template = function () {
     let d = document.createElement('div');
-    d.innerHTML = '<div style="position: fixed;' +
-      'top: 15vh; left: 20vw;' +
-      'z-index: 2147483647;' +
-      'font-size: 200px;' +
-      'text-align: left;' +
-      'text-shadow: -2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue;' +
-      'line-height: 1;"></div>';
-    return d.firstChild;
+    let css = {
+      'position': 'fixed',
+      'margin': '0',
+      'padding': '0',
+      'top': '15vh',
+      'left': '20vw',
+      'z-index': '2147483647',
+      'color': 'black',
+      'font-size': '180px',
+      'text-align': 'left',
+      'text-shadow': '-2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue',
+      'line-height': '1',
+    };
+    Object.assign(d.style, css);
+    return d;
   };
   static abort_remove = 'mousedown';
   // 用来多次删除，防止重叠
-  static tip_div = {obj: undefined, state: undefined};
+  static tip_div = {obj: undefined, state: undefined, timer_id: undefined};
 
   static displayText(params) {
     let content = params['content'] || '';
     let css = params['css'] || {};
     let keep_time = params['keep_time'] || 1300;
 
-    typeof DISPLAYER.tip_div.obj === 'object' && DISPLAYER._remove(DISPLAYER.tip_div.obj);
-
+    typeof DISPLAYER.tip_div.obj === 'object'
+    && DISPLAYER._remove(DISPLAYER.tip_div.obj)
+    && clearTimeout(DISPLAYER.tip_div.timer_id);
+    // reset css
     DISPLAYER.tip_div.obj = DISPLAYER.tip_template();
+
     DISPLAYER.tip_div.obj.innerHTML = content;
     DISPLAYER._apply_css(DISPLAYER.tip_div.obj, css);
     DISPLAYER.tip_div.obj.onmouseup = function (e) {
@@ -66,7 +76,7 @@ class DISPLAYER {
 
     CONDITION.onBodyReady(function () {
       document.body.appendChild(DISPLAYER.tip_div.obj);
-      setTimeout(function () {
+      DISPLAYER.tip_div.timer_id = setTimeout(function () {
         DISPLAYER.tip_div.state !== DISPLAYER.abort_remove
         && DISPLAYER._remove(DISPLAYER.tip_div.obj);
       }, keep_time);
@@ -85,6 +95,7 @@ class DISPLAYER {
 
   static _remove(div) {
     div.remove();
+    return true;
   }
 }
 
