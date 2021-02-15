@@ -41,21 +41,9 @@ class DISPLAYER {
       'line-height: 1;"></div>';
     return d.firstChild;
   };
-  static bookmark_template = function () {
-    let d = document.createElement('div');
-    d.innerHTML = '<div style="position: fixed;' +
-      'top: 15vh; bottom: 15vh; left: 20vw; right: 20vw;' +
-      'z-index: 2147483647;' +
-      'font-size: 200px;' +
-      'background-color: white;' +
-      'text-shadow: -2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue;' +
-      'line-height: 1;"></div>';
-    return d.firstChild;
-  };
   static abort_remove = 'mousedown';
   // 用来多次删除，防止重叠
   static tip_div = {obj: undefined, state: undefined};
-  static bookmark_div = {obj: undefined, state: undefined};
 
   static displayText(params) {
     let content = params['content'] || '';

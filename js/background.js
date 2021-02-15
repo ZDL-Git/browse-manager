@@ -36,9 +36,6 @@ chrome.notifications.onClicked.addListener(function (notificationId) {
   chrome.notifications.clear(notificationId);
 });
 
-chrome.storage.onChanged.addListener(function (changes, area) {
-
-});
 // ============================================================================
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
