@@ -40,7 +40,7 @@ class DISPLAYER {
       'left': '20vw',
       'z-index': '2147483647',
       'color': 'black',
-      'font-size': '180px',
+      'font-size': '100px',
       'text-align': 'left',
       'text-shadow': '-2px 0 2px skyblue, 0 2px 2px yellow, 2px 0 2px skyblue, 0 -2px 2px blue',
       'line-height': '1',
