@@ -1,3 +1,4 @@
+let enableCount = false;
 let OPERATIONS = {
   menu: {
     addUrlBlacklist: "URL加入黑名单（不再访问）",
@@ -335,6 +336,7 @@ let TABS = {
   },
   setTabBadge: function (tab) {
     try {
+      if (!enableCount) return;
       let stableUrl = URL_UTILS.getStableUrl(tab.url);
       COUNTING.getBrowsedTimes(stableUrl, function (browseTimes) {
         if (URL_UTILS.isWhitelist(stableUrl) || URL_UTILS.isBlacklist(stableUrl) || !browseTimes) {
@@ -381,6 +383,7 @@ let TABS = {
 let COUNTING = {
   increaseAndShowBrowseTimes: function (tab) { // 含异步接口，妥协单一职责
     consoleDebug('COUNTING.increaseAndShowBrowseTimes()');
+    if (!enableCount) return;
     let stableUrl = URL_UTILS.getStableUrl(tab.url);
     COUNTING.getBrowsedTimes(stableUrl, function (times) {
       times = (times || 0) + 1;
@@ -477,6 +480,7 @@ let URL_UTILS = {
   },
 
   isWhitelist: function (url) {
+    if (!enableCount) return true;
     let isDefaultWhitelist = /^chrome/.test(url)
       || /^https?:\/\/www\.baidu\.com/.test(url)
       || /^https?:\/\/www\.google\.com/.test(url);
